@@ -14,6 +14,8 @@ ENV ANDROID_NDK_VERSION="13"
 ENV LANG en_US.UTF-8
 RUN locale-gen $LANG
 
+COPY README.md /README.md
+
 WORKDIR /tmp
 
 # Installing packages
