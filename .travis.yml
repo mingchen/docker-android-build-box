@@ -1,0 +1,12 @@
+language: bash
+services: docker
+
+# Skipping the Installation Step
+install: true
+
+script:
+  - docker build -t android-build-box .
+
+after_script:
+  - docker images
+
