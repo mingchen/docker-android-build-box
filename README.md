@@ -1,5 +1,9 @@
 # Docker Android Build Box
 
+
+[![Build Status](https://travis-ci.org/mingchen/docker-android-build-box.svg?branch=master)](https://travis-ci.org/mingchen/docker-android-build-box)
+
+
 ## Introduction
 
 An **docker** image build with **Android** build environment.
