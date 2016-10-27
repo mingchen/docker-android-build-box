@@ -14,6 +14,8 @@ ENV ANDROID_NDK_VERSION="13"
 ENV LANG en_US.UTF-8
 RUN locale-gen $LANG
 
+WORKDIR /tmp
+
 # Installing packages
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -45,46 +47,40 @@ RUN apt-get update && \
     apt-add-repository -y ppa:openjdk-r/ppa && \
     apt-get install -y openjdk-8-jdk && \
     rm -rf /var/lib/apt/lists/ && \
-    apt-get clean
+    apt-get clean && \
 
-# Install Android SDK
-WORKDIR /tmp
-RUN wget -q -O android-sdk.tgz https://dl.google.com/android/android-sdk_r${ANDROID_SDK_VERSION}-linux.tgz  && \
+    wget -q -O android-sdk.tgz https://dl.google.com/android/android-sdk_r${ANDROID_SDK_VERSION}-linux.tgz  && \
     tar -xzf android-sdk.tgz && \
     rm -fr $ANDROID_HOME && \
     mv android-sdk-linux $ANDROID_HOME && \
-    rm android-sdk.tgz
+    rm android-sdk.tgz && \
 
-# Install Android components
-RUN echo y | $ANDROID_HOME/tools/android --silent update sdk --no-ui --all --filter android-16
-RUN echo y | $ANDROID_HOME/tools/android --silent update sdk --no-ui --all --filter android-17
-RUN echo y | $ANDROID_HOME/tools/android --silent update sdk --no-ui --all --filter android-18
-RUN echo y | $ANDROID_HOME/tools/android --silent update sdk --no-ui --all --filter android-19
-RUN echo y | $ANDROID_HOME/tools/android --silent update sdk --no-ui --all --filter android-20
-RUN echo y | $ANDROID_HOME/tools/android --silent update sdk --no-ui --all --filter android-21
-RUN echo y | $ANDROID_HOME/tools/android --silent update sdk --no-ui --all --filter android-22
-RUN echo y | $ANDROID_HOME/tools/android --silent update sdk --no-ui --all --filter android-23
-RUN echo y | $ANDROID_HOME/tools/android --silent update sdk --no-ui --all --filter android-24
-RUN echo y | $ANDROID_HOME/tools/android --silent update sdk --no-ui --all --filter platform-tools
-RUN echo y | $ANDROID_HOME/tools/android --silent update sdk --no-ui --all --filter build-tools-${ANDROID_BUILD_TOOLS_VERSION}
-RUN echo y | $ANDROID_HOME/tools/android --silent update sdk --no-ui --all --filter extra-android-m2repository
-RUN echo y | $ANDROID_HOME/tools/android --silent update sdk --no-ui --all --filter extra-google-google_play_services
-RUN echo y | $ANDROID_HOME/tools/android --silent update sdk --no-ui --all --filter extra-google-m2repository
+    # Install Android components
+    echo y | $ANDROID_HOME/tools/android --silent update sdk --no-ui --all --filter android-16 && \
+    echo y | $ANDROID_HOME/tools/android --silent update sdk --no-ui --all --filter android-17 && \
+    echo y | $ANDROID_HOME/tools/android --silent update sdk --no-ui --all --filter android-18 && \
+    echo y | $ANDROID_HOME/tools/android --silent update sdk --no-ui --all --filter android-19 && \
+    echo y | $ANDROID_HOME/tools/android --silent update sdk --no-ui --all --filter android-20 && \
+    echo y | $ANDROID_HOME/tools/android --silent update sdk --no-ui --all --filter android-21 && \
+    echo y | $ANDROID_HOME/tools/android --silent update sdk --no-ui --all --filter android-22 && \
+    echo y | $ANDROID_HOME/tools/android --silent update sdk --no-ui --all --filter android-23 && \
+    echo y | $ANDROID_HOME/tools/android --silent update sdk --no-ui --all --filter android-24 && \
+    echo y | $ANDROID_HOME/tools/android --silent update sdk --no-ui --all --filter platform-tools && \
+    echo y | $ANDROID_HOME/tools/android --silent update sdk --no-ui --all --filter build-tools-${ANDROID_BUILD_TOOLS_VERSION} && \
+    echo y | $ANDROID_HOME/tools/android --silent update sdk --no-ui --all --filter extra-android-m2repository && \
+    echo y | $ANDROID_HOME/tools/android --silent update sdk --no-ui --all --filter extra-google-google_play_services && \
+    echo y | $ANDROID_HOME/tools/android --silent update sdk --no-ui --all --filter extra-google-m2repository && \
 
-# Install Android NDK
-WORKDIR /tmp
-RUN wget -q -O android-ndk.zip http://dl.google.com/android/repository/android-ndk-r${ANDROID_NDK_VERSION}-linux-x86_64.zip && \
+    # Install Android NDK
+    wget -q -O android-ndk.zip http://dl.google.com/android/repository/android-ndk-r${ANDROID_NDK_VERSION}-linux-x86_64.zip && \
     unzip -q android-ndk.zip && \
     rm -fr $ANDROID_NDK && \
     mv android-ndk-r${ANDROID_NDK_VERSION} $ANDROID_NDK && \
     rm android-ndk.zip
 
-# Environment variables
+# Add android commands to PATH
 ENV ANDROID_SDK_HOME $ANDROID_HOME
-ENV PATH $PATH:$ANDROID_SDK_HOME/tools
-ENV PATH $PATH:$ANDROID_SDK_HOME/platform-tools
-ENV PATH $PATH:$ANDROID_SDK_HOME/build-tools/${ANDROID_BUILD_TOOLS_VERSION}
-ENV PATH $PATH:$ANDROID_NDK
+ENV PATH $PATH:$ANDROID_SDK_HOME/tools:$ANDROID_SDK_HOME/platform-tools:$ANDROID_SDK_HOME/build-tools/${ANDROID_BUILD_TOOLS_VERSION}:$ANDROID_NDK
 
 # Export JAVA_HOME variable
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/
