@@ -51,9 +51,8 @@ RUN apt-get update && \
 
     wget -q -O android-sdk.tgz https://dl.google.com/android/android-sdk_r${ANDROID_SDK_VERSION}-linux.tgz  && \
     tar -xzf android-sdk.tgz && \
-    rm -fr $ANDROID_HOME && \
+    rm -fr $ANDROID_HOME android-sdk.tgz && \
     mv android-sdk-linux $ANDROID_HOME && \
-    rm android-sdk.tgz && \
 
     # Install Android components
     echo y | $ANDROID_HOME/tools/android --silent update sdk --no-ui --all --filter android-16 && \
@@ -69,14 +68,13 @@ RUN apt-get update && \
     echo y | $ANDROID_HOME/tools/android --silent update sdk --no-ui --all --filter build-tools-${ANDROID_BUILD_TOOLS_VERSION} && \
     echo y | $ANDROID_HOME/tools/android --silent update sdk --no-ui --all --filter extra-android-m2repository && \
     echo y | $ANDROID_HOME/tools/android --silent update sdk --no-ui --all --filter extra-google-google_play_services && \
-    echo y | $ANDROID_HOME/tools/android --silent update sdk --no-ui --all --filter extra-google-m2repository && \
+    echo y | $ANDROID_HOME/tools/android --silent update sdk --no-ui --all --filter extra-google-m2repository
 
-    # Install Android NDK
-    wget -q -O android-ndk.zip http://dl.google.com/android/repository/android-ndk-r${ANDROID_NDK_VERSION}-linux-x86_64.zip && \
+# Install Android NDK, put it in a separate RUN to avoid travis-ci timeout in 10 minutes.
+RUN wget -q -O android-ndk.zip http://dl.google.com/android/repository/android-ndk-r${ANDROID_NDK_VERSION}-linux-x86_64.zip && \
     unzip -q android-ndk.zip && \
-    rm -fr $ANDROID_NDK && \
-    mv android-ndk-r${ANDROID_NDK_VERSION} $ANDROID_NDK && \
-    rm android-ndk.zip
+    rm -fr $ANDROID_NDK android-ndk.zip && \
+    mv android-ndk-r${ANDROID_NDK_VERSION} $ANDROID_NDK
 
 # Add android commands to PATH
 ENV ANDROID_SDK_HOME $ANDROID_HOME
