@@ -41,23 +41,19 @@ RUN apt-get update && \
         software-properties-common \
         unzip \
         zip \
-        zlib1g-dev
-
-# Add java repo
-RUN apt-add-repository -y ppa:openjdk-r/ppa
-RUN apt-get install -y openjdk-8-jdk
-
-# Clean up apt-get
-RUN rm -rf /var/lib/apt/lists/
-RUN apt-get clean
+        zlib1g-dev && \
+    apt-add-repository -y ppa:openjdk-r/ppa && \
+    apt-get install -y openjdk-8-jdk && \
+    rm -rf /var/lib/apt/lists/ && \
+    apt-get clean
 
 # Install Android SDK
 WORKDIR /tmp
-RUN wget --quiet --output-document=android-sdk.tgz https://dl.google.com/android/android-sdk_r${ANDROID_SDK_VERSION}-linux.tgz
-RUN tar -xzf android-sdk.tgz
-RUN rm -fr $ANDROID_HOME    # Remove old one, if exist
-RUN mv android-sdk-linux $ANDROID_HOME
-RUN rm android-sdk.tgz
+RUN wget -q -O android-sdk.tgz https://dl.google.com/android/android-sdk_r${ANDROID_SDK_VERSION}-linux.tgz  && \
+    tar -xzf android-sdk.tgz && \
+    rm -fr $ANDROID_HOME && \
+    mv android-sdk-linux $ANDROID_HOME && \
+    rm android-sdk.tgz
 
 # Install Android components
 RUN echo y | $ANDROID_HOME/tools/android --silent update sdk --no-ui --all --filter android-16
@@ -77,11 +73,11 @@ RUN echo y | $ANDROID_HOME/tools/android --silent update sdk --no-ui --all --fil
 
 # Install Android NDK
 WORKDIR /tmp
-RUN wget --quiet --output-document=android-ndk.zip http://dl.google.com/android/repository/android-ndk-r${ANDROID_NDK_VERSION}-linux-x86_64.zip
-RUN unzip android-ndk.zip
-RUN rm -fr $ANDROID_NDK # Remove old one, if exist
-RUN mv android-ndk-r${ANDROID_NDK_VERSION} $ANDROID_NDK
-RUN rm android-ndk.zip
+RUN wget -q -O android-ndk.zip http://dl.google.com/android/repository/android-ndk-r${ANDROID_NDK_VERSION}-linux-x86_64.zip && \
+    unzip -q android-ndk.zip && \
+    rm -fr $ANDROID_NDK && \
+    mv android-ndk-r${ANDROID_NDK_VERSION} $ANDROID_NDK && \
+    rm android-ndk.zip
 
 # Environment variables
 ENV ANDROID_SDK_HOME $ANDROID_HOME
