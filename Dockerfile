@@ -41,14 +41,14 @@ RUN apt-get update && \
         software-properties-common \
         unzip \
         zip \
-        zlib1g-dev && \
-    rm -rf /var/lib/apt/lists/
+        zlib1g-dev
 
 # Add java repo
 RUN apt-add-repository -y ppa:openjdk-r/ppa
 RUN apt-get install -y openjdk-8-jdk
 
 # Clean up apt-get
+RUN rm -rf /var/lib/apt/lists/
 RUN apt-get clean
 
 # Install Android SDK
