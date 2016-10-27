@@ -14,10 +14,9 @@ ENV ANDROID_NDK_VERSION="13"
 ENV LANG en_US.UTF-8
 RUN locale-gen $LANG
 
-RUN apt-get update
-
 # Installing packages
-RUN apt-get install -y \
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
         build-essential \
         autoconf \
         git \
@@ -42,13 +41,14 @@ RUN apt-get install -y \
         software-properties-common \
         unzip \
         zip \
-        zlib1g-dev
+        zlib1g-dev && \
+    rm -rf /var/lib/apt/lists/
 
 # Add java repo
 RUN apt-add-repository -y ppa:openjdk-r/ppa
 RUN apt-get install -y openjdk-8-jdk
 
-# Clean Up Apt-get
+# Clean up apt-get
 RUN apt-get clean
 
 # Install Android SDK
