@@ -59,7 +59,7 @@ RUN wget -q -O tools.zip https://dl.google.com/android/repository/tools_r${ANDRO
     mv tools $ANDROID_HOME/tools && \
 
     # Install Android components
-    cd $ANDROID_HOME && pwd && ls -l && \
+    cd $ANDROID_HOME && \
 
     echo "Install android-16" && \
     echo y | tools/android --silent update sdk --no-ui --all --filter android-16 && \
