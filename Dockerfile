@@ -4,6 +4,7 @@ MAINTAINER Ming Chen
 
 ENV ANDROID_HOME /opt/android-sdk
 ENV ANDROID_NDK  /opt/android-ndk
+ENV ANDROID_NDK_HOME /opt/android-ndk
 
 # Get the latest version from https://developer.android.com/studio/index.html
 ENV ANDROID_SDK_VERSION="25.2.3"
