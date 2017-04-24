@@ -135,7 +135,6 @@ RUN wget -q -O android-ndk.zip http://dl.google.com/android/repository/android-n
 ENV ANDROID_SDK_HOME $ANDROID_HOME
 ENV PATH $PATH:$ANDROID_SDK_HOME/tools:$ANDROID_SDK_HOME/platform-tools:$ANDROID_NDK
 
-
 # Export JAVA_HOME variable
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/
 
@@ -143,4 +142,9 @@ ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/
 ENV TERM dumb
 ENV JAVA_OPTS "-Xms512m -Xmx1024m"
 ENV GRADLE_OPTS "-XX:+UseG1GC -XX:MaxGCPauseMillis=1000"
+
+# Confirms that we agreed on the Terms and Conditions of the SDK itself
+# (if we didn’t the build would fail, asking us to agree on those terms).
+RUN mkdir "${ANDROID_HOME}/licenses" || true
+RUN echo "8933bad161af4178b1185d1a37fbf41ea5269c55" > "${ANDROID_HOME}/licenses/android-sdk-license"
 
