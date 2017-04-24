@@ -12,7 +12,10 @@ ENV ANDROID_SDK_VERSION="25.2.3"
 # Get the latest version from https://developer.android.com/ndk/downloads/index.html
 ENV ANDROID_NDK_VERSION="13b"
 
+
+# Set locale
 ENV LANG en_US.UTF-8
+RUN apt-get clean && apt-get update && apt-get install -y locales
 RUN locale-gen $LANG
 
 COPY README.md /README.md
