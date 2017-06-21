@@ -7,7 +7,7 @@ ENV ANDROID_NDK  /opt/android-ndk
 ENV ANDROID_NDK_HOME /opt/android-ndk
 
 # Get the latest version from https://developer.android.com/studio/index.html
-ENV ANDROID_SDK_VERSION="25.2.3"
+ENV ANDROID_SDK_VERSION="26.0.2"
 
 # Get the latest version from https://developer.android.com/ndk/downloads/index.html
 ENV ANDROID_NDK_VERSION="13b"
