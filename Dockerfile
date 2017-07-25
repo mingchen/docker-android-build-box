@@ -7,10 +7,10 @@ ENV ANDROID_NDK  /opt/android-ndk
 ENV ANDROID_NDK_HOME /opt/android-ndk
 
 # Get the latest version from https://developer.android.com/studio/index.html
-ENV ANDROID_SDK_VERSION="25.2.3"
+ENV ANDROID_SDK_VERSION="26.0.0"
 
 # Get the latest version from https://developer.android.com/ndk/downloads/index.html
-ENV ANDROID_NDK_VERSION="13b"
+ENV ANDROID_NDK_VERSION="15b"
 
 # nodejs version
 ENV NODE_VERSION "7.x"
@@ -97,6 +97,8 @@ RUN wget -q -O tools.zip https://dl.google.com/android/repository/tools_r${ANDRO
     echo y | tools/android --silent update sdk --no-ui --all --filter android-24 && \
     echo "Install android-25" && \
     echo y | tools/android --silent update sdk --no-ui --all --filter android-25 && \
+    echo "Install android-26" && \
+    echo y | tools/android --silent update sdk --no-ui --all --filter android-26 && \
 
     echo "Install platform-tools" && \
     echo y | tools/android --silent update sdk --no-ui --all --filter platform-tools && \
@@ -127,10 +129,12 @@ RUN wget -q -O tools.zip https://dl.google.com/android/repository/tools_r${ANDRO
     echo y | tools/android --silent update sdk --no-ui --all --filter build-tools-25.0.2 && \
     echo "Install build-tools-25.0.3" && \
     echo y | tools/android --silent update sdk --no-ui --all --filter build-tools-25.0.3 && \
-
+    echo "Install build-tools-26.0.1" && \
+    echo y | tools/android --silent update sdk --no-ui --all --filter build-tools-26.0.1 && \
+    
     echo "Install extra-android-m2repository" && \
     echo y | tools/android --silent update sdk --no-ui --all --filter extra-android-m2repository && \
-
+  
     echo "Install extra-google-google_play_services" && \
     echo y | tools/android --silent update sdk --no-ui --all --filter extra-google-google_play_services && \
 
