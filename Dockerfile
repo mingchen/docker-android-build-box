@@ -49,6 +49,7 @@ RUN apt-get update && \
         pkg-config \
         python-software-properties \
         software-properties-common \
+        ruby-full \
         unzip \
         zip \
         zlib1g-dev && \
@@ -160,3 +161,5 @@ ENV GRADLE_OPTS "-XX:+UseG1GC -XX:MaxGCPauseMillis=1000"
 RUN mkdir "${ANDROID_HOME}/licenses" || true
 RUN echo "8933bad161af4178b1185d1a37fbf41ea5269c55" > "${ANDROID_HOME}/licenses/android-sdk-license"
 
+# Install Fastlane
+RUN gem install fastlane -NV
