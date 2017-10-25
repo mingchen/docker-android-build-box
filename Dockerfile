@@ -1,37 +1,41 @@
-FROM ubuntu:16.04
+FROM ubuntu:17.10
 
 MAINTAINER Ming Chen
 
-ENV ANDROID_HOME /opt/android-sdk
-ENV ANDROID_NDK  /opt/android-ndk
-ENV ANDROID_NDK_HOME /opt/android-ndk
-
+ENV ANDROID_HOME="/opt/android-sdk" \
+    ANDROID_NDK="/opt/android-ndk" \
+    ANDROID_NDK_HOME="/opt/android-ndk" \
 # Get the latest version from https://developer.android.com/studio/index.html
-ENV ANDROID_SDK_VERSION="25.2.3"
-
+    ANDROID_SDK_TOOLS_VERSION="3859397" \
 # Get the latest version from https://developer.android.com/ndk/downloads/index.html
-ENV ANDROID_NDK_VERSION="13b"
-
+    ANDROID_NDK_VERSION="15c" \
 # nodejs version
-ENV NODE_VERSION "7.x"
-
+    NODE_VERSION="8.x" \
 # Set locale
-ENV LANG en_US.UTF-8
-RUN apt-get clean && apt-get update && apt-get install -y locales
-RUN locale-gen $LANG
+    LANG="en_US.UTF-8" \
+    LANGUAGE="en_US.UTF-8" \
+    LC_ALL="en_US.UTF-8" \
+    DEBIAN_FRONTEND="noninteractive" \
+    ANDROID_SDK_HOME="$ANDROID_HOME" \
+    PATH="$PATH:$ANDROID_SDK_HOME/tools:$ANDROID_SDK_HOME/platform-tools:$ANDROID_NDK" \
+    JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/ \
+    TERM=dumb \
+    DEBIAN_FRONTEND=noninteractive
+
 
 COPY README.md /README.md
 
 WORKDIR /tmp
 
 # Installing packages
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
+RUN apt-get update -qq > /dev/null && \
+    apt-get install -qq locales > /dev/null && \
+    locale-gen "$LANG" > /dev/null && \
+    apt-get install -qq --no-install-recommends \
         build-essential \
         autoconf \
-        git \
         curl \
-        wget \
+        git \
         lib32stdc++6 \
         lib32z1 \
         lib32z1-dev \
@@ -45,121 +49,107 @@ RUN apt-get update && \
         m4 \
         ncurses-dev \
         ocaml \
+        openjdk-8-jdk \
         openssh-client \
         pkg-config \
         python-software-properties \
-        software-properties-common \
         ruby-full \
+        software-properties-common \
         unzip \
+        wget \
         zip \
-        zlib1g-dev && \
-    apt-add-repository -y ppa:openjdk-r/ppa && \
-    apt-get install -y openjdk-8-jdk && \
+        zlib1g-dev > /dev/null && \
+    echo "installing nodejs, npm, cordova, ionic, react-native" && \
+    curl -sL -k https://deb.nodesource.com/setup_${NODE_VERSION} \
+        | bash - > /dev/null && \
+    apt-get install -qq nodejs > /dev/null && \
+    apt-get clean > /dev/null && \
     rm -rf /var/lib/apt/lists/ && \
-    apt-get clean  && \
-
-    # Install nodejs, npm etc.
-    # https://github.com/nodesource/distributions
-    curl -sL -k https://deb.nodesource.com/setup_${NODE_VERSION} | bash -  && \
-    apt-get install -yq nodejs && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
-    npm install -g npm && \
-    npm install --quiet -g npm-check-updates eslint jshint node-gyp gulp bower mocha karma-cli react-native-cli && \
-    npm cache clean
+    npm install --quiet -g npm > /dev/null && \
+    npm install --quiet -g \
+        bower cordova eslint gulp \
+        ionic jshint karma-cli mocha \
+        node-gyp npm-check-updates \
+        react-native-cli > /dev/null && \
+    npm cache clean --force > /dev/null && \
+    rm -rf /tmp/* /var/tmp/* && \
+    echo "installing fastlane" && \
+    gem install fastlane --quiet --no-document > /dev/null
 
 # Install Android SDK
-RUN wget -q -O tools.zip https://dl.google.com/android/repository/tools_r${ANDROID_SDK_VERSION}-linux.zip && \
-    unzip -q tools.zip && \
-    rm -fr $ANDROID_HOME tools.zip && \
-    mkdir -p $ANDROID_HOME && \
-    mv tools $ANDROID_HOME/tools && \
+RUN echo "installing sdk tools" && \
+    wget --quiet --output-document=sdk-tools.zip \
+        "https://dl.google.com/android/repository/sdk-tools-linux-${ANDROID_SDK_TOOLS_VERSION}.zip" && \
+    mkdir --parents "$ANDROID_HOME" && \
+    unzip -q sdk-tools.zip -d "$ANDROID_HOME" && \
+    rm --force sdk-tools.zip && \
+    echo "installing ndk" && \
+    wget --quiet --output-document=android-ndk.zip \
+    "http://dl.google.com/android/repository/android-ndk-r${ANDROID_NDK_VERSION}-linux-x86_64.zip" && \
+    mkdir --parents "$ANDROID_NDK/android-ndk-r${ANDROID_NDK_VERSION}" && \
+    unzip -q android-ndk.zip -d "$ANDROID_NDK" && \
+    rm --force android-ndk.zip && \
+# Install SDKs
+# Please keep these in descending order!
+# The `yes` is for accepting all non-standard tool licenses.
+    mkdir --parents "$HOME/.android/" && \
+    echo '### User Sources for Android SDK Manager' > \
+        "$HOME/.android/repositories.cfg" && \
+    yes | "$ANDROID_HOME"/tools/bin/sdkmanager --licenses > /dev/null && \
+    echo "installing platforms" && \
+    yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
+        "platforms;android-26" \
+        "platforms;android-25" \
+        "platforms;android-24" \
+        "platforms;android-23" \
+        "platforms;android-22" \
+        "platforms;android-21" \
+        "platforms;android-20" \
+        "platforms;android-19" \
+        "platforms;android-18" \
+        "platforms;android-17" \
+        "platforms;android-16" && \
+    echo "installing platform tools " && \
+    yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
+        "platform-tools" && \
+    echo "installing build tools " && \
+    yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
+        "build-tools;26.0.2" "build-tools;26.0.1" "build-tools;26.0.0" \
+        "build-tools;25.0.3" "build-tools;25.0.2" \
+        "build-tools;25.0.1" "build-tools;25.0.0" \
+        "build-tools;24.0.3" "build-tools;24.0.2" \
+        "build-tools;24.0.1" "build-tools;24.0.0" && \
+    echo "installing build tools " && \
+    yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
+        "build-tools;23.0.3" "build-tools;23.0.2" "build-tools;23.0.1" \
+        "build-tools;22.0.1" \
+        "build-tools;21.1.2" \
+        "build-tools;20.0.0" \
+        "build-tools;19.1.0" \
+        "build-tools;18.1.1" \
+        "build-tools;17.0.0" && \
+    echo "installing extras " && \
+    yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
+        "extras;android;m2repository" \
+        "extras;google;m2repository" && \
+    echo "installing play services " && \
+    yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
+        "extras;google;google_play_services" \
+        "extras;m2repository;com;android;support;constraint;constraint-layout;1.0.2" \
+        "extras;m2repository;com;android;support;constraint;constraint-layout;1.0.1" && \
+    echo "installing Google APIs" && \
+    yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
+        "add-ons;addon-google_apis-google-24" \
+        "add-ons;addon-google_apis-google-23" \
+        "add-ons;addon-google_apis-google-22" \
+        "add-ons;addon-google_apis-google-21" \
+        "add-ons;addon-google_apis-google-19" \
+        "add-ons;addon-google_apis-google-18" \
+        "add-ons;addon-google_apis-google-17" \
+        "add-ons;addon-google_apis-google-16" && \
+    echo "installing emulator " && \
+    yes | "$ANDROID_HOME"/tools/bin/sdkmanager "emulator" && \
+    echo "installing system image with android 25 and google apis" && \
+    yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
+        "system-images;android-25;google_apis;x86_64"
 
-    # Install Android components
-    cd $ANDROID_HOME && \
-
-    echo "Install android-16" && \
-    echo y | tools/android --silent update sdk --no-ui --all --filter android-16 && \
-    echo "Install android-17" && \
-    echo y | tools/android --silent update sdk --no-ui --all --filter android-17 && \
-    echo "Install android-18" && \
-    echo y | tools/android --silent update sdk --no-ui --all --filter android-18 && \
-    echo "Install android-19" && \
-    echo y | tools/android --silent update sdk --no-ui --all --filter android-19 && \
-    echo "Install android-20" && \
-    echo y | tools/android --silent update sdk --no-ui --all --filter android-20 && \
-    echo "Install android-21" && \
-    echo y | tools/android --silent update sdk --no-ui --all --filter android-21 && \
-    echo "Install android-22" && \
-    echo y | tools/android --silent update sdk --no-ui --all --filter android-22 && \
-    echo "Install android-23" && \
-    echo y | tools/android --silent update sdk --no-ui --all --filter android-23 && \
-    echo "Install android-24" && \
-    echo y | tools/android --silent update sdk --no-ui --all --filter android-24 && \
-    echo "Install android-25" && \
-    echo y | tools/android --silent update sdk --no-ui --all --filter android-25 && \
-
-    echo "Install platform-tools" && \
-    echo y | tools/android --silent update sdk --no-ui --all --filter platform-tools && \
-
-    echo "Install build-tools-21.1.2" && \
-    echo y | tools/android --silent update sdk --no-ui --all --filter build-tools-21.1.2 && \
-    echo "Install build-tools-22.0.1" && \
-    echo y | tools/android --silent update sdk --no-ui --all --filter build-tools-22.0.1 && \
-    echo "Install build-tools-23.0.1" && \
-    echo y | tools/android --silent update sdk --no-ui --all --filter build-tools-23.0.1 && \
-    echo "Install build-tools-23.0.2" && \
-    echo y | tools/android --silent update sdk --no-ui --all --filter build-tools-23.0.2 && \
-    echo "Install build-tools-23.0.3" && \
-    echo y | tools/android --silent update sdk --no-ui --all --filter build-tools-23.0.3 && \
-    echo "Install build-tools-24" && \
-    echo y | tools/android --silent update sdk --no-ui --all --filter build-tools-24 && \
-    echo "Install build-tools-24.0.1" && \
-    echo y | tools/android --silent update sdk --no-ui --all --filter build-tools-24.0.1 && \
-    echo "Install build-tools-24.0.2" && \
-    echo y | tools/android --silent update sdk --no-ui --all --filter build-tools-24.0.2 && \
-    echo "Install build-tools-24.0.3" && \
-    echo y | tools/android --silent update sdk --no-ui --all --filter build-tools-24.0.3 && \
-    echo "Install build-tools-25" && \
-    echo y | tools/android --silent update sdk --no-ui --all --filter build-tools-25 && \
-    echo "Install build-tools-25.0.1" && \
-    echo y | tools/android --silent update sdk --no-ui --all --filter build-tools-25.0.1 && \
-    echo "Install build-tools-25.0.2" && \
-    echo y | tools/android --silent update sdk --no-ui --all --filter build-tools-25.0.2 && \
-    echo "Install build-tools-25.0.3" && \
-    echo y | tools/android --silent update sdk --no-ui --all --filter build-tools-25.0.3 && \
-
-    echo "Install extra-android-m2repository" && \
-    echo y | tools/android --silent update sdk --no-ui --all --filter extra-android-m2repository && \
-
-    echo "Install extra-google-google_play_services" && \
-    echo y | tools/android --silent update sdk --no-ui --all --filter extra-google-google_play_services && \
-
-    echo "Install extra-google-m2repository" && \
-    echo y | tools/android --silent update sdk --no-ui --all --filter extra-google-m2repository
-
-# Install Android NDK, put it in a separate RUN to avoid travis-ci timeout in 10 minutes.
-RUN wget -q -O android-ndk.zip http://dl.google.com/android/repository/android-ndk-r${ANDROID_NDK_VERSION}-linux-x86_64.zip && \
-    unzip -q android-ndk.zip && \
-    rm -fr $ANDROID_NDK android-ndk.zip && \
-    mv android-ndk-r${ANDROID_NDK_VERSION} $ANDROID_NDK
-
-# Add android commands to PATH
-ENV ANDROID_SDK_HOME $ANDROID_HOME
-ENV PATH $PATH:$ANDROID_SDK_HOME/tools:$ANDROID_SDK_HOME/platform-tools:$ANDROID_NDK
-
-# Export JAVA_HOME variable
-ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/
-
-# Support Gradle
-ENV TERM dumb
-ENV JAVA_OPTS "-Xms512m -Xmx1024m"
-ENV GRADLE_OPTS "-XX:+UseG1GC -XX:MaxGCPauseMillis=1000"
-
-# Confirms that we agreed on the Terms and Conditions of the SDK itself
-# (if we didn’t the build would fail, asking us to agree on those terms).
-RUN mkdir "${ANDROID_HOME}/licenses" || true
-RUN echo "8933bad161af4178b1185d1a37fbf41ea5269c55" > "${ANDROID_HOME}/licenses/android-sdk-license"
-
-# Install Fastlane
-RUN gem install fastlane -NV
