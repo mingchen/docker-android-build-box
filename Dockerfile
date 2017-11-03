@@ -4,7 +4,6 @@ MAINTAINER Ming Chen
 
 ENV ANDROID_HOME="/opt/android-sdk" \
     ANDROID_NDK="/opt/android-ndk" \
-    ANDROID_NDK_HOME="/opt/android-ndk" \
 # Get the latest version from https://developer.android.com/studio/index.html
     ANDROID_SDK_TOOLS_VERSION="3859397" \
 # Get the latest version from https://developer.android.com/ndk/downloads/index.html
@@ -17,6 +16,7 @@ ENV ANDROID_HOME="/opt/android-sdk" \
     LC_ALL="en_US.UTF-8" \
     DEBIAN_FRONTEND="noninteractive" \
     ANDROID_SDK_HOME="$ANDROID_HOME" \
+    ANDROID_NDK_HOME="$ANDROID_NDK/android-ndk-r${ANDROID_NDK_VERSION}" \
     PATH="$PATH:$ANDROID_SDK_HOME/tools:$ANDROID_SDK_HOME/platform-tools:$ANDROID_NDK" \
     JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/ \
     TERM=dumb \
