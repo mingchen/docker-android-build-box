@@ -19,7 +19,7 @@ ENV NODE_VERSION="8.x"
 ENV LANG="en_US.UTF-8" \
     LANGUAGE="en_US.UTF-8" \
     LC_ALL="en_US.UTF-8"
-    
+
 ENV DEBIAN_FRONTEND="noninteractive" \
     TERM=dumb \
     DEBIAN_FRONTEND=noninteractive
@@ -159,3 +159,7 @@ RUN echo "installing sdk tools" && \
     echo "installing system image with android 25 and google apis" && \
     yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
         "system-images;android-25;google_apis;x86_64"
+
+# Copy sdk license agreement files.
+RUN mkdir -p $ANDROID_HOME/licenses
+COPY sdk/licenses/* $ANDROID_HOME/licenses/
