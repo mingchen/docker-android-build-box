@@ -1,5 +1,10 @@
 # Releases
 
+## v1.1.2
+
+* Fix License for package not accepted issue
+
+
 ## v1.1.1
 
 * Fix environment variable concatenation
