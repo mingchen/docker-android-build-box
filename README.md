@@ -16,8 +16,8 @@ A **docker** image build with **Android** build environment.
 It includes the following components:
 
 * Ubuntu 17.10
-* Android SDK 16 17 18 19 20 21 22 23 24 25 26
-* Android build tools 17.0.0 18.1.1 19.1.0 20.0.0 21.1.2 22.0.1 23.0.1 23.0.2 23.0.3 24.0.0 24.0.1 24.0.2 24.0.3 25.0.0 25.0.1 25.0.2 25.0.3 26.0.0 26.0.1 26.0.2
+* Android SDK 16 17 18 19 20 21 22 23 24 25 26 27
+* Android build tools 17.0.0 18.1.1 19.1.0 20.0.0 21.1.2 22.0.1 23.0.1 23.0.2 23.0.3 24.0.0 24.0.1 24.0.2 24.0.3 25.0.0 25.0.1 25.0.2 25.0.3 26.0.0 26.0.1 26.0.2 27.0.1 27.0.2 27.0.3
 * Android NDK r15c
 * extra-android-m2repository
 * extra-google-m2repository
