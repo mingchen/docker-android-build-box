@@ -105,6 +105,7 @@ RUN echo "installing sdk tools" && \
     yes | "$ANDROID_HOME"/tools/bin/sdkmanager --licenses > /dev/null && \
     echo "installing platforms" && \
     yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
+        "platforms;android-27" \
         "platforms;android-26" \
         "platforms;android-25" \
         "platforms;android-24" \
@@ -121,6 +122,7 @@ RUN echo "installing sdk tools" && \
         "platform-tools" && \
     echo "installing build tools " && \
     yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
+        "build-tools;27.0.3" "build-tools;27.0.2" "build-tools;27.0.1" \
         "build-tools;26.0.2" "build-tools;26.0.1" "build-tools;26.0.0" \
         "build-tools;25.0.3" "build-tools;25.0.2" \
         "build-tools;25.0.1" "build-tools;25.0.0" \
