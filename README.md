@@ -73,7 +73,7 @@ The image itself is more than 5 GB, check your free disk space before building i
 
 ## Contribution
 
-If you want to enhance this docker image for fix something, feel free to send [pull request](https://github.com/mingchen/docker-android-build-box/pull/new/master).
+If you want to enhance this docker image or fix something, feel free to send [pull request](https://github.com/mingchen/docker-android-build-box/pull/new/master).
 
 
 ## References
