@@ -63,6 +63,31 @@ Here is an example of `bitbucket-pipelines.yml`
 If gradlew is marked as executable in your repository as recommended, remove the `chmod` command.
 
 
+### Run an Android emulator in the Docker build machine
+
+Using guidelines from https://medium.com/@AndreSand/android-emulator-on-docker-container-f20c49b129ef and https://paulemtz.blogspot.com/2013/05/android-testing-in-headless-emulator.html , you can use a script to create and launch an ARM emulator, which can be used for running integration tests or instrumentation tests or unit tests:
+
+```shell
+# Add missing folder to the PATH, to use sdkmanager and avdmanager
+ANDROID_TOOLS=$ANDROID_HOME/tools/bin
+PATH=$ANDROID_TOOLS:$PATH
+
+# Download an ARM system image to create an ARM emulator.
+sdkmanager "system-images;android-16;default;armeabi-v7a"
+
+# Create an ARM AVD emulator, with 100MB SD card storage space.
+echo "no" | avdmanager create avd \
+    -n Android_4.1_API_16 \
+    -k "system-images;android-16;default;armeabi-v7a" \
+    -c 100M \
+    --force
+
+# Launch the emulator in the background
+$ANDROID_HOME/emulator/emulator -avd Android_4.1_API_16 -no-skin -no-audio -no-window -no-boot-anim -gpu off &
+```
+
+Note that x86_64 emulators are not currently supported. See [Issue #18](https://github.com/mingchen/docker-android-build-box/issues/18) for details.
+
 ## Docker Build Image
 
 If you want to build the docker image by yourself, you can use following command.
