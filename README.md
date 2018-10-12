@@ -65,9 +65,11 @@ If gradlew is marked as executable in your repository as recommended, remove the
 
 ### Run an Android emulator in the Docker build machine
 
-Using guidelines from https://medium.com/@AndreSand/android-emulator-on-docker-container-f20c49b129ef and https://paulemtz.blogspot.com/2013/05/android-testing-in-headless-emulator.html , you can use a script to create and launch an ARM emulator, which can be used for running integration tests or instrumentation tests or unit tests:
+Using guidelines from https://medium.com/@AndreSand/android-emulator-on-docker-container-f20c49b129ef and https://spin.atomicobject.com/2016/03/10/android-test-script/ and https://paulemtz.blogspot.com/2013/05/android-testing-in-headless-emulator.html , you can use a script to create and launch an ARM emulator, which can be used for running integration tests or instrumentation tests or unit tests:
 
 ```shell
+#!/bin/bash
+
 # Add missing folder to the PATH, to use sdkmanager and avdmanager
 ANDROID_TOOLS=$ANDROID_HOME/tools/bin
 PATH=$ANDROID_TOOLS:$PATH
@@ -75,7 +77,9 @@ PATH=$ANDROID_TOOLS:$PATH
 # Download an ARM system image to create an ARM emulator.
 sdkmanager "system-images;android-16;default;armeabi-v7a"
 
-# Create an ARM AVD emulator, with 100MB SD card storage space.
+# Create an ARM AVD emulator, with a 100 MB SD card storage space. Echo "no"
+# because it will ask if you want to use a custom hardware profile, and you don't.
+# https://medium.com/@AndreSand/android-emulator-on-docker-container-f20c49b129ef
 echo "no" | avdmanager create avd \
     -n Android_4.1_API_16 \
     -k "system-images;android-16;default;armeabi-v7a" \
