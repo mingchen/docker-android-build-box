@@ -111,4 +111,4 @@ If you want to enhance this docker image or fix something, feel free to send [pu
 * [Best practices for writing Dockerfiles](https://docs.docker.com/engine/userguide/eng-image/dockerfile_best-practices/)
 * [Build your own image](https://docs.docker.com/engine/getstarted/step_four/)
 * [uber android build environment](https://hub.docker.com/r/uber/android-build-environment/)
-* [Refactoring a Dockerfile for image size](https://blog.replicated.com/2016/02/05/refactoring-a-dockerfile-for-image-size/)
+* [Refactoring a Dockerfile for image size](https://blog.replicated.com/refactoring-a-dockerfile-for-image-size/)
