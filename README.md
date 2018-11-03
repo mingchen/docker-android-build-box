@@ -25,7 +25,9 @@ It includes the following components:
 * TestNG
 * Python 2, Python 3
 * Node.js, npm, React Native
-* Ruby, RubyGems, fastlane
+* Ruby, RubyGems
+* fastlane
+* Kotlin 1.3
 
 
 ## Docker Pull Command
@@ -44,6 +46,9 @@ You can use this docker image to build your Android project with a single docker
     cd <android project directory>  # change working directory to your project root directory.
     docker run --rm -v `pwd`:/project mingc/android-build-box bash -c 'cd /project; ./gradlew build'
 
+Run docker image with interactive bash shell:
+
+    docker run -v `pwd`:/project -it mingc/android-build-box bash
 
 
 ### Use the image for a Bitbucket pipeline

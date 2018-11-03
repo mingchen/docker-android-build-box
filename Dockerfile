@@ -20,6 +20,8 @@ ENV LANG="en_US.UTF-8" \
     LANGUAGE="en_US.UTF-8" \
     LC_ALL="en_US.UTF-8"
 
+RUN apt-get clean && apt-get update && apt-get install -y apt-utils locales && locale-gen $LANG
+
 ENV DEBIAN_FRONTEND="noninteractive" \
     TERM=dumb \
     DEBIAN_FRONTEND=noninteractive
@@ -66,7 +68,7 @@ RUN apt-get update -qq > /dev/null && \
         wget \
         zip \
         zlib1g-dev > /dev/null && \
-    echo "installing nodejs, npm, cordova, ionic, react-native" && \
+    echo "Installing nodejs, npm, cordova, ionic, react-native" && \
     curl -sL -k https://deb.nodesource.com/setup_${NODE_VERSION} \
         | bash - > /dev/null && \
     apt-get install -qq nodejs > /dev/null && \
@@ -80,17 +82,17 @@ RUN apt-get update -qq > /dev/null && \
         react-native-cli > /dev/null && \
     npm cache clean --force > /dev/null && \
     rm -rf /tmp/* /var/tmp/* && \
-    echo "installing fastlane" && \
+    echo "Installing fastlane" && \
     gem install fastlane --quiet --no-document > /dev/null
 
 # Install Android SDK
-RUN echo "installing sdk tools" && \
+RUN echo "Installing sdk tools" && \
     wget --quiet --output-document=sdk-tools.zip \
         "https://dl.google.com/android/repository/sdk-tools-linux-${ANDROID_SDK_TOOLS_VERSION}.zip" && \
     mkdir --parents "$ANDROID_HOME" && \
     unzip -q sdk-tools.zip -d "$ANDROID_HOME" && \
     rm --force sdk-tools.zip && \
-    echo "installing ndk" && \
+    echo "Installing ndk" && \
     wget --quiet --output-document=android-ndk.zip \
     "http://dl.google.com/android/repository/android-ndk-r${ANDROID_NDK_VERSION}-linux-x86_64.zip" && \
     mkdir --parents "$ANDROID_NDK_HOME" && \
@@ -103,7 +105,7 @@ RUN echo "installing sdk tools" && \
     echo '### User Sources for Android SDK Manager' > \
         "$ANDROID_HOME/.android/repositories.cfg" && \
     yes | "$ANDROID_HOME"/tools/bin/sdkmanager --licenses > /dev/null && \
-    echo "installing platforms" && \
+    echo "Installing platforms" && \
     yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
         "platforms;android-28" \
         "platforms;android-27" \
@@ -118,10 +120,10 @@ RUN echo "installing sdk tools" && \
         "platforms;android-18" \
         "platforms;android-17" \
         "platforms;android-16" && \
-    echo "installing platform tools " && \
+    echo "Installing platform tools " && \
     yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
         "platform-tools" && \
-    echo "installing build tools " && \
+    echo "Installing build tools " && \
     yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
         "build-tools;28.0.3" "build-tools;28.0.2" \
         "build-tools;27.0.3" "build-tools;27.0.2" "build-tools;27.0.1" \
@@ -130,7 +132,7 @@ RUN echo "installing sdk tools" && \
         "build-tools;25.0.1" "build-tools;25.0.0" \
         "build-tools;24.0.3" "build-tools;24.0.2" \
         "build-tools;24.0.1" "build-tools;24.0.0" && \
-    echo "installing build tools " && \
+    echo "Installing build tools " && \
     yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
         "build-tools;23.0.3" "build-tools;23.0.2" "build-tools;23.0.1" \
         "build-tools;22.0.1" \
@@ -139,16 +141,16 @@ RUN echo "installing sdk tools" && \
         "build-tools;19.1.0" \
         "build-tools;18.1.1" \
         "build-tools;17.0.0" && \
-    echo "installing extras " && \
+    echo "Installing extras " && \
     yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
         "extras;android;m2repository" \
         "extras;google;m2repository" && \
-    echo "installing play services " && \
+    echo "Installing play services " && \
     yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
         "extras;google;google_play_services" \
         "extras;m2repository;com;android;support;constraint;constraint-layout;1.0.2" \
         "extras;m2repository;com;android;support;constraint;constraint-layout;1.0.1" && \
-    echo "installing Google APIs" && \
+    echo "Installing Google APIs" && \
     yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
         "add-ons;addon-google_apis-google-24" \
         "add-ons;addon-google_apis-google-23" \
@@ -158,8 +160,12 @@ RUN echo "installing sdk tools" && \
         "add-ons;addon-google_apis-google-18" \
         "add-ons;addon-google_apis-google-17" \
         "add-ons;addon-google_apis-google-16" && \
-    echo "installing emulator " && \
-    yes | "$ANDROID_HOME"/tools/bin/sdkmanager "emulator"
+    echo "Installing emulator " && \
+    yes | "$ANDROID_HOME"/tools/bin/sdkmanager "emulator" && \
+    echo "Installing kotlin" && \
+    wget -O sdk.install.sh "https://get.sdkman.io" && \
+    bash -c "bash ./sdk.install.sh && source ~/.sdkman/bin/sdkman-init.sh && sdk install kotlin" && \
+    rm -f sdk.install.sh
 
 # Copy sdk license agreement files.
 RUN mkdir -p $ANDROID_HOME/licenses
