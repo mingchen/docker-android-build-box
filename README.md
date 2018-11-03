@@ -30,12 +30,13 @@ It includes the following components:
 * Kotlin 1.3
 
 
-## Docker Pull Command
+## Docker Pull
 
 The docker image is publicly automated build on [Docker Hub](https://hub.docker.com/r/mingc/android-build-box/) based on the Dockerfile in this repo, so there is no hidden stuff in it. To pull the latest docker image:
 
     docker pull mingc/android-build-box:latest
 
+**Hint:** Use tag to sepecific a stable version rather than `latest` of docker image to avoid break your buid. e.g. `mingc/android-build-box:v1.2.0`. Checkout [RELEASES.md](RELEASES.md) to see all the available tags.
 
 ## Usage
 
