@@ -56,9 +56,10 @@ Here is an example of `bitbucket-pipelines.yml`
     pipelines:
       default:
         - step:
+            caches:
+              - gradle
             script:
-              - chmod +x gradlew
-              - ./gradlew assemble
+              - sh ./gradlew assemble
 
 If gradlew is marked as executable in your repository as recommended, remove the `chmod` command.
 
