@@ -2,9 +2,13 @@
 
 Use tag to sepecific a stable version rather than `latest` of docker image to avoid break your buid. e.g. `mingc/android-build-box:v1.2.0`
 
+## v1.3.0
+
+* PR #21: Update sdk to 28.
+
 ## v1.2.0
 
-* PR #17:Update sdk to 27.
+* PR #17: Update sdk to 27.
 * PR #20: Fix issue #18 Remove pre-installed x86_64 emulator. Explain how to create and launch an ARM emulator.
 
 ## v1.1.2
