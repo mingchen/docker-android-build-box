@@ -7,10 +7,10 @@ ENV ANDROID_HOME="/opt/android-sdk" \
     JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/
 
 # Get the latest version from https://developer.android.com/studio/index.html
-ENV ANDROID_SDK_TOOLS_VERSION="3859397"
+ENV ANDROID_SDK_TOOLS_VERSION="4333796"
 
 # Get the latest version from https://developer.android.com/ndk/downloads/index.html
-ENV ANDROID_NDK_VERSION="15c"
+ENV ANDROID_NDK_VERSION="18b"
 
 # nodejs version
 ENV NODE_VERSION="8.x"
@@ -99,12 +99,13 @@ RUN echo "installing sdk tools" && \
 # Install SDKs
 # Please keep these in descending order!
 # The `yes` is for accepting all non-standard tool licenses.
-    mkdir --parents "$HOME/.android/" && \
+    mkdir --parents "$ANDROID_HOME/.android/" && \
     echo '### User Sources for Android SDK Manager' > \
-        "$HOME/.android/repositories.cfg" && \
+        "$ANDROID_HOME/.android/repositories.cfg" && \
     yes | "$ANDROID_HOME"/tools/bin/sdkmanager --licenses > /dev/null && \
     echo "installing platforms" && \
     yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
+        "platforms;android-28" \
         "platforms;android-27" \
         "platforms;android-26" \
         "platforms;android-25" \
@@ -122,6 +123,7 @@ RUN echo "installing sdk tools" && \
         "platform-tools" && \
     echo "installing build tools " && \
     yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
+        "build-tools;28.0.3" "build-tools;28.0.2" \
         "build-tools;27.0.3" "build-tools;27.0.2" "build-tools;27.0.1" \
         "build-tools;26.0.2" "build-tools;26.0.1" "build-tools;26.0.0" \
         "build-tools;25.0.3" "build-tools;25.0.2" \
