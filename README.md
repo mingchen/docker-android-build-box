@@ -65,9 +65,7 @@ Here is an example of `bitbucket-pipelines.yml`
             caches:
               - gradle
             script:
-              - sh ./gradlew assemble
-
-If gradlew is marked as executable in your repository as recommended, remove the `chmod` command.
+              - bash ./gradlew assemble
 
 
 ### Run an Android emulator in the Docker build machine
