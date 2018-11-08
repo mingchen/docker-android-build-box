@@ -64,8 +64,14 @@ Here is an example of `bitbucket-pipelines.yml`
         - step:
             caches:
               - gradle
+              - gradlewrapper
+              - androidavd
             script:
               - bash ./gradlew assemble
+    definitions:
+      caches:
+        gradlewrapper: ~/.gradle/wrapper
+        androidavd: ~/.android/avd
 
 
 ### Run an Android emulator in the Docker build machine
