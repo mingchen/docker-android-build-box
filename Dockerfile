@@ -170,3 +170,10 @@ RUN echo "Installing sdk tools" && \
 # Copy sdk license agreement files.
 RUN mkdir -p $ANDROID_HOME/licenses
 COPY sdk/licenses/* $ANDROID_HOME/licenses/
+
+# Create some jenkins required directory to allow this image run with Jenkins
+RUN mkdir -p /var/lib/jenkins/workspace
+RUN mkdir -p /home/jenkins
+RUN chmod 777 /home/jenkins
+RUN chmod 777 /var/lib/jenkins/workspace
+
