@@ -71,8 +71,9 @@ Here is an example of `bitbucket-pipelines.yml`
     definitions:
       caches:
         gradlewrapper: ~/.gradle/wrapper
-        androidavd: ~/.android/avd
+        androidavd: $ANDROID_HOME/.android/avd
 
+The caches are used to [store downloaded dependencies](https://confluence.atlassian.com/bitbucket/caching-dependencies-895552876.html) from previous builds, to speed up the next builds.
 
 ### Run an Android emulator in the Docker build machine
 
