@@ -171,7 +171,8 @@ RUN echo "Installing sdk tools" && \
     cd /opt && \
     wget https://storage.googleapis.com/flutter_infra/releases/stable/linux/flutter_linux_v1.0.0-stable.tar.xz && \
     tar xf flutter_linux_v1.0.0-stable.tar.xz && \
-    rm -f flutter_linux_v1.0.0-stable.tar.xz
+    rm -f flutter_linux_v1.0.0-stable.tar.xz && \
+    flutter config --no-analytics
 
 
 # Copy sdk license agreement files.
