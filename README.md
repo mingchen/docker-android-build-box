@@ -28,6 +28,7 @@ It includes the following components:
 * Ruby, RubyGems
 * fastlane
 * Kotlin 1.3
+* Flutter 1.0
 
 
 ## Docker Pull

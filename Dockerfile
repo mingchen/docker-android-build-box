@@ -4,6 +4,7 @@ MAINTAINER Ming Chen
 
 ENV ANDROID_HOME="/opt/android-sdk" \
     ANDROID_NDK="/opt/android-ndk" \
+    FLUTTER_HOME="/opt/flutter" \
     JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/
 
 # Get the latest version from https://developer.android.com/studio/index.html
@@ -30,7 +31,7 @@ ENV DEBIAN_FRONTEND="noninteractive" \
 ENV ANDROID_SDK_HOME="$ANDROID_HOME"
 ENV ANDROID_NDK_HOME="$ANDROID_NDK/android-ndk-r$ANDROID_NDK_VERSION"
 
-ENV PATH="$PATH:$ANDROID_SDK_HOME/emulator:$ANDROID_SDK_HOME/tools/bin:$ANDROID_SDK_HOME/tools:$ANDROID_SDK_HOME/platform-tools:$ANDROID_NDK"
+ENV PATH="$PATH:$ANDROID_SDK_HOME/emulator:$ANDROID_SDK_HOME/tools/bin:$ANDROID_SDK_HOME/tools:$ANDROID_SDK_HOME/platform-tools:$ANDROID_NDK:$FLUTTER_HOME/bin"
 
 COPY README.md /README.md
 
@@ -165,7 +166,13 @@ RUN echo "Installing sdk tools" && \
     echo "Installing kotlin" && \
     wget -O sdk.install.sh "https://get.sdkman.io" && \
     bash -c "bash ./sdk.install.sh && source ~/.sdkman/bin/sdkman-init.sh && sdk install kotlin" && \
-    rm -f sdk.install.sh
+    rm -f sdk.install.sh && \
+    # Install Flutter sdk
+    cd /opt && \
+    wget https://storage.googleapis.com/flutter_infra/releases/stable/linux/flutter_linux_v1.0.0-stable.tar.xz && \
+    tar xf flutter_linux_v1.0.0-stable.tar.xz && \
+    rm -f flutter_linux_v1.0.0-stable.tar.xz
+
 
 # Copy sdk license agreement files.
 RUN mkdir -p $ANDROID_HOME/licenses
