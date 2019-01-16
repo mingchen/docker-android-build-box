@@ -83,10 +83,6 @@ Using guidelines from https://medium.com/@AndreSand/android-emulator-on-docker-c
 ```shell
 #!/bin/bash
 
-# Add missing folder to the PATH, to use sdkmanager and avdmanager
-ANDROID_TOOLS=$ANDROID_HOME/tools/bin
-PATH=$ANDROID_TOOLS:$PATH
-
 # Download an ARM system image to create an ARM emulator.
 sdkmanager "system-images;android-16;default;armeabi-v7a"
 
