@@ -114,7 +114,7 @@ The image itself is more than 5 GB, check your free disk space before building i
 
 ## Tags
 
-Use tag to sepecific a stable version rather than `latest` of docker image to avoid break your buid. e.g. `mingc/android-build-box:1.5.0`
+Use tag to sepecific a stable version rather than `latest` of docker image to avoid break your buid. e.g. `mingc/android-build-box:1.5.1`
 
 ### 1.5.1
 
