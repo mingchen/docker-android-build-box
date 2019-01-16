@@ -37,7 +37,7 @@ The docker image is publicly automated build on [Docker Hub](https://hub.docker.
 
     docker pull mingc/android-build-box:latest
 
-**Hint:** Use tag to sepecific a stable version rather than `latest` of docker image to avoid break your buid. e.g. `mingc/android-build-box:1.5.0`. Checkout Tags to see all the available tags.
+**Hint:** Use tag to sepecific a stable version rather than `latest` of docker image to avoid break your buid. e.g. `mingc/android-build-box:1.5.1`. Checkout Tags to see all the available tags.
 
 ## Usage
 
@@ -115,6 +115,10 @@ The image itself is more than 5 GB, check your free disk space before building i
 ## Tags
 
 Use tag to sepecific a stable version rather than `latest` of docker image to avoid break your buid. e.g. `mingc/android-build-box:1.5.0`
+
+### 1.5.1
+
+* Do not send flutter analytics
 
 ### 1.5.0
 
