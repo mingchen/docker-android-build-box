@@ -1,11 +1,11 @@
 language: bash
 services: docker
 
-# Skipping the Installation Step
-install: true
+before_install:
+  - docker build -t android-build-box .
 
 script:
-  - docker build -t android-build-box .
+  - docker run -it --rm android-build-box flutter --version
 
 after_script:
   - docker images
