@@ -120,10 +120,10 @@ RUN echo "Installing sdk tools" && \
         "platforms;android-19" \
         "platforms;android-18" \
         "platforms;android-17" \
-        "platforms;android-16" && \
+        "platforms;android-16" > /dev/null && \
     echo "Installing platform tools " && \
     yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
-        "platform-tools" && \
+        "platform-tools" > /dev/null && \
     echo "Installing build tools " && \
     yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
         "build-tools;28.0.3" "build-tools;28.0.2" \
@@ -132,7 +132,7 @@ RUN echo "Installing sdk tools" && \
         "build-tools;25.0.3" "build-tools;25.0.2" \
         "build-tools;25.0.1" "build-tools;25.0.0" \
         "build-tools;24.0.3" "build-tools;24.0.2" \
-        "build-tools;24.0.1" "build-tools;24.0.0" && \
+        "build-tools;24.0.1" "build-tools;24.0.0" > /dev/null && \
     echo "Installing build tools " && \
     yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
         "build-tools;23.0.3" "build-tools;23.0.2" "build-tools;23.0.1" \
@@ -141,16 +141,16 @@ RUN echo "Installing sdk tools" && \
         "build-tools;20.0.0" \
         "build-tools;19.1.0" \
         "build-tools;18.1.1" \
-        "build-tools;17.0.0" && \
+        "build-tools;17.0.0" > /dev/null && \
     echo "Installing extras " && \
     yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
         "extras;android;m2repository" \
-        "extras;google;m2repository" && \
+        "extras;google;m2repository" > /dev/null && \
     echo "Installing play services " && \
     yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
         "extras;google;google_play_services" \
         "extras;m2repository;com;android;support;constraint;constraint-layout;1.0.2" \
-        "extras;m2repository;com;android;support;constraint;constraint-layout;1.0.1" && \
+        "extras;m2repository;com;android;support;constraint;constraint-layout;1.0.1" > /dev/null && \
     echo "Installing Google APIs" && \
     yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
         "add-ons;addon-google_apis-google-24" \
@@ -160,9 +160,9 @@ RUN echo "Installing sdk tools" && \
         "add-ons;addon-google_apis-google-19" \
         "add-ons;addon-google_apis-google-18" \
         "add-ons;addon-google_apis-google-17" \
-        "add-ons;addon-google_apis-google-16" && \
+        "add-ons;addon-google_apis-google-16" > /dev/null && \
     echo "Installing emulator " && \
-    yes | "$ANDROID_HOME"/tools/bin/sdkmanager "emulator" && \
+    yes | "$ANDROID_HOME"/tools/bin/sdkmanager "emulator" > /dev/null && \
     echo "Installing kotlin" && \
     wget -O sdk.install.sh "https://get.sdkman.io" && \
     bash -c "bash ./sdk.install.sh && source ~/.sdkman/bin/sdkman-init.sh && sdk install kotlin" && \
