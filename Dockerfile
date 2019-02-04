@@ -164,12 +164,12 @@ RUN echo "Installing sdk tools" && \
     echo "Installing emulator " && \
     yes | "$ANDROID_HOME"/tools/bin/sdkmanager "emulator" > /dev/null && \
     echo "Installing kotlin" && \
-    wget -O sdk.install.sh "https://get.sdkman.io" && \
-    bash -c "bash ./sdk.install.sh && source ~/.sdkman/bin/sdkman-init.sh && sdk install kotlin" && \
+    wget --quiet -O sdk.install.sh "https://get.sdkman.io" && \
+    bash -c "bash ./sdk.install.sh > /dev/null && source ~/.sdkman/bin/sdkman-init.sh && sdk install kotlin" && \
     rm -f sdk.install.sh && \
     # Install Flutter sdk
     cd /opt && \
-    wget https://storage.googleapis.com/flutter_infra/releases/stable/linux/flutter_linux_v1.0.0-stable.tar.xz && \
+    wget --quiet https://storage.googleapis.com/flutter_infra/releases/stable/linux/flutter_linux_v1.0.0-stable.tar.xz && \
     tar xf flutter_linux_v1.0.0-stable.tar.xz && \
     rm -f flutter_linux_v1.0.0-stable.tar.xz && \
     flutter config --no-analytics
