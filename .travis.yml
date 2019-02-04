@@ -4,7 +4,7 @@ services: docker
 before_install:
   # Wait 50 minutes to avoid travis timeout.
   # https://docs.travis-ci.com/user/common-build-problems/#Build-times-out-because-no-output-was-received
-  - travis_wait 50 docker build -t android-build-box . > /tmp/build.log
+  - travis_wait 50 docker build -t android-build-box .
 
 script:
   - docker run -it --rm android-build-box flutter --version
