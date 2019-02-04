@@ -21,7 +21,7 @@ ENV LANG="en_US.UTF-8" \
     LANGUAGE="en_US.UTF-8" \
     LC_ALL="en_US.UTF-8"
 
-RUN apt-get clean && apt-get update --qq && apt-get install -qq -y apt-utils locales && locale-gen $LANG
+RUN apt-get clean && apt-get update -qq && apt-get install -qq -y apt-utils locales && locale-gen $LANG
 
 ENV DEBIAN_FRONTEND="noninteractive" \
     TERM=dumb \
