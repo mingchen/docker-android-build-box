@@ -31,7 +31,7 @@ ENV DEBIAN_FRONTEND="noninteractive" \
 ENV ANDROID_SDK_HOME="$ANDROID_HOME"
 ENV ANDROID_NDK_HOME="$ANDROID_NDK/android-ndk-r$ANDROID_NDK_VERSION"
 
-ENV PATH="$PATH:$ANDROID_SDK_HOME/emulator:$ANDROID_SDK_HOME/tools/bin:$ANDROID_SDK_HOME/tools:$ANDROID_SDK_HOME/platform-tools:$ANDROID_NDK:$FLUTTER_HOME/bin"
+ENV PATH="$PATH:$ANDROID_SDK_HOME/emulator:$ANDROID_SDK_HOME/tools/bin:$ANDROID_SDK_HOME/tools:$ANDROID_SDK_HOME/platform-tools:$ANDROID_NDK:$FLUTTER_HOME/bin:$FLUTTER_HOME/bin/cache/dart-sdk/bin"
 
 COPY README.md /README.md
 
@@ -169,9 +169,9 @@ RUN echo "Installing sdk tools ${ANDROID_SDK_TOOLS_VERSION}" && \
     rm -f sdk.install.sh && \
     # Install Flutter sdk
     cd /opt && \
-    wget --quiet https://storage.googleapis.com/flutter_infra/releases/stable/linux/flutter_linux_v1.0.0-stable.tar.xz && \
-    tar xf flutter_linux_v1.0.0-stable.tar.xz && \
-    rm -f flutter_linux_v1.0.0-stable.tar.xz && \
+    wget --quiet https://storage.googleapis.com/flutter_infra/releases/stable/linux/flutter_linux_v1.2.1-stable.tar.xz && \
+    tar xf flutter_linux_v1.2.1-stable.tar.xz && \
+    rm -f flutter_linux_v1.2.1-stable.tar.xz && \
     flutter config --no-analytics
 
 
