@@ -185,3 +185,6 @@ RUN mkdir -p /home/jenkins
 RUN chmod 777 /home/jenkins
 RUN chmod 777 /var/lib/jenkins/workspace
 RUN chmod 777 $ANDROID_HOME/.android
+
+# Shell hack for avoiding Ubuntu's dash
+RUN ln -sf /bin/bash /bin/sh
