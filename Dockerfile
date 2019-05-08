@@ -1,4 +1,4 @@
-FROM ubuntu:17.10
+FROM ubuntu:18.04
 
 MAINTAINER Ming Chen
 
@@ -46,6 +46,7 @@ RUN apt-get update -qq > /dev/null && \
         autoconf \
         curl \
         git \
+        gpg-agent \
         lib32stdc++6 \
         lib32z1 \
         lib32z1-dev \
@@ -62,7 +63,7 @@ RUN apt-get update -qq > /dev/null && \
         openjdk-8-jdk \
         openssh-client \
         pkg-config \
-        python-software-properties \
+        software-properties-common \
         ruby-full \
         software-properties-common \
         unzip \
