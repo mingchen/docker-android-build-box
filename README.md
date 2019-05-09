@@ -13,7 +13,7 @@ A **docker** image build with **Android** build environment.
 
 It includes the following components:
 
-* Ubuntu 17.10
+* Ubuntu 18.04
 * Android SDK 16 17 18 19 20 21 22 23 24 25 26 27 28
 * Android build tools 17.0.0 18.1.1 19.1.0 20.0.0 21.1.2 22.0.1 23.0.1 23.0.2 23.0.3 24.0.0 24.0.1 24.0.2 24.0.3 25.0.0 25.0.1 25.0.2 25.0.3 26.0.0 26.0.1 26.0.2 27.0.1 27.0.2 27.0.3 28.0.1 28.0.2 28.0.3
 * Android NDK r18b
@@ -115,7 +115,7 @@ Use tag to sepecific a stable version rather than `latest` of docker image to av
 
 ### 1.9.0
 
-* Upgrade Ubuntu from 17.04 to 18.04.
+* Upgrade Ubuntu from 17.10 to 18.04.
 
 ### 1.8.0
 
