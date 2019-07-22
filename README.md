@@ -27,7 +27,7 @@ It includes the following components:
   * 26.0.0 26.0.1 26.0.2
   * 27.0.1 27.0.2 27.0.3
   * 28.0.1 28.0.2 28.0.3
-* Android NDK r18b
+* Android NDK r20
 * extra-android-m2repository
 * extra-google-m2repository
 * extra-google-google\_play\_services
@@ -49,7 +49,7 @@ The docker image is publicly automated build on [Docker Hub](https://hub.docker.
 
     docker pull mingc/android-build-box:latest
 
-**Hint:** Use tag to sepecific a stable version rather than `latest` of docker image to avoid break your buid. e.g. `mingc/android-build-box:1.10.0`. Checkout **Tags** (bottom of this page) to see all the available tags.
+**Hint:** Use tag to sepecific a stable version rather than `latest` of docker image to avoid break your buid. e.g. `mingc/android-build-box:1.11.0`. Checkout **Tags** (bottom of this page) to see all the available tags.
 
 ## Usage
 
@@ -122,7 +122,11 @@ The image itself is more than 5 GB, check your free disk space before building i
 
 ## Tags
 
-Use tag to sepecific a stable version rather than `latest` of docker image to avoid break your buid. e.g. `mingc/android-build-box:1.10.0`
+Use tag to sepecific a stable version rather than `latest` of docker image to avoid break your buid. e.g. `mingc/android-build-box:1.11.0`
+
+### 1.11.0
+
+* Upgrade NDK from r19 to r20.
 
 ### 1.10.0
 
