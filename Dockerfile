@@ -46,6 +46,9 @@ RUN apt-get update -qq > /dev/null && \
         autoconf \
         curl \
         git \
+        file \
+        less \
+        vim-tiny \
         gpg-agent \
         lib32stdc++6 \
         lib32z1 \
