@@ -112,6 +112,7 @@ RUN echo "Installing sdk tools ${ANDROID_SDK_TOOLS_VERSION}" && \
     yes | "$ANDROID_HOME"/tools/bin/sdkmanager --licenses > /dev/null && \
     echo "Installing platforms" && \
     yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
+        "platforms;android-29" \
         "platforms;android-28" \
         "platforms;android-27" \
         "platforms;android-26" \
@@ -130,6 +131,7 @@ RUN echo "Installing sdk tools ${ANDROID_SDK_TOOLS_VERSION}" && \
         "platform-tools" > /dev/null && \
     echo "Installing build tools " && \
     yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
+        "build-tools;29.0.2" \
         "build-tools;28.0.3" "build-tools;28.0.2" \
         "build-tools;27.0.3" "build-tools;27.0.2" "build-tools;27.0.1" \
         "build-tools;26.0.2" "build-tools;26.0.1" "build-tools;26.0.0" \
