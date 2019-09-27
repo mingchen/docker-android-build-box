@@ -88,7 +88,7 @@ RUN apt-get update -qq > /dev/null && \
     npm cache clean --force > /dev/null && \
     rm -rf /tmp/* /var/tmp/* && \
     echo "Installing fastlane" && \
-    gem install fastlane --quiet --no-document > /dev/null \
+    gem install fastlane --quiet --no-document > /dev/null && \
     gem install bundler --quiet --no-document > /dev/null
 
 # Install Android SDK
