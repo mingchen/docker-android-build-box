@@ -43,7 +43,7 @@ It includes the following components:
 * Flutter 1.5.4
 
 
-## Docker Pull
+## Pull Docker Image
 
 The docker image is publicly automated build on [Docker Hub](https://hub.docker.com/r/mingc/android-build-box/) based on the Dockerfile in this repo, so there is no hidden stuff in it. To pull the latest docker image:
 
