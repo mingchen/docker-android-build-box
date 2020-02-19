@@ -6,7 +6,7 @@
 
 ## Introduction
 
-A **docker** image build with **Android** build environment.
+An optimized **docker** image includes **Android**, **Kotlin**, **Flutter sdk**.
 
 
 ## What Is Inside
@@ -46,11 +46,13 @@ It includes the following components:
 
 ## Pull Docker Image
 
-The docker image is publicly automated build on [Docker Hub](https://hub.docker.com/r/mingc/android-build-box/) based on the Dockerfile in this repo, so there is no hidden stuff in it. To pull the latest docker image:
+The docker image is publicly automated build on [Docker Hub](https://hub.docker.com/r/mingc/android-build-box/) 
+based on the Dockerfile in this repo, so there is no hidden stuff in it. To pull the latest docker image:
 
     docker pull mingc/android-build-box:latest
 
-**Hint:** Use tag to sepecific a stable version rather than `latest` of docker image to avoid break your buid. e.g. `mingc/android-build-box:1.12.0`. Checkout **Tags** (bottom of this page) to see all the available tags.
+**Hint:** Use tag to sepecific a stable version rather than `latest` of docker image to avoid break your buid. 
+e.g. `mingc/android-build-box:1.12.0`. Checkout **Tags** (bottom of this page) to see all the available tags.
 
 ## Usage
 
@@ -68,7 +70,8 @@ Run docker image with interactive bash shell:
 
 ### Use the image for a Bitbucket pipeline
 
-If you have an Android project in a Bitbucket repository and want to use its pipeline to build it, you can simply specify this docker image.
+If you have an Android project in a Bitbucket repository and want to use its pipeline to build it, 
+you can simply specify this docker image.
 Here is an example of `bitbucket-pipelines.yml`
 
     image: mingc/android-build-box:latest
