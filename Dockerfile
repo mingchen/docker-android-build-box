@@ -176,7 +176,7 @@ RUN echo "Installing sdk tools ${ANDROID_SDK_TOOLS_VERSION}" && \
     rm -f sdk.install.sh && \
     # Install Flutter sdk
     cd /opt && \
-    wget --quiet https://storage.googleapis.com/flutter_infra/releases/stable/linux/flutter_linux_v1.5.4-hotfix.2-stable.tar.xz -O flutter.tar.xz && \
+    wget --quiet https://storage.googleapis.com/flutter_infra/releases/stable/linux/flutter_linux_v1.12.13+hotfix.8-stable.tar.xz -O flutter.tar.xz && \
     tar xf flutter.tar.xz && \
     rm -f flutter.tar.xz && \
     flutter config --no-analytics
@@ -187,8 +187,9 @@ RUN mkdir -p $ANDROID_HOME/licenses
 COPY sdk/licenses/* $ANDROID_HOME/licenses/
 
 # Create some jenkins required directory to allow this image run with Jenkins
-RUN mkdir -p /var/lib/jenkins/workspace
-RUN mkdir -p /home/jenkins
-RUN chmod 777 /home/jenkins
-RUN chmod 777 /var/lib/jenkins/workspace
-RUN chmod 777 $ANDROID_HOME/.android
+RUN mkdir -p /var/lib/jenkins/workspace &&
+    mkdir -p /home/jenkins && \
+    chmod 777 /home/jenkins && \
+    chmod 777 /var/lib/jenkins/workspace && \
+    chmod 777 $ANDROID_HOME/.android
+

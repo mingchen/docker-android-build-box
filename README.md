@@ -41,7 +41,7 @@ It includes the following components:
 * Ruby, RubyGems
 * fastlane
 * Kotlin 1.3
-* Flutter 1.5.4
+* Flutter 1.12.13+hotfix.8
 
 
 ## Pull Docker Image
