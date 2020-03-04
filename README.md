@@ -92,6 +92,45 @@ Here is an example of `bitbucket-pipelines.yml`
 
 The caches are used to [store downloaded dependencies](https://confluence.atlassian.com/bitbucket/caching-dependencies-895552876.html) from previous builds, to speed up the next builds.
 
+### Build a Flutter project with github action
+
+Here is an example `.github/workflows/main.yml` to build a Flutter project.
+
+```yml
+name: CI
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-18.04
+    container: mingc/android-build-box:latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/cache@v1
+      with:
+        path: /root/.gradle/caches
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+    - name: Build
+      run: |
+        echo "Work dir: $(pwd)"
+        echo "User: $(whoami)"
+        flutter --version
+        flutter analyze
+        flutter build apk
+    - name: Archive apk
+      uses: actions/upload-artifact@v1
+      with:
+        name: apk
+        path: build/app/outputs/apk
+    - name: Clean build to avoid action/cache error
+      run: rm -fr build
+```
+
 ### Run an Android emulator in the Docker build machine
 
 Using guidelines from https://medium.com/@AndreSand/android-emulator-on-docker-container-f20c49b129ef and https://spin.atomicobject.com/2016/03/10/android-test-script/ and https://paulemtz.blogspot.com/2013/05/android-testing-in-headless-emulator.html , you can use a script to create and launch an ARM emulator, which can be used for running integration tests or instrumentation tests or unit tests:
