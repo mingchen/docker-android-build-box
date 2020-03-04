@@ -52,7 +52,7 @@ based on the Dockerfile in this repo, so there is no hidden stuff in it. To pull
     docker pull mingc/android-build-box:latest
 
 **Hint:** Use tag to sepecific a stable version rather than `latest` of docker image to avoid break your buid. 
-e.g. `mingc/android-build-box:1.12.0`. Checkout **Tags** (bottom of this page) to see all the available tags.
+e.g. `mingc/android-build-box:1.13.0`. Checkout **Tags** (bottom of this page) to see all the available tags.
 
 ## Usage
 
@@ -126,7 +126,11 @@ The image itself is more than 5 GB, check your free disk space before building i
 
 ## Tags
 
-Use tag to sepecific a stable version rather than `latest` of docker image to avoid break your buid. e.g. `mingc/android-build-box:1.12.0`
+Use tag to sepecific a stable version rather than `latest` of docker image to avoid break your buid. e.g. `mingc/android-build-box:1.13.0`
+
+### 1.13.0
+
+* Upgrade flutter to v1.12.13+hotfix.8.
 
 ### 1.12.0
 
