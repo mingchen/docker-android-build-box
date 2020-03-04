@@ -68,33 +68,35 @@ Run docker image with interactive bash shell:
     docker run -v `pwd`:/project -it mingc/android-build-box bash
 
 
-### Use the image for a Bitbucket pipeline
+### Build an Android project with Bitbucket pipeline
 
 If you have an Android project in a Bitbucket repository and want to use its pipeline to build it, 
 you can simply specify this docker image.
-Here is an example of `bitbucket-pipelines.yml`
+Here is an example of `bitbucket-pipelines.yml`:
 
-    image: mingc/android-build-box:latest
+```yml
+image: mingc/android-build-box:latest
 
-    pipelines:
-      default:
-        - step:
-            caches:
-              - gradle
-              - gradlewrapper
-              - androidavd
-            script:
-              - bash ./gradlew assemble
-    definitions:
-      caches:
-        gradlewrapper: ~/.gradle/wrapper
-        androidavd: $ANDROID_HOME/.android/avd
+pipelines:
+  default:
+    - step:
+        caches:
+          - gradle
+          - gradlewrapper
+          - androidavd
+        script:
+          - bash ./gradlew assemble
+definitions:
+  caches:
+    gradlewrapper: ~/.gradle/wrapper
+    androidavd: $ANDROID_HOME/.android/avd
+```
 
 The caches are used to [store downloaded dependencies](https://confluence.atlassian.com/bitbucket/caching-dependencies-895552876.html) from previous builds, to speed up the next builds.
 
 ### Build a Flutter project with github action
 
-Here is an example `.github/workflows/main.yml` to build a Flutter project.
+Here is an example `.github/workflows/main.yml` to build a Flutter project with this docker image:
 
 ```yml
 name: CI
