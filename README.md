@@ -129,6 +129,8 @@ jobs:
       with:
         name: apk
         path: build/app/outputs/apk
+    - name: Test
+      run: flutter test
     - name: Clean build to avoid action/cache error
       run: rm -fr build
 ```
