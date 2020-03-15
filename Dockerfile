@@ -78,6 +78,12 @@ RUN apt-get update -qq > /dev/null && \
         | bash - > /dev/null && \
     apt-get install -qq nodejs > /dev/null && \
     apt-get clean > /dev/null && \
+    curl -sS -k https://dl.yarnpkg.com/debian/pubkey.gpg \
+        | apt-key add - > /dev/null && \
+    echo "deb https://dl.yarnpkg.com/debian/ stable main" \
+        | tee /etc/apt/sources.list.d/yarn.list > /dev/null && \
+    apt-get update -qq > /dev/null && \
+    apt-get install -qq yarn > /dev/null && \
     rm -rf /var/lib/apt/lists/ && \
     npm install --quiet -g npm > /dev/null && \
     npm install --quiet -g \
@@ -86,10 +92,7 @@ RUN apt-get update -qq > /dev/null && \
         node-gyp npm-check-updates \
         react-native-cli > /dev/null && \
     npm cache clean --force > /dev/null && \
-    rm -rf /tmp/* /var/tmp/* && \
-    echo "Installing fastlane" && \
-    gem install fastlane --quiet --no-document > /dev/null && \
-    gem install bundler --quiet --no-document > /dev/null
+    rm -rf /tmp/* /var/tmp/*
 
 # Install Android SDK
 RUN echo "Installing sdk tools ${ANDROID_SDK_TOOLS_VERSION}" && \
@@ -181,15 +184,24 @@ RUN echo "Installing sdk tools ${ANDROID_SDK_TOOLS_VERSION}" && \
     rm -f flutter.tar.xz && \
     flutter config --no-analytics
 
-
 # Copy sdk license agreement files.
 RUN mkdir -p $ANDROID_HOME/licenses
 COPY sdk/licenses/* $ANDROID_HOME/licenses/
 
 # Create some jenkins required directory to allow this image run with Jenkins
-RUN mkdir -p /var/lib/jenkins/workspace && \
-    mkdir -p /home/jenkins && \
-    chmod 777 /home/jenkins && \
-    chmod 777 /var/lib/jenkins/workspace && \
-    chmod 777 $ANDROID_HOME/.android
+RUN mkdir -p /var/lib/jenkins/workspace
+RUN mkdir -p /home/jenkins
+RUN chmod 777 /home/jenkins
+RUN chmod 777 /var/lib/jenkins/workspace
+RUN chmod 777 $ANDROID_HOME/.android
 
+# Install fastlane with bundler and Gemfile
+ENV BUNDLE_GEMFILE=/tmp/Gemfile
+
+COPY Gemfile /tmp/Gemfile
+
+RUN echo "Installing fastlane" && \
+    gem install bundler --quiet --no-document > /dev/null && \
+    mkdir -p /.fastlane && \
+    chmod 777 /.fastlane && \
+    bundle install --quiet
