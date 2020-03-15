@@ -10,6 +10,11 @@ apt-get install -qq -y apt-utils locales
 export LANG="en_US.UTF-8"
 export LANGUAGE="en_US.UTF-8"
 
+# Get the latest version from https://developer.android.com/studio/index.html
+export ANDROID_SDK_TOOLS_VERSION="4333796"
+export DEBIAN_FRONTEND="noninteractive"
+export TERM=dumb
+
 locale-gen $LANG
 
 apt-get install -qq --no-install-recommends \
@@ -57,7 +62,7 @@ rm --force sdk-tools.zip
 
 mkdir -p "$HOME/.android/"
 
-echo '### User Sources for Android SDK Manager' > "$HOME/.android/repositories.cfg"
+echo '### User Sources for Android SDK Manager' >"$HOME/.android/repositories.cfg"
 
 yes | "$ANDROID_HOME"/tools/bin/sdkmanager --licenses >/dev/null
 
@@ -108,5 +113,5 @@ cd /opt
 wget --quiet https://storage.googleapis.com/flutter_infra/releases/stable/linux/flutter_linux_v1.12.13+hotfix.8-stable.tar.xz -O flutter.tar.xz
 tar xf flutter.tar.xz
 rm -f flutter.tar.xz
-$FLUTTER_HOME/bin/flutter config --no-analytics
-$FLUTTER_HOME/bin/flutter config
+flutter config --no-analytics
+flutter config
