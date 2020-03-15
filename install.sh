@@ -1,4 +1,7 @@
 #!/bin/sh -x
+
+env
+
 apt-get clean
 apt-get update -qq
 apt-get install -qq -y apt-utils locales
@@ -51,15 +54,18 @@ rm --force sdk-tools.zip
 # Install SDKs
 # Please keep these in descending order!
 # The `yes` is for accepting all non-standard tool licenses.
-mkdir -p "$ANDROID_HOME/.android/"
 
-echo '### User Sources for Android SDK Manager' > "$ANDROID_HOME/.android/repositories.cfg"
+mkdir -p "$HOME/.android/"
+
+echo '### User Sources for Android SDK Manager' > "$HOME/.android/repositories.cfg"
+
 yes | "$ANDROID_HOME"/tools/bin/sdkmanager --licenses >/dev/null
 
 echo "Installing platforms"
 yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
     "platforms;android-29" \
     "platforms;android-28" >/dev/null
+
 echo "Installing platform tools "
 yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
     "platform-tools" >/dev/null
@@ -67,17 +73,12 @@ yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
 echo "Installing build tools "
 yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
     "build-tools;29.0.2" \
-    "build-tools;28.0.3" "build-tools;28.0.2" >/dev/null
+    "build-tools;28.0.3" >/dev/null
 
 echo "Installing build tools "
 yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
     "build-tools;23.0.3" "build-tools;23.0.2" "build-tools;23.0.1" \
-    "build-tools;22.0.1" \
-    "build-tools;21.1.2" \
-    "build-tools;20.0.0" \
-    "build-tools;19.1.0" \
-    "build-tools;18.1.1" \
-    "build-tools;17.0.0" >/dev/null
+    "build-tools;22.0.1" >/dev/null
 
 echo "Installing extras "
 yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
