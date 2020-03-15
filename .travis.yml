@@ -7,7 +7,7 @@ before_install:
   - travis_wait 50 docker build -t android-build-box:flutter .
 
 script:
-  - docker run -it --rm android-build-box flutter --version
+  - docker run -it --rm android-build-box:flutter flutter --version
 
 after_script:
   - docker image ls
