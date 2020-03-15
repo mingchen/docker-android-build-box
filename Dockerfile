@@ -1,6 +1,6 @@
 FROM ubuntu:18.04
 
-MAINTAINER Ming Chen
+LABEL maintainer="Ming Chen"
 
 ENV ANDROID_HOME="/opt/android-sdk" \
     FLUTTER_HOME="/opt/flutter" \
@@ -12,9 +12,8 @@ ENV ANDROID_HOME="/opt/android-sdk" \
     TERM=dumb \
     PATH="$PATH:$ANDROID_SDK_HOME/emulator:$ANDROID_SDK_HOME/tools/bin:$ANDROID_SDK_HOME/tools:$ANDROID_SDK_HOME/platform-tools:$FLUTTER_HOME/bin:$FLUTTER_HOME/bin/cache/dart-sdk/bin"
 
-COPY README.md /README.md
+COPY README.md LICENSE install.sh /
 COPY sdk/licenses/* $ANDROID_HOME/licenses/
-COPY install.sh /install.sh
 
 WORKDIR /tmp
 
