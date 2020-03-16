@@ -80,11 +80,6 @@ yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
     "build-tools;29.0.2" \
     "build-tools;28.0.3" >/dev/null
 
-echo "Installing build tools "
-yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
-    "build-tools;23.0.3" "build-tools;23.0.2" "build-tools;23.0.1" \
-    "build-tools;22.0.1" >/dev/null
-
 echo "Installing extras "
 yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
     "extras;android;m2repository" \
