@@ -68,7 +68,6 @@ RUN apt-get update -qq > /dev/null && \
         pkg-config \
         software-properties-common \
         ruby-full \
-        software-properties-common \
         unzip \
         wget \
         zip \
@@ -110,9 +109,9 @@ RUN echo "Installing sdk tools ${ANDROID_SDK_TOOLS_VERSION}" && \
 # Install SDKs
 # Please keep these in descending order!
 # The `yes` is for accepting all non-standard tool licenses.
-    mkdir --parents "$ANDROID_HOME/.android/" && \
+    mkdir --parents "$HOME/.android/" && \
     echo '### User Sources for Android SDK Manager' > \
-        "$ANDROID_HOME/.android/repositories.cfg" && \
+        "$HOME/.android/repositories.cfg" && \
     yes | "$ANDROID_HOME"/tools/bin/sdkmanager --licenses > /dev/null && \
     echo "Installing platforms" && \
     yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
@@ -181,8 +180,8 @@ RUN echo "Installing sdk tools ${ANDROID_SDK_TOOLS_VERSION}" && \
     cd /opt && \
     wget --quiet https://storage.googleapis.com/flutter_infra/releases/stable/linux/flutter_linux_v1.12.13+hotfix.8-stable.tar.xz -O flutter.tar.xz && \
     tar xf flutter.tar.xz && \
-    rm -f flutter.tar.xz && \
-    flutter config --no-analytics
+    flutter config --no-analytics && \
+    rm -f flutter.tar.xz
 
 # Copy sdk license agreement files.
 RUN mkdir -p $ANDROID_HOME/licenses
