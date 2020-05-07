@@ -192,7 +192,7 @@ RUN mkdir -p /var/lib/jenkins/workspace && \
     mkdir -p /home/jenkins && \
     chmod 777 /home/jenkins && \
     chmod 777 /var/lib/jenkins/workspace && \
-    chmod -R 777 $ANDROID_HOME
+    chmod -R 775 $ANDROID_HOME
 
 # Install fastlane with bundler and Gemfile
 ENV BUNDLE_GEMFILE=/tmp/Gemfile
