@@ -178,7 +178,7 @@ RUN echo "Installing sdk tools ${ANDROID_SDK_TOOLS_VERSION}" && \
     rm -f sdk.install.sh && \
     # Install Flutter sdk
     cd /opt && \
-    wget --quiet https://storage.googleapis.com/flutter_infra/releases/stable/linux/flutter_linux_v1.12.13+hotfix.8-stable.tar.xz -O flutter.tar.xz && \
+    wget --quiet https://storage.googleapis.com/flutter_infra/releases/stable/linux/flutter_linux_1.17.1-stable.tar.xz -O flutter.tar.xz && \
     tar xf flutter.tar.xz && \
     flutter config --no-analytics && \
     rm -f flutter.tar.xz
