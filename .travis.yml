@@ -1,13 +1,18 @@
 language: bash
-services: docker
+
+services:
+  - docker
 
 before_install:
+  # Pull image to use exist layers
+  - docker pull mingc/android-build-box
+
   # Wait 50 minutes to avoid travis timeout.
   # https://docs.travis-ci.com/user/common-build-problems/#Build-times-out-because-no-output-was-received
-  - travis_wait 50 docker build -t android-build-box .
+  - travis_wait 50 docker build -t mingc/android-build-box .
 
 script:
-  - docker run -it --rm android-build-box flutter --version
+  - docker run -it --rm mingc/android-build-box flutter --version
 
 after_script:
   - docker images
