@@ -171,6 +171,10 @@ The image itself is more than 5 GB, check your free disk space before building i
 
 Use tag to sepecific a stable version rather than `latest` of docker image to avoid break your buid. e.g. `mingc/android-build-box:1.15.0`
 
+### 1.17.0
+
+* Add build-tools;29.0.3
+
 ### 1.16.0
 
 * Upgrade Flutter to 1.17.1.
