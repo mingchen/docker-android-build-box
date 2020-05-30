@@ -6,6 +6,7 @@ services:
 before_install:
   # Pull image to use exist layers
   - docker pull mingc/android-build-box
+  - docker images
 
   # Wait 50 minutes to avoid travis timeout.
   # https://docs.travis-ci.com/user/common-build-problems/#Build-times-out-because-no-output-was-received
