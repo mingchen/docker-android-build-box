@@ -27,7 +27,7 @@ It includes the following components:
   * 26.0.0 26.0.1 26.0.2
   * 27.0.1 27.0.2 27.0.3
   * 28.0.1 28.0.2 28.0.3
-  * 29.0.2
+  * 29.0.2 29.0.3
 * Android NDK r21
 * extra-android-m2repository
 * extra-google-m2repository
