@@ -1,5 +1,10 @@
 #!/bin/bash
 
 docker images
+
+# show meta data
 docker inspect $IMAGE_NAME
+
+# show each layer size
+docker history $IMAGE_NAME
 
