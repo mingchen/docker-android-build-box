@@ -7,13 +7,11 @@ services:
 # https://docs.travis-ci.com/user/environment-variables/
 #
 env:
+  # All the env variables need put into a single line.
   - IMAGE_NAME=mingc/android-build-box SOURCE_BRANCH=$TRAVIS_BRANCH SOURCE_COMMIT=$TRAVIS_COMMIT DOCKER_TAG=latest
 
 before_install:
-  - env
-  # Pull image to use exist layers
-  - docker pull mingc/android-build-box
-  - docker images
+  - ./hooks/pre_build
 
   # Wait 50 minutes to avoid travis timeout.
   # https://docs.travis-ci.com/user/common-build-problems/#Build-times-out-because-no-output-was-received
@@ -23,7 +21,6 @@ script:
   - docker run -it --rm $IMAGE_NAME flutter --version
 
 after_script:
-  - docker images
-  - docker inspect $IMAGE_NAME
+  - ./hooks/post_build
   - docker rmi $IMAGE_NAME
 
