@@ -1,7 +1,5 @@
 FROM ubuntu:18.04
 
-MAINTAINER Ming Chen
-
 ENV ANDROID_HOME="/opt/android-sdk" \
     ANDROID_NDK="/opt/android-ndk" \
     FLUTTER_HOME="/opt/flutter" \
@@ -221,3 +219,17 @@ RUN echo "Installing fastlane" && \
     mkdir -p /.fastlane && \
     chmod 777 /.fastlane && \
     bundle install --quiet
+
+ARG BUILD_DATE=""
+ARG SOURCE_BRANCH=""
+ARG SOURCE_COMMIT=""
+
+# labels, see http://label-schema.org/
+LABEL maintainer="Ming Chen"
+LABEL org.label-schema.schema-version="1.0"
+LABEL org.label-schema.name="mingc/android-build-box"
+LABEL org.label-schema.version="1.17.0"
+LABEL org.label-schema.usage="/README.md"
+LABEL org.label-schema.docker.cmd="docker run --rm -v `pwd`:/project mingc/android-build-box bash -c 'cd /project; ./gradlew build'"
+LABEL org.label-schema.build-date="$BUILD_DATE"
+LABEL org.label-schema.vcs-ref="$SOURCE_COMMIT@$SOURCE_BRANCH"
