@@ -7,10 +7,7 @@ services:
 # https://docs.travis-ci.com/user/environment-variables/
 #
 env:
-  - IMAGE_NAME=mingc/android-build-box
-  - SOURCE_BRANCH=$TRAVIS_BRANCH
-  - SOURCE_COMMIT=$TRAVIS_COMMIT
-  - DOCKER_TAG=latest
+  - IMAGE_NAME=mingc/android-build-box SOURCE_BRANCH=$TRAVIS_BRANCH SOURCE_COMMIT=$TRAVIS_COMMIT DOCKER_TAG=latest
 
 before_install:
   - env
