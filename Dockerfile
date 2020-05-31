@@ -137,11 +137,11 @@ RUN echo "Installing platforms" && \
         "platforms;android-17" \
         "platforms;android-16" > /dev/null
 
-RUN echo "Installing platform tools " && \
+RUN echo "Installing platform tools" && \
     yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
         "platform-tools" > /dev/null
 
-RUN echo "Installing build tools " && \
+RUN echo "Installing build tools 24-29" && \
     yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
         "build-tools;29.0.3" "build-tools;29.0.2" \
         "build-tools;28.0.3" "build-tools;28.0.2" \
@@ -152,7 +152,7 @@ RUN echo "Installing build tools " && \
         "build-tools;24.0.3" "build-tools;24.0.2" \
         "build-tools;24.0.1" "build-tools;24.0.0" > /dev/null
 
-RUN echo "Installing build tools " && \
+RUN echo "Installing build tools 17-23" && \
     yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
         "build-tools;23.0.3" "build-tools;23.0.2" "build-tools;23.0.1" \
         "build-tools;22.0.1" \
@@ -167,7 +167,7 @@ RUN echo "Installing extras repos" && \
         "extras;android;m2repository" \
         "extras;google;m2repository" > /dev/null
 
-RUN echo "Installing play services " && \
+RUN echo "Installing play services & constraint-layout" && \
     yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
         "extras;google;google_play_services" \
         "extras;m2repository;com;android;support;constraint;constraint-layout;1.0.2" \
@@ -182,8 +182,9 @@ RUN echo "Installing Google APIs" && \
         "add-ons;addon-google_apis-google-19" \
         "add-ons;addon-google_apis-google-18" \
         "add-ons;addon-google_apis-google-17" \
-        "add-ons;addon-google_apis-google-16" > /dev/null && \
-    echo "Installing emulator " && \
+        "add-ons;addon-google_apis-google-16" > /dev/null
+
+RUN echo "Installing emulator" && \
     yes | "$ANDROID_HOME"/tools/bin/sdkmanager "emulator" > /dev/null
 
 RUN echo "Installing kotlin" && \
