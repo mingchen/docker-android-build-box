@@ -2,7 +2,7 @@
 #
 
 # show current build env variables
-env
+env | grep -v SSH_PRIVATE
 
 # Pull exist image to boost build
 docker pull mingc/android-build-box
