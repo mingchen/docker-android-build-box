@@ -9,7 +9,7 @@ ENV ANDROID_HOME="/opt/android-sdk" \
 ENV ANDROID_SDK_TOOLS_VERSION="4333796"
 
 # Get the latest version from https://developer.android.com/ndk/downloads/index.html
-ENV ANDROID_NDK_VERSION="21"
+ENV ANDROID_NDK_VERSION="r21c"
 
 # nodejs version
 ENV NODE_VERSION="12.x"
@@ -19,7 +19,10 @@ ENV LANG="en_US.UTF-8" \
     LANGUAGE="en_US.UTF-8" \
     LC_ALL="en_US.UTF-8"
 
-RUN apt-get clean && apt-get update -qq && apt-get install -qq -y apt-utils locales && locale-gen $LANG
+RUN apt-get clean && \
+    apt-get update -qq && \
+    apt-get install -qq -y apt-utils locales && \
+    locale-gen $LANG
 
 ENV DEBIAN_FRONTEND="noninteractive" \
     TERM=dumb \
@@ -27,11 +30,9 @@ ENV DEBIAN_FRONTEND="noninteractive" \
 
 # Variables must be references after they are created
 ENV ANDROID_SDK_HOME="$ANDROID_HOME"
-ENV ANDROID_NDK_HOME="$ANDROID_NDK/android-ndk-r$ANDROID_NDK_VERSION"
+ENV ANDROID_NDK_HOME="$ANDROID_NDK/android-ndk-$ANDROID_NDK_VERSION"
 
 ENV PATH="$PATH:$ANDROID_SDK_HOME/emulator:$ANDROID_SDK_HOME/tools/bin:$ANDROID_SDK_HOME/tools:$ANDROID_SDK_HOME/platform-tools:$ANDROID_NDK:$FLUTTER_HOME/bin:$FLUTTER_HOME/bin/cache/dart-sdk/bin"
-
-COPY README.md /README.md
 
 WORKDIR /tmp
 
@@ -105,9 +106,9 @@ RUN echo "Installing sdk tools ${ANDROID_SDK_TOOLS_VERSION}" && \
     mkdir --parents "$ANDROID_HOME" && \
     unzip -q sdk-tools.zip -d "$ANDROID_HOME" && \
     rm --force sdk-tools.zip && \
-    echo "Installing ndk r${ANDROID_NDK_VERSION}" && \
+    echo "Installing ndk ${ANDROID_NDK_VERSION}" && \
     wget --quiet --output-document=android-ndk.zip \
-    "http://dl.google.com/android/repository/android-ndk-r${ANDROID_NDK_VERSION}-linux-x86_64.zip" && \
+    "http://dl.google.com/android/repository/android-ndk-${ANDROID_NDK_VERSION}-linux-x86_64.zip" && \
     mkdir --parents "$ANDROID_NDK_HOME" && \
     unzip -q android-ndk.zip -d "$ANDROID_NDK" && \
     rm --force android-ndk.zip
@@ -220,6 +221,8 @@ RUN echo "Installing fastlane" && \
     mkdir -p /.fastlane && \
     chmod 777 /.fastlane && \
     bundle install --quiet
+
+COPY README.md /README.md
 
 ARG BUILD_DATE=""
 ARG SOURCE_BRANCH=""
