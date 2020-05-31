@@ -223,13 +223,19 @@ RUN echo "Installing fastlane" && \
 ARG BUILD_DATE=""
 ARG SOURCE_BRANCH=""
 ARG SOURCE_COMMIT=""
+ARG DOCKER_TAG=""
+
+ENV BUILD_DATE=${BUILD_DATE} \
+    SOURCE_BRANCH=${SOURCE_BRANCH} \
+    SOURCE_COMMIT=${SOURCE_COMMIT} \
+    DOCKER_TAG=${DOCKER_TAG}
 
 # labels, see http://label-schema.org/
 LABEL maintainer="Ming Chen"
 LABEL org.label-schema.schema-version="1.0"
 LABEL org.label-schema.name="mingc/android-build-box"
-LABEL org.label-schema.version="1.17.0"
+LABEL org.label-schema.version="${DOCKER_TAG}"
 LABEL org.label-schema.usage="/README.md"
 LABEL org.label-schema.docker.cmd="docker run --rm -v `pwd`:/project mingc/android-build-box bash -c 'cd /project; ./gradlew build'"
-LABEL org.label-schema.build-date="$BUILD_DATE"
-LABEL org.label-schema.vcs-ref="$SOURCE_COMMIT@$SOURCE_BRANCH"
+LABEL org.label-schema.build-date="${BUILD_DATE}"
+LABEL org.label-schema.vcs-ref="${SOURCE_COMMIT}@{$SOURCE_BRANCH}"
