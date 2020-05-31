@@ -277,10 +277,10 @@ Use tag to sepecific a stable version rather than `latest` of docker image to av
 * extra-google-m2repository
 
 
-
 ## Contribution
 
-If you want to enhance this docker image or fix something, feel free to send [pull request](https://github.com/mingchen/docker-android-build-box/pull/new/master).
+If you want to enhance this docker image or fix something, 
+feel free to send [pull request](https://github.com/mingchen/docker-android-build-box/pull/new/master).
 
 
 ## References
@@ -290,4 +290,5 @@ If you want to enhance this docker image or fix something, feel free to send [pu
 * [Build your own image](https://docs.docker.com/engine/getstarted/step_four/)
 * [uber android build environment](https://hub.docker.com/r/uber/android-build-environment/)
 * [Refactoring a Dockerfile for image size](https://blog.replicated.com/refactoring-a-dockerfile-for-image-size/)
+* [Label Schema](http://label-schema.org/)
 
