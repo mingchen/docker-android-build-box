@@ -1,0 +1,6 @@
+#!/bin/bash
+#
+# Pull exist image to boost build
+#
+docker pull mingc/android-build-box
+
