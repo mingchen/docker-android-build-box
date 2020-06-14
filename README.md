@@ -14,7 +14,22 @@ An optimized **docker** image includes **Android**, **Kotlin**, **Flutter sdk**.
 It includes the following components:
 
 * Ubuntu 18.04
-* Android SDK 16 17 18 19 20 21 22 23 24 25 26 27 28 29
+* Android SDKs
+  * 16
+  * 17
+  * 18
+  * 19
+  * 20
+  * 21
+  * 22
+  * 23
+  * 24
+  * 25
+  * 26
+  * 27
+  * 28
+  * 29
+  * 30
 * Android build tools:
   * 17.0.0
   * 18.1.1
@@ -28,6 +43,7 @@ It includes the following components:
   * 27.0.1 27.0.2 27.0.3
   * 28.0.1 28.0.2 28.0.3
   * 29.0.2 29.0.3
+  * 30.0.0
 * Android NDK r21
 * extra-android-m2repository
 * extra-google-m2repository
