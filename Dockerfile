@@ -71,7 +71,7 @@ RUN apt-get update -qq > /dev/null && \
         wget \
         zip \
         zlib1g-dev > /dev/null && \
-    echo "Installing nodejs, npm, cordova, ionic, react-native" && \
+    echo "nodejs, npm, cordova, ionic, react-native" && \
     curl -sL -k https://deb.nodesource.com/setup_${NODE_VERSION} \
         | bash - > /dev/null && \
     apt-get install -qq nodejs > /dev/null && \
@@ -100,14 +100,14 @@ RUN apt-get update -qq > /dev/null && \
     rm -rf /tmp/* /var/tmp/*
 
 # Install Android SDK
-RUN echo "Installing sdk tools ${ANDROID_SDK_TOOLS_VERSION}" && \
+RUN echo "sdk tools ${ANDROID_SDK_TOOLS_VERSION}" && \
     wget --quiet --output-document=sdk-tools.zip \
         "https://dl.google.com/android/repository/sdk-tools-linux-${ANDROID_SDK_TOOLS_VERSION}.zip" && \
     mkdir --parents "$ANDROID_HOME" && \
     unzip -q sdk-tools.zip -d "$ANDROID_HOME" && \
     rm --force sdk-tools.zip
 
-RUN echo "Installing ndk ${ANDROID_NDK_VERSION}" && \
+RUN echo "ndk ${ANDROID_NDK_VERSION}" && \
     wget --quiet --output-document=android-ndk.zip \
     "http://dl.google.com/android/repository/android-ndk-${ANDROID_NDK_VERSION}-linux-x86_64.zip" && \
     mkdir --parents "$ANDROID_NDK_HOME" && \
@@ -122,7 +122,7 @@ RUN mkdir --parents "$HOME/.android/" && \
         "$HOME/.android/repositories.cfg" && \
     yes | "$ANDROID_HOME"/tools/bin/sdkmanager --licenses > /dev/null
 
-RUN echo "Installing platforms" && \
+RUN echo "platforms" && \
     yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
         "platforms;android-30" \
         "platforms;android-29" \
@@ -140,11 +140,11 @@ RUN echo "Installing platforms" && \
         "platforms;android-17" \
         "platforms;android-16" > /dev/null
 
-RUN echo "Installing platform tools" && \
+RUN echo "platform tools" && \
     yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
         "platform-tools" > /dev/null
 
-RUN echo "Installing build tools 24-30" && \
+RUN echo "build tools 24-30" && \
     yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
         "build-tools;30.0.0" \
         "build-tools;29.0.3" "build-tools;29.0.2" \
@@ -156,7 +156,7 @@ RUN echo "Installing build tools 24-30" && \
         "build-tools;24.0.3" "build-tools;24.0.2" \
         "build-tools;24.0.1" "build-tools;24.0.0" > /dev/null
 
-RUN echo "Installing build tools 17-23" && \
+RUN echo "build tools 17-23" && \
     yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
         "build-tools;23.0.3" "build-tools;23.0.2" "build-tools;23.0.1" \
         "build-tools;22.0.1" \
@@ -166,18 +166,18 @@ RUN echo "Installing build tools 17-23" && \
         "build-tools;18.1.1" \
         "build-tools;17.0.0" > /dev/null
 
-RUN echo "Installing extras repos" && \
+RUN echo "extras repos" && \
     yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
         "extras;android;m2repository" \
         "extras;google;m2repository" > /dev/null
 
-RUN echo "Installing play services & constraint-layout" && \
+RUN echo "play services & constraint-layout" && \
     yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
         "extras;google;google_play_services" \
         "extras;m2repository;com;android;support;constraint;constraint-layout;1.0.2" \
         "extras;m2repository;com;android;support;constraint;constraint-layout;1.0.1" > /dev/null
 
-RUN echo "Installing Google APIs" && \
+RUN echo "Google APIs" && \
     yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
         "add-ons;addon-google_apis-google-24" \
         "add-ons;addon-google_apis-google-23" \
@@ -188,15 +188,15 @@ RUN echo "Installing Google APIs" && \
         "add-ons;addon-google_apis-google-17" \
         "add-ons;addon-google_apis-google-16" > /dev/null
 
-RUN echo "Installing emulator" && \
+RUN echo "emulator" && \
     yes | "$ANDROID_HOME"/tools/bin/sdkmanager "emulator" > /dev/null
 
-RUN echo "Installing kotlin" && \
+RUN echo "kotlin" && \
     wget --quiet -O sdk.install.sh "https://get.sdkman.io" && \
     bash -c "bash ./sdk.install.sh > /dev/null && source ~/.sdkman/bin/sdkman-init.sh && sdk install kotlin" && \
     rm -f sdk.install.sh
 
-RUN echo "Install Flutter sdk" && \
+RUN echo "Flutter sdk" && \
     cd /opt && \
     wget --quiet https://storage.googleapis.com/flutter_infra/releases/stable/linux/flutter_linux_1.17.1-stable.tar.xz -O flutter.tar.xz && \
     tar xf flutter.tar.xz && \
@@ -219,7 +219,7 @@ ENV BUNDLE_GEMFILE=/tmp/Gemfile
 
 COPY Gemfile /tmp/Gemfile
 
-RUN echo "Installing fastlane" && \
+RUN echo "fastlane" && \
     gem install bundler --quiet --no-document > /dev/null && \
     mkdir -p /.fastlane && \
     chmod 777 /.fastlane && \
