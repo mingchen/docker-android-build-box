@@ -105,8 +105,9 @@ RUN echo "Installing sdk tools ${ANDROID_SDK_TOOLS_VERSION}" && \
         "https://dl.google.com/android/repository/sdk-tools-linux-${ANDROID_SDK_TOOLS_VERSION}.zip" && \
     mkdir --parents "$ANDROID_HOME" && \
     unzip -q sdk-tools.zip -d "$ANDROID_HOME" && \
-    rm --force sdk-tools.zip && \
-    echo "Installing ndk ${ANDROID_NDK_VERSION}" && \
+    rm --force sdk-tools.zip
+
+RUN echo "Installing ndk ${ANDROID_NDK_VERSION}" && \
     wget --quiet --output-document=android-ndk.zip \
     "http://dl.google.com/android/repository/android-ndk-${ANDROID_NDK_VERSION}-linux-x86_64.zip" && \
     mkdir --parents "$ANDROID_NDK_HOME" && \
