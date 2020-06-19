@@ -15,15 +15,6 @@ It includes the following components:
 
 * Ubuntu 18.04
 * Android SDKs
-  * 16
-  * 17
-  * 18
-  * 19
-  * 20
-  * 21
-  * 22
-  * 23
-  * 24
   * 25
   * 26
   * 27
@@ -31,13 +22,6 @@ It includes the following components:
   * 29
   * 30
 * Android build tools:
-  * 17.0.0
-  * 18.1.1
-  * 19.1.0
-  * 20.0.0
-  * 21.1.2 22.0.1
-  * 23.0.1 23.0.2 23.0.3
-  * 24.0.0 24.0.1 24.0.2 24.0.3
   * 25.0.0 25.0.1 25.0.2 25.0.3
   * 26.0.0 26.0.1 26.0.2
   * 27.0.1 27.0.2 27.0.3
@@ -48,7 +32,6 @@ It includes the following components:
 * extra-android-m2repository
 * extra-google-m2repository
 * extra-google-google\_play\_services
-* Google API add-ons
 * Android Emulator
 * Constraint Layout
 * TestNG
@@ -67,7 +50,7 @@ based on the Dockerfile in this repo, so there is no hidden stuff in it. To pull
 
     docker pull mingc/android-build-box:latest
 
-**Hint:** Use tag to sepecific a stable version rather than `latest` of docker image to avoid break your buid. 
+**Hint:** You can use a tag to a specific stable version, rather than `latest` of docker image, to avoid breaking your build. 
 e.g. `mingc/android-build-box:1.15.0`. Checkout [**Tags**](#tags) (bottom of this page) to see all the available tags.
 
 ## Usage
@@ -84,9 +67,9 @@ Run docker image with interactive bash shell:
     docker run -v `pwd`:/project -it mingc/android-build-box bash
 
 
-### Build an Android project with Bitbucket pipeline
+### Build an Android project with [Bitbucket Pipelines](https://bitbucket.org/product/features/pipelines)
 
-If you have an Android project in a Bitbucket repository and want to use its pipeline to build it, 
+If you have an Android project in a Bitbucket repository and want to use the pipeline feature to build it, 
 you can simply specify this docker image.
 Here is an example of `bitbucket-pipelines.yml`:
 
@@ -98,19 +81,19 @@ pipelines:
     - step:
         caches:
           - gradle
-          - gradlewrapper
-          - androidavd
+          - gradle-wrapper
+          - android-emulator
         script:
           - bash ./gradlew assemble
 definitions:
   caches:
-    gradlewrapper: ~/.gradle/wrapper
-    androidavd: $ANDROID_HOME/.android/avd
+    gradle-wrapper: ~/.gradle/wrapper
+    android-emulator: $ANDROID_HOME/system-images/android-21
 ```
 
 The caches are used to [store downloaded dependencies](https://confluence.atlassian.com/bitbucket/caching-dependencies-895552876.html) from previous builds, to speed up the next builds.
 
-### Build a Flutter project with github action
+### Build a Flutter project with [Github Actions](https://github.com/features/actions)
 
 Here is an example `.github/workflows/main.yml` to build a Flutter project with this docker image:
 
@@ -153,7 +136,13 @@ jobs:
 
 ### Run an Android emulator in the Docker build machine
 
-Using guidelines from https://medium.com/@AndreSand/android-emulator-on-docker-container-f20c49b129ef and https://spin.atomicobject.com/2016/03/10/android-test-script/ and https://paulemtz.blogspot.com/2013/05/android-testing-in-headless-emulator.html , you can use a script to create and launch an ARM emulator, which can be used for running integration tests or instrumentation tests or unit tests:
+Using guidelines from...
+
+* https://medium.com/@AndreSand/android-emulator-on-docker-container-f20c49b129ef
+* https://spin.atomicobject.com/2016/03/10/android-test-script/
+* https://paulemtz.blogspot.com/2013/05/android-testing-in-headless-emulator.html
+
+...You can write a script to create and launch an ARM emulator, which can be used for running integration tests or instrumentation tests or unit tests:
 
 ```shell
 #!/bin/bash
@@ -172,6 +161,8 @@ echo "no" | avdmanager create avd \
 
 # Launch the emulator in the background
 $ANDROID_HOME/emulator/emulator -avd Android_4.1_API_16 -no-skin -no-audio -no-window -no-boot-anim -gpu off &
+
+# Note: You will have to add a suitable time delay, to wait for the emulator to launch.
 ```
 
 Note that x86_64 emulators are not currently supported. See [Issue #18](https://github.com/mingchen/docker-android-build-box/issues/18) for details.
@@ -185,7 +176,14 @@ The image itself is more than 5 GB, check your free disk space before building i
 
 ## Tags
 
-Use tag to sepecific a stable version rather than `latest` of docker image to avoid break your buid. e.g. `mingc/android-build-box:1.15.0`
+You can use a tag to a specific stable version, rather than `latest` of docker image,
+to avoid breaking your build. For example `mingc/android-build-box:1.15.0`
+or `mingc/android-build-box:v1.15.0`
+
+Note that versions `1.0.0` up to `1.17.0` included every single Build Tool version and every
+Android Platform version available. This generated large Docker images, around 5 GB.
+Newer versions of `android-build-box` only include a subset of the newest Android Tools,
+so the Docker images are smaller.
 
 ### 1.17.0
 
