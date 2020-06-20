@@ -45,13 +45,17 @@ It includes the following components:
 
 ## Pull Docker Image
 
-The docker image is publicly automated build on [Docker Hub](https://hub.docker.com/r/mingc/android-build-box/) 
+The docker image is publicly automated build on [Docker Hub](https://hub.docker.com/r/mingc/android-build-box/)
 based on the Dockerfile in this repo, so there is no hidden stuff in it. To pull the latest docker image:
 
-    docker pull mingc/android-build-box:latest
+```sh
+docker pull mingc/android-build-box:latest
+```
 
-**Hint:** You can use a tag to a specific stable version, rather than `latest` of docker image, to avoid breaking your build. 
-e.g. `mingc/android-build-box:1.15.0`. Checkout [**Tags**](#tags) (bottom of this page) to see all the available tags.
+**Hint:** You can use a tag to a specific stable version,
+rather than `latest` of docker image, to avoid breaking your build.
+e.g. `mingc/android-build-box:1.18.0`.
+Checkout [**Tags**](#tags) (bottom of this page) to see all the available tags.
 
 ## Usage
 
@@ -59,17 +63,20 @@ e.g. `mingc/android-build-box:1.15.0`. Checkout [**Tags**](#tags) (bottom of thi
 
 You can use this docker image to build your Android project with a single docker command:
 
-    cd <android project directory>  # change working directory to your project root directory.
-    docker run --rm -v `pwd`:/project mingc/android-build-box bash -c 'cd /project; ./gradlew build'
+```sh
+cd <android project directory>  # change working directory to your project root directory.
+docker run --rm -v `pwd`:/project mingc/android-build-box bash -c 'cd /project; ./gradlew build'
+```
 
 Run docker image with interactive bash shell:
 
-    docker run -v `pwd`:/project -it mingc/android-build-box bash
-
+```sh
+docker run -v `pwd`:/project -it mingc/android-build-box bash
+```
 
 ### Build an Android project with [Bitbucket Pipelines](https://bitbucket.org/product/features/pipelines)
 
-If you have an Android project in a Bitbucket repository and want to use the pipeline feature to build it, 
+If you have an Android project in a Bitbucket repository and want to use the pipeline feature to build it,
 you can simply specify this docker image.
 Here is an example of `bitbucket-pipelines.yml`:
 
@@ -144,7 +151,7 @@ Using guidelines from...
 
 ...You can write a script to create and launch an ARM emulator, which can be used for running integration tests or instrumentation tests or unit tests:
 
-```shell
+```sh
 #!/bin/bash
 
 # Download an ARM system image to create an ARM emulator.
@@ -172,18 +179,25 @@ Note that x86_64 emulators are not currently supported. See [Issue #18](https://
 If you want to build the docker image by yourself, you can use following command.
 The image itself is more than 5 GB, check your free disk space before building it.
 
-    docker build -t android-build-box .
+```sh
+docker build -t android-build-box .
+```
 
 ## Tags
 
 You can use a tag to a specific stable version, rather than `latest` of docker image,
-to avoid breaking your build. For example `mingc/android-build-box:1.15.0`
-or `mingc/android-build-box:v1.15.0`
+to avoid breaking your build. For example `mingc/android-build-box:1.18.0`
+or `mingc/android-build-box:v1.18.0`
 
 Note that versions `1.0.0` up to `1.17.0` included every single Build Tool version and every
 Android Platform version available. This generated large Docker images, around 5 GB.
 Newer versions of `android-build-box` only include a subset of the newest Android Tools,
 so the Docker images are smaller.
+
+### 1.18.0
+
+* Add platform sdk 30 and build build 30.0.0
+* PR #47: Remove old Build Tools (versions 24-17), and old Android Platform versions (versions 24-16), and old Google APIs (versions 24-16) @ozmium
 
 ### 1.17.0
 
@@ -293,7 +307,7 @@ so the Docker images are smaller.
 
 ## Contribution
 
-If you want to enhance this docker image or fix something, 
+If you want to enhance this docker image or fix something,
 feel free to send [pull request](https://github.com/mingchen/docker-android-build-box/pull/new/master).
 
 
@@ -305,4 +319,3 @@ feel free to send [pull request](https://github.com/mingchen/docker-android-buil
 * [uber android build environment](https://hub.docker.com/r/uber/android-build-environment/)
 * [Refactoring a Dockerfile for image size](https://blog.replicated.com/refactoring-a-dockerfile-for-image-size/)
 * [Label Schema](http://label-schema.org/)
-
