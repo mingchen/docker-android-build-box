@@ -5,6 +5,8 @@ ENV ANDROID_HOME="/opt/android-sdk" \
     FLUTTER_HOME="/opt/flutter" \
     JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/
 
+ENV TZ=America/Los_Angeles
+
 # Get the latest version from https://developer.android.com/studio/index.html
 ENV ANDROID_SDK_TOOLS_VERSION="4333796"
 
@@ -66,11 +68,14 @@ RUN apt-get update -qq > /dev/null && \
         pkg-config \
         ruby-full \
         software-properties-common \
+        tzdata \
         unzip \
         vim-tiny \
         wget \
         zip \
         zlib1g-dev > /dev/null && \
+    echo "set timezone" && \
+    ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone && \
     echo "nodejs, npm, cordova, ionic, react-native" && \
     curl -sL -k https://deb.nodesource.com/setup_${NODE_VERSION} \
         | bash - > /dev/null && \
