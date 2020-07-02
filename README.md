@@ -29,11 +29,7 @@ It includes the following components:
   * 29.0.2 29.0.3
   * 30.0.0
 * Android NDK r21
-* extra-android-m2repository
-* extra-google-m2repository
-* extra-google-google\_play\_services
 * Android Emulator
-* Constraint Layout
 * TestNG
 * Python 2, Python 3
 * Node.js, npm, React Native
@@ -177,7 +173,7 @@ Note that x86_64 emulators are not currently supported. See [Issue #18](https://
 ## Docker Build Image
 
 If you want to build the docker image by yourself, you can use following command.
-The image itself is more than 5 GB, check your free disk space before building it.
+The image itself is around 5 GB, so check your free disk space before building it.
 
 ```sh
 docker build -t android-build-box .
