@@ -150,17 +150,6 @@ RUN echo "build tools 25-30" && \
         "build-tools;25.0.3" "build-tools;25.0.2" \
         "build-tools;25.0.1" "build-tools;25.0.0" > /dev/null
 
-RUN echo "extras repos" && \
-    yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
-        "extras;android;m2repository" \
-        "extras;google;m2repository" > /dev/null
-
-RUN echo "play services & constraint-layout" && \
-    yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
-        "extras;google;google_play_services" \
-        "extras;m2repository;com;android;support;constraint;constraint-layout;1.0.2" \
-        "extras;m2repository;com;android;support;constraint;constraint-layout;1.0.1" > /dev/null
-
 RUN echo "emulator" && \
     yes | "$ANDROID_HOME"/tools/bin/sdkmanager "emulator" > /dev/null
 
