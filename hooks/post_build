@@ -16,7 +16,7 @@ docker run \
     bash -c 'cd /project; ./gradlew build'
 
 # build with java 11
-docker run
+docker run \
     --rm \
     -e JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64/ \
     -v `pwd`:/project mingc/android-build-box \
