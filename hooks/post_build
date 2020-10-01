@@ -15,6 +15,12 @@ docker run \
     -v `pwd`:/project mingc/android-build-box \
     bash -c 'cd /project; ./gradlew build'
 
+# build sample project with fastlane
+docker run \
+    --rm \
+    -v `pwd`:/project mingc/android-build-box \
+    bash -c 'cd /project; fastlane build'
+
 # build with java 11
 docker run \
     --rm \
