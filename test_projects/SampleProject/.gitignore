@@ -12,3 +12,6 @@
 /captures
 .externalNativeBuild
 .cxx
+/Gemfile.lock
+/fastlane/README.md
+/fastlane/report.xml
