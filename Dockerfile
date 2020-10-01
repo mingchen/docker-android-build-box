@@ -11,7 +11,7 @@ ENV TZ=America/Los_Angeles
 ENV ANDROID_SDK_TOOLS_VERSION="4333796"
 
 # Get the latest version from https://developer.android.com/ndk/downloads/index.html
-ENV ANDROID_NDK_VERSION="r21c"
+ENV ANDROID_NDK_VERSION="r21d"
 
 # nodejs version
 ENV NODE_VERSION="12.x"
