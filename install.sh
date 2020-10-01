@@ -105,7 +105,7 @@ rm -f sdk.install.sh
 
 # Install Flutter sdk
 cd /opt
-wget --quiet https://storage.googleapis.com/flutter_infra/releases/stable/linux/flutter_linux_v1.22.0-stable.tar.xz -O flutter.tar.xz
+wget --quiet https://storage.googleapis.com/flutter_infra/releases/stable/linux/flutter_linux_1.22.0-stable.tar.xz -O flutter.tar.xz
 tar xf flutter.tar.xz
 rm -f flutter.tar.xz
 flutter config --no-analytics
