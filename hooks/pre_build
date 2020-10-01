@@ -2,6 +2,9 @@
 #
 
 # Pull exist image to boost build
-docker pull mingc/android-build-box
+# This does not work well because the base image may update.
+# docker pull mingc/android-build-box
 
+docker info
 docker images
+
