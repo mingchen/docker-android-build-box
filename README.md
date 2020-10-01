@@ -189,6 +189,11 @@ Android Platform version available. This generated large Docker images, around 5
 Newer versions of `android-build-box` only include a subset of the newest Android Tools,
 so the Docker images are smaller.
 
+### 1.20.0
+
+* Upgrade Flutter to 1.22.0
+* Upgrade NDK to r21d
+
 ### 1.19.0
 
 * PR #50: Remove all the "extras" items of local libraries in the Android SDK  @ozmium
