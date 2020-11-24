@@ -150,6 +150,10 @@ Using guidelines from...
 ```sh
 #!/bin/bash
 
+# Arm emulators can be quite slow. For this reason it is convenient
+# to increase the adb timeout to avoid errors.
+export ADB_INSTALL_TIMEOUT=30
+
 # Download an ARM system image to create an ARM emulator.
 sdkmanager "system-images;android-16;default;armeabi-v7a"
 
