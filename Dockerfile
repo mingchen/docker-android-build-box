@@ -175,7 +175,7 @@ RUN mkdir -p /var/lib/jenkins/workspace && \
     mkdir -p /home/jenkins && \
     chmod 777 /home/jenkins && \
     chmod 777 /var/lib/jenkins/workspace && \
-    chmod 777 $ANDROID_HOME/.android
+    chmod -R 775 $ANDROID_HOME
 
 COPY Gemfile /Gemfile
 
