@@ -70,6 +70,18 @@ Run docker image with interactive bash shell:
 docker run -v `pwd`:/project -it mingc/android-build-box bash
 ```
 
+
+Add the following arguments to the docker command to cache the home gradle folder: 
+```sh
+-v "$HOME/.dockercache/gradle":"/root/.gradle"
+```
+e.g.
+
+```sh
+docker run --rm -v `pwd`:/project  -v "$HOME/.dockercache/gradle":"/root/.gradle"   mingc/android-build-box bash -c 'cd /project; ./gradlew build' 
+```
+
+
 ### Build an Android project with [Bitbucket Pipelines](https://bitbucket.org/product/features/pipelines)
 
 If you have an Android project in a Bitbucket repository and want to use the pipeline feature to build it,
