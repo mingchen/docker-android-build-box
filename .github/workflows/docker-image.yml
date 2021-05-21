@@ -11,8 +11,22 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    env:
+      IMAGE_NAME=mingc/android-build-box
+      TAG=$GITHUB_SHA
 
     steps:
     - uses: actions/checkout@v2
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag mingc/android-build-box:$(date +%s) --cache-from  mingc/android-build-box:latest
+      run: |
+        docker images
+        docker build . \
+            --file Dockerfile \
+            --tag $IMAGE_NAME:$TAG \
+            --cache-from $IMAGE_NAME:latest
+        docker images
+        docker inspect $IMAGE_NAME:$TAG
+
+    - name: Use docker image
+      run: |
+        docker run -it --rm $IMAGE_NAME:$TAG flutter --version
