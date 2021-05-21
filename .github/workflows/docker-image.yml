@@ -26,8 +26,7 @@ jobs:
         docker image prune -a -f
 
         # Remove exist images to free disk space
-        IMAGE_IDS=$(docker images -a | awk '{ print $3 }' | grep -v IMAGE)
-        docker rmi $(IMAGE_IDS)
+        docker rmi $(docker images | grep -v IMAGE | awk '{print $3}')
         docker images
 
         df -h
