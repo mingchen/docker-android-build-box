@@ -41,6 +41,7 @@ jobs:
 
     - name: Inspect docker image
       run: |
+        TAG=$GITHUB_SHA
         docker images
         docker inspect $IMAGE_NAME:$TAG
 
