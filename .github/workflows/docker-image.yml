@@ -12,8 +12,8 @@ jobs:
 
     runs-on: ubuntu-latest
     env:
-      IMAGE_NAME=mingc/android-build-box
-      TAG=$GITHUB_SHA
+      IMAGE_NAME: mingc/android-build-box
+      TAG: ${{env.GITHUB_SHA}}
 
     steps:
     - uses: actions/checkout@v2
