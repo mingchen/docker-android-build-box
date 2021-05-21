@@ -3,11 +3,9 @@
 [![docker icon](https://dockeri.co/image/mingc/android-build-box)](https://hub.docker.com/r/mingc/android-build-box/)
 [![Docker Image CI](https://github.com/mingchen/docker-android-build-box/actions/workflows/docker-image.yml/badge.svg)](https://github.com/mingchen/docker-android-build-box/actions/workflows/docker-image.yml)
 
-
 ## Introduction
 
 An optimized **docker** image includes **Android**, **Kotlin**, **Flutter sdk**.
-
 
 ## What Is Inside
 
@@ -36,8 +34,7 @@ It includes the following components:
 * Ruby, RubyGems
 * fastlane
 * Kotlin 1.3
-* Flutter 1.22.0
-
+* Flutter 2.2.0
 
 ## Pull Docker Image
 
@@ -50,7 +47,7 @@ docker pull mingc/android-build-box:latest
 
 **Hint:** You can use a tag to a specific stable version,
 rather than `latest` of docker image, to avoid breaking your build.
-e.g. `mingc/android-build-box:1.19.0`.
+e.g. `mingc/android-build-box:1.20.0`.
 Checkout [**Tags**](#tags) (bottom of this page) to see all the available tags.
 
 ## Usage
@@ -70,17 +67,17 @@ Run docker image with interactive bash shell:
 docker run -v `pwd`:/project -it mingc/android-build-box bash
 ```
 
+Add the following arguments to the docker command to cache the home gradle folder:
 
-Add the following arguments to the docker command to cache the home gradle folder: 
 ```sh
 -v "$HOME/.dockercache/gradle":"/root/.gradle"
 ```
+
 e.g.
 
 ```sh
-docker run --rm -v `pwd`:/project  -v "$HOME/.dockercache/gradle":"/root/.gradle"   mingc/android-build-box bash -c 'cd /project; ./gradlew build' 
+docker run --rm -v `pwd`:/project  -v "$HOME/.dockercache/gradle":"/root/.gradle"   mingc/android-build-box bash -c 'cd /project; ./gradlew build'
 ```
-
 
 ### Build an Android project with [Bitbucket Pipelines](https://bitbucket.org/product/features/pipelines)
 
@@ -198,12 +195,21 @@ docker build -t android-build-box .
 ## Tags
 
 You can use a tag to a specific stable version, rather than `latest` of docker image,
-to avoid breaking your build. For example `mingc/android-build-box:1.19.0`
+to avoid breaking your build. For example `mingc/android-build-box:1.20.0`
 
 **Note**: versions `1.0.0` up to `1.17.0` included every single Build Tool version and every
 Android Platform version available. This generated large Docker images, around 5 GB.
 Newer versions of `android-build-box` only include a subset of the newest Android Tools,
 so the Docker images are smaller.
+
+## 1.21.0
+
+* Upgrade Flutter to 2.2.0
+* CI switched from travis-ci to Github Action.
+* PR #63: Add cache gradle to README @dewijones92
+* PR #62: Make the Android SDK directory writeable @DanDevine
+* Fix #60: Remove BUNDLE_GEMFILE env.
+* PR #59: Fix #58: Updated README: Run emulator with ADB_INSTALL_TIMEOUT @felHR85
 
 ### 1.20.0
 
