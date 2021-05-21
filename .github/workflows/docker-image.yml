@@ -38,10 +38,18 @@ jobs:
             --file Dockerfile \
             --tag $IMAGE_NAME:$TAG \
             --cache-from $IMAGE_NAME:latest
+
+    - name: Inspect docker image
+      run: |
         docker images
         docker inspect $IMAGE_NAME:$TAG
 
     - name: Use docker image
       run: |
         TAG=$GITHUB_SHA
-        docker run -it --rm $IMAGE_NAME:$TAG flutter --version
+        docker run --rm $IMAGE_NAME:$TAG flutter --version
+
+    - name: Cleanup
+      run:
+        TAG=$GITHUB_SHA
+        docker rmi $IMAGE_NAME:$TAG
