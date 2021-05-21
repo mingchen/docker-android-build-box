@@ -51,6 +51,6 @@ jobs:
         docker run --rm $IMAGE_NAME:$TAG flutter --version
 
     - name: Cleanup
-      run:
+      run: |
         TAG=$GITHUB_SHA
         docker rmi $IMAGE_NAME:$TAG
