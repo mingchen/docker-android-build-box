@@ -21,7 +21,12 @@ jobs:
       run: |
         df -h
         docker images
+        docker ps -a
         echo "GITHUB_SHA: $GITHUB_SHA"
+        docker image prune -a -f
+
+        # Remove exist images to free disk space
+        docker images -a | awk '{ print $3 }' | args docker rmi
 
     - name: Build the Docker image
       run: |
