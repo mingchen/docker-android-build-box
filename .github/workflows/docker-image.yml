@@ -16,10 +16,16 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+
+    - name: Pre build
+      run: |
+        df -h
+        docker images
+        echo "GITHUB_SHA: $GITHUB_SHA"
+
     - name: Build the Docker image
       run: |
         TAG=$GITHUB_SHA
-        docker images
         docker build . \
             --file Dockerfile \
             --tag $IMAGE_NAME:$TAG \
