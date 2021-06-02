@@ -8,3 +8,8 @@
 docker info
 docker images
 
+# Remove exist images to release disk space.
+docker rmi $(docker images | grep -v IMAGE | awk '{print $3}')
+docker image prune -a -f
+
+docker images
