@@ -143,7 +143,7 @@ RUN echo "platform tools" && \
 
 RUN echo "build tools 25-30" && \
     yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
-        "build-tools;30.0.0" \
+        "build-tools;30.0.0" "build-tools;30.0.2" \
         "build-tools;29.0.3" "build-tools;29.0.2" \
         "build-tools;28.0.3" "build-tools;28.0.2" \
         "build-tools;27.0.3" "build-tools;27.0.2" "build-tools;27.0.1" \
