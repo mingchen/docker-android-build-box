@@ -21,7 +21,7 @@ jobs:
       id: meta
       uses: docker/metadata-action@v3
       with:
-        images: $IMAGE_NAME
+        images: mingc/android-build-box
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v1
@@ -60,7 +60,7 @@ jobs:
       with:
         context: .
         push: ${{ github.event_name != 'pull_request' }}
-        tags: $IMAGE_NAME:latest,${{ steps.meta.outputs.tags }}
+        tags: mingc/android-build-box:latest,${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
 
     - name: Inspect docker image
