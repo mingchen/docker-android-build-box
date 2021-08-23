@@ -190,7 +190,7 @@ RUN echo "fastlane" && \
 RUN git clone https://github.com/jenv/jenv.git ~/.jenv && \
     echo 'export PATH="$HOME/.jenv/bin:$PATH"' >> ~/.bash_profile && \
     echo 'eval "$(jenv init -)"' >> ~/.bash_profile && \
-    source ~/.bash_profile && \
+    . ~/.bash_profile && \
     jenv add /usr/lib/jvm/java-8-openjdk-amd64 && \
     jenv add /usr/lib/jvm/java-11-openjdk-amd64 && \
     jenv versions && \

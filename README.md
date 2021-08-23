@@ -192,10 +192,11 @@ Note that x86_64 emulators are not currently supported. See [Issue #18](https://
 Both Java 1.8 and Java 11 are installed, `jenv` can be used to switch different version of java. System default to java 11.
 
 ```sh
-$ jenv versions   # List all Java versions
-$ jenv local 11   # Set current Java env to 11
-$ jenv local 1.8  # Set current Java env to 1.8
-$ javac -version
+# . $HOME/.bash_profile
+# jenv versions     # List all Java versions
+# jenv local 11     # Set current Java env to 11
+# jenv local 1.8    # Set current Java env to 1.8
+# javac -version
 ```
 
 ## Docker Build Image
