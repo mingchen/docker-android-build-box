@@ -22,6 +22,9 @@ jobs:
       uses: docker/metadata-action@v3
       with:
         images: mingc/android-build-box
+        labels: |
+          org.opencontainers.image.url=https://hub.docker.com/r/mingc/android-build-box
+          org.opencontainers.image.vendor=Ming Chen
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v1
@@ -67,7 +70,7 @@ jobs:
       run: |
         TAG=$GITHUB_SHA
         docker images
-        docker inspect $IMAGE_NAME:$TAG
+        docker inspect $IMAGE_NAME:latest
 
     - name: Use docker image
       run: |
