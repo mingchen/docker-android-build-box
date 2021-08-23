@@ -66,18 +66,18 @@ jobs:
         tags: mingc/android-build-box:latest,${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
 
-    - name: Inspect docker image
-      run: |
-        TAG=$GITHUB_SHA
-        docker images
-        docker inspect $IMAGE_NAME:latest
+    # - name: Inspect docker image
+    #   run: |
+    #     TAG=$GITHUB_SHA
+    #     docker images
+    #     docker inspect $IMAGE_NAME:latest
 
-    - name: Use docker image
-      run: |
-        TAG=$GITHUB_SHA
-        docker run --rm $IMAGE_NAME:$TAG flutter --version
+    # - name: Use docker image
+    #   run: |
+    #     TAG=$GITHUB_SHA
+    #     docker run --rm $IMAGE_NAME:$TAG flutter --version
 
-    - name: Cleanup
-      run: |
-        TAG=$GITHUB_SHA
-        docker rmi $IMAGE_NAME:$TAG
+    # - name: Cleanup
+    #   run: |
+    #     TAG=$GITHUB_SHA
+    #     docker rmi $IMAGE_NAME:$TAG
