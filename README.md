@@ -30,10 +30,10 @@ It includes the following components:
 * Android Emulator
 * TestNG
 * Python 2, Python 3
-* Node.js, npm, React Native
+* Node.js 14, npm, React Native
 * Ruby, RubyGems
 * fastlane
-* Kotlin 1.3
+* Kotlin 1.5
 * Flutter 2.2.0
 
 ## Pull Docker Image
@@ -47,7 +47,7 @@ docker pull mingc/android-build-box:latest
 
 **Hint:** You can use a tag to a specific stable version,
 rather than `latest` of docker image, to avoid breaking your build.
-e.g. `mingc/android-build-box:1.21.1`.
+e.g. `mingc/android-build-box:1.22.0`.
 Checkout [**Tags**](#tags) (bottom of this page) to see all the available tags.
 
 ## Usage
@@ -195,12 +195,17 @@ docker build -t android-build-box .
 ## Tags
 
 You can use a tag to a specific stable version, rather than `latest` of docker image,
-to avoid breaking your build. For example `mingc/android-build-box:1.21.1`
+to avoid breaking your build. For example `mingc/android-build-box:1.22.0`
 
 **Note**: versions `1.0.0` up to `1.17.0` included every single Build Tool version and every
 Android Platform version available. This generated large Docker images, around 5 GB.
 Newer versions of `android-build-box` only include a subset of the newest Android Tools,
 so the Docker images are smaller.
+
+## 1.22.0
+
+* Upgrade Nodejs from 12.x to 14.x
+* Push image to docker hub from github action directly.
 
 ## 1.21.1
 
