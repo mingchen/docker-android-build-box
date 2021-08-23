@@ -186,6 +186,17 @@ RUN echo "fastlane" && \
     chmod 777 /.fastlane && \
     bundle install --quiet
 
+# Add jenv to control which version of java to use, default to 11.
+RUN git clone https://github.com/jenv/jenv.git ~/.jenv && \
+    echo 'export PATH="$HOME/.jenv/bin:$PATH"' >> ~/.bash_profile && \
+    echo 'eval "$(jenv init -)"' >> ~/.bash_profile && \
+    source ~/.bash_profile && \
+    jenv add /usr/lib/jvm/java-8-openjdk-amd64 && \
+    jenv add /usr/lib/jvm/java-11-openjdk-amd64 && \
+    jenv versions && \
+    jenv global 11 && \
+    java -version
+
 COPY README.md /README.md
 
 ARG BUILD_DATE=""

@@ -12,6 +12,9 @@ An optimized **docker** image includes **Android**, **Kotlin**, **Flutter sdk**.
 It includes the following components:
 
 * Ubuntu 18.04
+* Java (OpenJDK)
+  * 1.8
+  * 11
 * Android SDKs
   * 25
   * 26
@@ -35,6 +38,7 @@ It includes the following components:
 * fastlane
 * Kotlin 1.5
 * Flutter 2.2.0
+* jenv
 
 ## Pull Docker Image
 
@@ -182,6 +186,17 @@ $ANDROID_HOME/emulator/emulator -avd Android_4.1_API_16 -no-skin -no-audio -no-w
 ```
 
 Note that x86_64 emulators are not currently supported. See [Issue #18](https://github.com/mingchen/docker-android-build-box/issues/18) for details.
+
+### Choose Java Version
+
+Both Java 1.8 and Java 11 are installed, `jenv` can be used to switch different version of java. System default to java 11.
+
+```sh
+$ jenv versions   # List all Java versions
+$ jenv local 11   # Set current Java env to 11
+$ jenv local 1.8  # Set current Java env to 1.8
+$ javac -version
+```
 
 ## Docker Build Image
 
