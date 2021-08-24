@@ -127,9 +127,9 @@ RUN NDK_VERSION=$(echo $(grep Revision $ANDROID_NDK_HOME/source.properties | awk
 # Install SDKs
 # Please keep these in descending order!
 # The `yes` is for accepting all non-standard tool licenses.
-RUN mkdir --parents "$HOME/.android/" && \
+RUN mkdir --parents "$ANDROID_HOME/.android/" && \
     echo '### User Sources for Android SDK Manager' > \
-        "$HOME/.android/repositories.cfg" && \
+        "$ANDROID_HOME/.android/repositories.cfg" && \
     yes | "$ANDROID_HOME"/tools/bin/sdkmanager --licenses > /dev/null
 
 RUN echo "platforms" && \
