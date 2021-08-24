@@ -120,6 +120,11 @@ RUN echo "ndk ${ANDROID_NDK_VERSION}" && \
     unzip -q android-ndk.zip -d "$ANDROID_NDK" && \
     rm --force android-ndk.zip
 
+ENV NDK_VERSION=$(echo $(grep Revision $ANDROID_NDK_HOME/source.properties | awk -F= '{ print $2 }'))
+
+RUN mkdir -p $ANDROID_HOME/ndk && \
+    ln -s $ANDROID_NDK_HOME $ANDROID_HOME/ndk/$NDK_VERSION
+
 # Install SDKs
 # Please keep these in descending order!
 # The `yes` is for accepting all non-standard tool licenses.
