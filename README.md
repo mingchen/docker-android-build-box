@@ -7,6 +7,8 @@
 
 An optimized **docker** image includes **Android**, **Kotlin**, **Flutter sdk**.
 
+Build with `x86 64bit` and `arm 64bit` images.
+
 ## What Is Inside
 
 It includes the following components:
@@ -29,15 +31,15 @@ It includes the following components:
   * 28.0.1 28.0.2 28.0.3
   * 29.0.2 29.0.3
   * 30.0.0
-* Android NDK r21
-* Android Emulator
+* Android NDK (always the latest version, side by side install)
+* Android Emulator (x86 64bit image only, Android Emulator not support arm 64 bit yet)
 * TestNG
 * Python 2, Python 3
 * Node.js 14, npm, React Native
 * Ruby, RubyGems
 * fastlane
 * Kotlin 1.5
-* Flutter 2.2.0
+* Flutter 2.2.0 (x86 64bit image only, Flutter not support arm 64 bit yet)
 * jenv
 
 ## Pull Docker Image
