@@ -1,17 +1,22 @@
 FROM ubuntu:18.04
 
+RUN uname -a && uname -m
+
 ENV ANDROID_HOME="/opt/android-sdk" \
-    ANDROID_NDK="/opt/android-ndk" \
-    FLUTTER_HOME="/opt/flutter" \
-    JAVA_HOME="/usr/lib/jvm/java-8-openjdk-amd64/"
+    ANDROID_NDK="/opt/android-sdk/ndk/current" \
+    FLUTTER_HOME="/opt/flutter"
+
+# support amd64 and arm64
+RUN JDK_PLATFORM=$(if [ "$(uname -m)" = "aarch64" ]; then echo "arm64"; else echo "amd64"; fi) && \
+    echo export JDK_PLATFORM=$JDK_PLATFORM >> /etc/jdk.env && \
+    echo export JAVA_HOME="/usr/lib/jvm/java-8-openjdk-$JDK_PLATFORM/" >> /etc/jdk.env && \
+    echo . /etc/jdk.env >> /etc/bash.bashrc && \
+    echo . /etc/jdk.env >> /etc/profile
 
 ENV TZ=America/Los_Angeles
 
 # Get the latest version from https://developer.android.com/studio/index.html
 ENV ANDROID_SDK_TOOLS_VERSION="4333796"
-
-# Get the latest version from https://developer.android.com/ndk/downloads/index.html
-ENV ANDROID_NDK_VERSION="r21d"
 
 # nodejs version
 ENV NODE_VERSION="14.x"
@@ -32,7 +37,7 @@ ENV DEBIAN_FRONTEND="noninteractive" \
 
 # Variables must be references after they are created
 ENV ANDROID_SDK_HOME="$ANDROID_HOME"
-ENV ANDROID_NDK_HOME="$ANDROID_NDK/android-ndk-$ANDROID_NDK_VERSION"
+ENV ANDROID_NDK_HOME="$ANDROID_NDK"
 
 ENV PATH="$JAVA_HOME/bin:$PATH:$ANDROID_SDK_HOME/emulator:$ANDROID_SDK_HOME/tools/bin:$ANDROID_SDK_HOME/tools:$ANDROID_SDK_HOME/platform-tools:$ANDROID_NDK:$FLUTTER_HOME/bin:$FLUTTER_HOME/bin/cache/dart-sdk/bin"
 
@@ -50,10 +55,6 @@ RUN apt-get update -qq > /dev/null && \
         git \
         gpg-agent \
         less \
-        lib32stdc++6 \
-        lib32z1 \
-        lib32z1-dev \
-        lib32ncurses5 \
         libc6-dev \
         libgmp-dev \
         libmpc-dev \
@@ -75,6 +76,10 @@ RUN apt-get update -qq > /dev/null && \
         wget \
         zip \
         zlib1g-dev > /dev/null && \
+    echo "JVM directories: `ls /usr/lib/jvm/`" && \
+    . /etc/jdk.env && \
+    echo "Java version:" && \
+    java -version && \
     echo "set timezone" && \
     ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone && \
     echo "nodejs, npm, cordova, ionic, react-native" && \
@@ -113,26 +118,26 @@ RUN echo "sdk tools ${ANDROID_SDK_TOOLS_VERSION}" && \
     unzip -q sdk-tools.zip -d "$ANDROID_HOME" && \
     rm --force sdk-tools.zip
 
-RUN echo "ndk ${ANDROID_NDK_VERSION}" && \
-    wget --quiet --output-document=android-ndk.zip \
-    "http://dl.google.com/android/repository/android-ndk-${ANDROID_NDK_VERSION}-linux-x86_64.zip" && \
-    mkdir --parents "$ANDROID_NDK_HOME" && \
-    unzip -q android-ndk.zip -d "$ANDROID_NDK" && \
-    rm --force android-ndk.zip
-
-RUN NDK_VERSION=$(echo $(grep Revision $ANDROID_NDK_HOME/source.properties | awk -F= '{ print $2 }')) && \
-    mkdir -p $ANDROID_HOME/ndk && \
-    ln -s $ANDROID_NDK_HOME $ANDROID_HOME/ndk/$NDK_VERSION
-
 # Install SDKs
 # Please keep these in descending order!
 # The `yes` is for accepting all non-standard tool licenses.
 RUN mkdir --parents "$ANDROID_HOME/.android/" && \
     echo '### User Sources for Android SDK Manager' > \
         "$ANDROID_HOME/.android/repositories.cfg" && \
+    . /etc/jdk.env && \
     yes | "$ANDROID_HOME"/tools/bin/sdkmanager --licenses > /dev/null
 
+# List all available packages.
+# redirect to a temp file `packages.txt` for later use and avoid show progress
+RUN . /etc/jdk.env && \
+    "$ANDROID_HOME"/tools/bin/sdkmanager --list > packages.txt && \
+    cat packages.txt | grep -v '='
+
+#
+# https://developer.android.com/studio/command-line/sdkmanager.html
+#
 RUN echo "platforms" && \
+    . /etc/jdk.env && \
     yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
         "platforms;android-30" \
         "platforms;android-29" \
@@ -142,10 +147,12 @@ RUN echo "platforms" && \
         "platforms;android-25" > /dev/null
 
 RUN echo "platform tools" && \
+    . /etc/jdk.env && \
     yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
         "platform-tools" > /dev/null
 
 RUN echo "build tools 25-30" && \
+    . /etc/jdk.env && \
     yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
         "build-tools;30.0.0" "build-tools;30.0.2" \
         "build-tools;29.0.3" "build-tools;29.0.2" \
@@ -155,8 +162,31 @@ RUN echo "build tools 25-30" && \
         "build-tools;25.0.3" "build-tools;25.0.2" \
         "build-tools;25.0.1" "build-tools;25.0.0" > /dev/null
 
+# seems there is no emulator on arm64
+# Warning: Failed to find package emulator
 RUN echo "emulator" && \
+    if [ "$(uname -m)" != "x86_64" ]; then echo "emulator only support Linux x86 64bit. skip for $(uname -m)"; exit 0; fi && \
+    . /etc/jdk.env && \
     yes | "$ANDROID_HOME"/tools/bin/sdkmanager "emulator" > /dev/null
+
+# ndk-bundle does exist on arm64
+# RUN echo "NDK" && \
+#     yes | "$ANDROID_HOME"/tools/bin/sdkmanager "ndk-bundle" > /dev/null
+
+RUN echo "NDK" && \
+    NDK=$(grep 'ndk;' packages.txt | sort | tail -n1 | awk '{print $1}') && \
+    NDK_VERSION=$(echo $NDK | awk -F\; '{print $2}') && \
+    echo "Installing $NDK" && \
+    . /etc/jdk.env && \
+    yes | "$ANDROID_HOME"/tools/bin/sdkmanager "$NDK" > /dev/null && \
+    ln -sv $ANDROID_HOME/ndk/${NDK_VERSION} ${ANDROID_NDK}
+
+# List sdk and ndk directory content
+RUN ls -l $ANDROID_HOME && \
+    ls -l $ANDROID_HOME/ndk && \
+    ls -l $ANDROID_HOME/ndk/*
+
+RUN du -sh $ANDROID_HOME
 
 RUN echo "kotlin" && \
     wget --quiet -O sdk.install.sh "https://get.sdkman.io" && \
@@ -164,6 +194,7 @@ RUN echo "kotlin" && \
     rm -f sdk.install.sh
 
 RUN echo "Flutter sdk" && \
+    if [ "$(uname -m)" != "x86_64" ]; then echo "Flutter only support Linux x86 64bit. skip for $(uname -m)"; exit 0; fi && \
     cd /opt && \
     wget --quiet https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_2.2.0-stable.tar.xz -O flutter.tar.xz && \
     tar xf flutter.tar.xz && \
@@ -195,8 +226,10 @@ RUN git clone https://github.com/jenv/jenv.git ~/.jenv && \
     echo 'export PATH="$HOME/.jenv/bin:$PATH"' >> ~/.bash_profile && \
     echo 'eval "$(jenv init -)"' >> ~/.bash_profile && \
     . ~/.bash_profile && \
-    jenv add /usr/lib/jvm/java-8-openjdk-amd64 && \
-    jenv add /usr/lib/jvm/java-11-openjdk-amd64 && \
+    . /etc/jdk.env && \
+    java -version && \
+    jenv add /usr/lib/jvm/java-8-openjdk-$JDK_PLATFORM && \
+    jenv add /usr/lib/jvm/java-11-openjdk-$JDK_PLATFORM && \
     jenv versions && \
     jenv global 11 && \
     java -version
