@@ -71,6 +71,14 @@ cd <android project directory>  # change working directory to your project root 
 docker run --rm -v `pwd`:/project mingc/android-build-box bash -c 'cd /project; ./gradlew build'
 ```
 
+To build `.aab` bundle release, use `./gradlew bundleRelease`:
+
+```sh
+cd <android project directory>  # change working directory to your project root directory.
+docker run --rm -v `pwd`:/project mingc/android-build-box bash -c 'cd /project; ./gradlew bundleRelease'
+```
+
+
 Run docker image with interactive bash shell:
 
 ```sh
