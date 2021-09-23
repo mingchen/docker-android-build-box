@@ -13,10 +13,11 @@ Weekly image build to get the latest base image and updated packages.
 
 It includes the following components:
 
-* Ubuntu 18.04
+* Ubuntu 20.04
 * Java (OpenJDK)
   * 1.8
   * 11
+  * 16
 * Android SDKs
   * 25
   * 26
@@ -41,8 +42,9 @@ It includes the following components:
 * Ruby, RubyGems
 * fastlane
 * Kotlin 1.5
-* Flutter 2.2.0
+* Flutter 2.5.1
 * jenv
+* Gradle 7.2
 
 ## Pull Docker Image
 
