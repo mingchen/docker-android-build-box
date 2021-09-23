@@ -221,6 +221,13 @@ Android Platform version available. This generated large Docker images, around 5
 Newer versions of `android-build-box` only include a subset of the newest Android Tools,
 so the Docker images are smaller.
 
+## 1.23.0
+
+* Upgrade Flutter 2.2.0 to 2.5.1
+* PR #71: Ubuunt 20.04, JDK 16, gradle 7.2 @sedwards
+* Fix #57: Correct repositories.cfg path
+* Add jenv to choose java version
+
 ## 1.22.0
 
 * Upgrade Nodejs from 12.x to 14.x
