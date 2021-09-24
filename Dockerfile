@@ -66,7 +66,6 @@ RUN apt-get update -qq > /dev/null && \
         ocaml \
         openjdk-8-jdk \
         openjdk-11-jdk \
-        openjdk-16-jdk \
         openssh-client \
         pkg-config \
         ruby-full \
@@ -80,10 +79,6 @@ RUN apt-get update -qq > /dev/null && \
     echo "JVM directories: `ls -l /usr/lib/jvm/`" && \
     . /etc/jdk.env && \
     echo "Java version (default):" && \
-    java -version && \
-    update-java-alternatives --list && \
-    update-java-alternatives --set $(update-java-alternatives --list|grep 1.11|awk '{print $3}') && \
-    echo "Java version (after update-java-alternatives):" && \
     java -version && \
     echo "set timezone" && \
     ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone && \
@@ -237,7 +232,6 @@ RUN git clone https://github.com/jenv/jenv.git ~/.jenv && \
     java -version && \
     jenv add /usr/lib/jvm/java-8-openjdk-$JDK_PLATFORM && \
     jenv add /usr/lib/jvm/java-11-openjdk-$JDK_PLATFORM && \
-    jenv add /usr/lib/jvm/java-16-openjdk-$JDK_PLATFORM && \
     jenv versions && \
     jenv global 11 && \
     java -version
