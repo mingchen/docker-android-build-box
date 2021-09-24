@@ -85,6 +85,7 @@ jobs:
     - name: Test
       run: |
         TAG=$GITHUB_SHA
+        docker run --rm $IMAGE_NAME:$TAG env
         docker run --rm $IMAGE_NAME:$TAG flutter --version
         docker run --rm $IMAGE_NAME:$TAG java -version
 

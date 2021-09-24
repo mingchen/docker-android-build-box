@@ -9,7 +9,7 @@ ENV ANDROID_HOME="/opt/android-sdk" \
 # support amd64 and arm64
 RUN JDK_PLATFORM=$(if [ "$(uname -m)" = "aarch64" ]; then echo "arm64"; else echo "amd64"; fi) && \
     echo export JDK_PLATFORM=$JDK_PLATFORM >> /etc/jdk.env && \
-    echo export JAVA_HOME="/usr/lib/jvm/java-8-openjdk-$JDK_PLATFORM/" >> /etc/jdk.env && \
+    echo export JAVA_HOME="/usr/lib/jvm/java-11-openjdk-$JDK_PLATFORM/" >> /etc/jdk.env && \
     echo . /etc/jdk.env >> /etc/bash.bashrc && \
     echo . /etc/jdk.env >> /etc/profile
 
@@ -77,9 +77,13 @@ RUN apt-get update -qq > /dev/null && \
         wget \
         zip \
         zlib1g-dev > /dev/null && \
-    echo "JVM directories: `ls /usr/lib/jvm/`" && \
+    echo "JVM directories: `ls -l /usr/lib/jvm/`" && \
     . /etc/jdk.env && \
-    echo "Java version:" && \
+    echo "Java version (default):" && \
+    java -version && \
+    update-java-alternatives --list && \
+    update-java-alternatives --set $(update-java-alternatives --list|grep 1.11|awk '{print $3}') && \
+    echo "Java version (after update-java-alternatives):" && \
     java -version && \
     echo "set timezone" && \
     ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone && \
@@ -251,6 +255,8 @@ ENV BUILD_DATE=${BUILD_DATE} \
     SOURCE_BRANCH=${SOURCE_BRANCH} \
     SOURCE_COMMIT=${SOURCE_COMMIT} \
     DOCKER_TAG=${DOCKER_TAG}
+
+WORKDIR /project
 
 # labels, see http://label-schema.org/
 LABEL maintainer="Ming Chen"
