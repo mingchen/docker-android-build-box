@@ -190,9 +190,9 @@ RUN ls -l $ANDROID_HOME && \
 
 RUN du -sh $ANDROID_HOME
 
-RUN echo "kotlin" && \
+RUN echo "kotlin & gradle" && \
     wget --quiet -O sdk.install.sh "https://get.sdkman.io" && \
-    bash -c "bash ./sdk.install.sh > /dev/null && source ~/.sdkman/bin/sdkman-init.sh && sdk install kotlin" && \
+    bash -c "bash ./sdk.install.sh > /dev/null && source ~/.sdkman/bin/sdkman-init.sh && sdk install kotlin && sdk install gradle 7.2" && \
     rm -f sdk.install.sh
 
 RUN echo "Flutter sdk" && \
@@ -235,8 +235,6 @@ RUN git clone https://github.com/jenv/jenv.git ~/.jenv && \
     jenv versions && \
     jenv global 11 && \
     java -version
-
-RUN bash -c "source ~/.sdkman/bin/sdkman-init.sh && sdk install gradle 7.2"
 
 COPY README.md /README.md
 
