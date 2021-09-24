@@ -69,7 +69,7 @@ jobs:
         df -h
 
     - name: Build the Docker image
-      if: github.event_name != 'pull_request' ||
+      # if: github.event_name != 'pull_request'
       run: |
         # Pull the latest for `--cache-from`
         docker pull $IMAGE_NAME:latest
