@@ -68,13 +68,37 @@ jobs:
         # check disk space one more time
         df -h
 
-    # - name: Build the Docker image
-    #   run: |
-    #     TAG=$GITHUB_SHA
-    #     docker build . \
-    #         --file Dockerfile \
-    #         --tag $IMAGE_NAME:$TAG \
-    #         --cache-from $IMAGE_NAME:latest
+    - name: Build the Docker image
+      if: github.event_name != 'pull_request' ||
+      run: |
+        # Pull the latest for `--cache-from`
+        docker pull $IMAGE_NAME:latest
+
+        TAG=$GITHUB_SHA
+        docker build . \
+            --file Dockerfile \
+            --tag $IMAGE_NAME:$TAG \
+            --cache-from $IMAGE_NAME:latest
+
+    - name: Inspect docker image
+      run: |
+        TAG=$GITHUB_SHA
+        docker images
+        docker inspect $IMAGE_NAME:$TAG
+
+    - name: Test docker image
+      run: |
+        TAG=$GITHUB_SHA
+        docker run --rm $IMAGE_NAME:$TAG flutter --version
+        docker run --rm $IMAGE_NAME:$TAG java -version
+
+        cd test_projects/SampleProject/
+        docker run --rm -v `pwd`:/project $IMAGE_NAME:$TAG bash -c 'cd /project; ./gradlew build'
+
+    - name: Remove docker image
+      run: |
+        TAG=$GITHUB_SHA
+        docker rmi $IMAGE_NAME:$TAG
 
     - name: Login to DockerHub
       if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
@@ -94,19 +118,3 @@ jobs:
         push: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/master' }}
         tags: mingc/android-build-box:latest,${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
-
-    # - name: Inspect docker image
-    #   run: |
-    #     TAG=$GITHUB_SHA
-    #     docker images
-    #     docker inspect $IMAGE_NAME:latest
-
-    # - name: Use docker image
-    #   run: |
-    #     TAG=$GITHUB_SHA
-    #     docker run --rm $IMAGE_NAME:$TAG flutter --version
-
-    # - name: Cleanup
-    #   run: |
-    #     TAG=$GITHUB_SHA
-    #     docker rmi $IMAGE_NAME:$TAG
