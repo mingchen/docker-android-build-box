@@ -55,7 +55,16 @@ jobs:
     - name: Pre build
       run: |
         echo "ref: {{ github.ref }}"
+        echo "event_name: {{ github.event_name }}"
         echo "GITHUB_REF: $GITHUB_REF"
+        echo "GITHUB_EVENT_NAME: $GITHUB_EVENT_NAME"
+        echo "GITHUB_EVENT_PATH: $GITHUB_EVENT_PATH"
+        echo "GITHUB_WORKFLOW: $GITHUB_WORKFLOW"
+        echo "GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
+        echo "GITHUB_HEAD_REF: $GITHUB_HEAD_REF"
+        echo "GITHUB_ACTION: $GITHUB_ACTION"
+        echo "GITHUB_JOB: $GITHUB_JOB"
+
         uname -a
         df -h
         docker images
@@ -106,7 +115,8 @@ jobs:
         docker rmi $IMAGE_NAME:$TAG
 
     - name: Login to DockerHub
-      if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/master' || github.ref.contains("refs/tags/"))
+      # if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
+      if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/master' || contains(github.ref, "refs/tags/"))
       uses: docker/login-action@v1
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -120,6 +130,7 @@ jobs:
         # platforms: linux/amd64,linux/arm64
         platforms: linux/amd64
         # platforms: linux/arm64
-        push: github.event_name != 'pull_request' && (github.ref == 'refs/heads/master' || github.ref.contains("refs/tags/"))
+        # push: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
+        push: github.event_name != 'pull_request' && (github.ref == 'refs/heads/master' || contains(github.ref, "refs/tags/"))
         tags: mingc/android-build-box:latest,${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
