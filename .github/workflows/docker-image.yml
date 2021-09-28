@@ -120,6 +120,6 @@ jobs:
         # platforms: linux/amd64,linux/arm64
         platforms: linux/amd64
         # platforms: linux/arm64
-        push: ${{ github.event_name != 'pull_request' && (github.ref == 'refs/heads/master' || github.ref.contains("refs/tags/"))}}
+        push: github.event_name != 'pull_request' && (github.ref == 'refs/heads/master' || github.ref.contains("refs/tags/"))
         tags: mingc/android-build-box:latest,${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
