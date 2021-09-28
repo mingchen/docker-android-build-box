@@ -54,9 +54,6 @@ jobs:
 
     - name: Pre build
       run: |
-        echo "event_name: {{ github.event_name }}"
-        echo "ref: {{ github.ref }}"
-        echo "head_ref: {{ github.head_ref }}"
         echo "GITHUB_REF: $GITHUB_REF"
         echo "GITHUB_EVENT_NAME: $GITHUB_EVENT_NAME"
         echo "GITHUB_EVENT_PATH: $GITHUB_EVENT_PATH"
