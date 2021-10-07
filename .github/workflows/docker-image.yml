@@ -96,7 +96,12 @@ jobs:
         TAG=$GITHUB_SHA
         docker run --rm $IMAGE_NAME:$TAG env
         docker run --rm $IMAGE_NAME:$TAG flutter --version
+
+        echo "Show current java version"
         docker run --rm $IMAGE_NAME:$TAG java -version
+
+        echo "Set java env to 8"
+        docker run --rm $IMAGE_NAME:$TAG bash -c ". $HOME/.bash_profile; jenv local 8; java -version"
 
         docker run -v `pwd`:/project --rm $IMAGE_NAME:$TAG bash -c 'echo "Current directory: $PWD"'
 
@@ -105,7 +110,7 @@ jobs:
         docker run --rm $IMAGE_NAME:$TAG bash -c 'ls -l /opt/android-sdk/ndk/'
 
         cd test_projects/SampleProject/
-        docker run --rm -v `pwd`:/project $IMAGE_NAME:$TAG bash -c 'cd /project; ./gradlew build'
+        docker run --rm -v `pwd`:/project $IMAGE_NAME:$TAG bash -c './gradlew build'
 
     - name: Remove local docker image
       run: |
