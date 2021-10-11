@@ -12,18 +12,18 @@ docker history $IMAGE_NAME
 cd test_projects/SampleProject
 docker run \
     --rm \
-    -v `pwd`:/project mingc/android-build-box \
+    -v `pwd`:/project sampingan/android \
     bash -c 'cd /project; ./gradlew build'
 
 # build sample project with fastlane
 docker run \
     --rm \
-    -v `pwd`:/project mingc/android-build-box \
+    -v `pwd`:/project sampingan/android \
     bash -c 'cd /project; fastlane build'
 
 # build with java 11
 docker run \
     --rm \
     -e JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64/ \
-    -v `pwd`:/project mingc/android-build-box \
+    -v `pwd`:/project sampingan/android \
     bash -c 'java -version; cd /project; ./gradlew build'

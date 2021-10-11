@@ -1,11 +1,11 @@
 # Docker Android Build Box
 
-[![docker icon](https://dockeri.co/image/mingc/android-build-box)](https://hub.docker.com/r/mingc/android-build-box/)
-[![Docker Image CI](https://github.com/mingchen/docker-android-build-box/actions/workflows/docker-image.yml/badge.svg)](https://github.com/mingchen/docker-android-build-box/actions/workflows/docker-image.yml)
+[![docker icon](https://dockeri.co/image/sampingan/android)](https://hub.docker.com/r/sampingan/android/)
+[![Docker Image CI](https://github.com/sampingantech/docker-android-build-box/actions/workflows/docker-image.yml/badge.svg)](https://github.com/sampingantech/docker-android-build-box/actions/workflows/docker-image.yml)
 
 ## Introduction
 
-An optimized **docker** image includes **Android**, **Kotlin**, **Flutter sdk**.
+An optimized **docker** image includes **Android** & **Kotlin SDK**.
 
 Weekly image build to get the latest base image and updated packages.
 
@@ -33,30 +33,26 @@ It includes the following components:
   * 29.0.2 29.0.3
   * 30.0.0 30.0.2 30.0.3
   * 31.0.0
-* Android NDK (always the latest version, side by side install)
 * Android Emulator
 * TestNG
-* Python 2, Python 3
-* Node.js 14, npm, React Native
 * Ruby, RubyGems
 * fastlane
 * Kotlin 1.5
-* Flutter 2.5.1
 * jenv
 * Gradle 7.2
 
 ## Pull Docker Image
 
-The docker image is publicly automated build on [Docker Hub](https://hub.docker.com/r/mingc/android-build-box/)
+The docker image is publicly automated build on [Docker Hub](https://hub.docker.com/r/sampingan/android/)
 based on the Dockerfile in this repo, so there is no hidden stuff in it. To pull the latest docker image:
 
 ```sh
-docker pull mingc/android-build-box:latest
+docker pull sampingan/android:latest
 ```
 
 **Hint:** You can use a tag to a specific stable version,
 rather than `latest` of docker image, to avoid breaking your build.
-e.g. `mingc/android-build-box:1.22.0`.
+e.g. `sampingan/android:1.22.0`.
 Checkout [**Tags**](#tags) (bottom of this page) to see all the available tags.
 
 ## Usage
@@ -67,21 +63,21 @@ You can use this docker image to build your Android project with a single docker
 
 ```sh
 cd <android project directory>  # change working directory to your project root directory.
-docker run --rm -v `pwd`:/project mingc/android-build-box bash -c 'cd /project; ./gradlew build'
+docker run --rm -v `pwd`:/project sampingan/android bash -c 'cd /project; ./gradlew build'
 ```
 
 To build `.aab` bundle release, use `./gradlew bundleRelease`:
 
 ```sh
 cd <android project directory>  # change working directory to your project root directory.
-docker run --rm -v `pwd`:/project mingc/android-build-box bash -c 'cd /project; ./gradlew bundleRelease'
+docker run --rm -v `pwd`:/project sampingan/android bash -c 'cd /project; ./gradlew bundleRelease'
 ```
 
 
 Run docker image with interactive bash shell:
 
 ```sh
-docker run -v `pwd`:/project -it mingc/android-build-box bash
+docker run -v `pwd`:/project -it sampingan/android bash
 ```
 
 Add the following arguments to the docker command to cache the home gradle folder:
@@ -93,7 +89,7 @@ Add the following arguments to the docker command to cache the home gradle folde
 e.g.
 
 ```sh
-docker run --rm -v `pwd`:/project  -v "$HOME/.dockercache/gradle":"/root/.gradle"   mingc/android-build-box bash -c 'cd /project; ./gradlew build'
+docker run --rm -v `pwd`:/project  -v "$HOME/.dockercache/gradle":"/root/.gradle"   sampingan/android bash -c 'cd /project; ./gradlew build'
 ```
 
 ### Build an Android project with [Bitbucket Pipelines](https://bitbucket.org/product/features/pipelines)
@@ -103,7 +99,7 @@ you can simply specify this docker image.
 Here is an example of `bitbucket-pipelines.yml`:
 
 ```yml
-image: mingc/android-build-box:latest
+image: sampingan/android:latest
 
 pipelines:
   default:
@@ -121,47 +117,6 @@ definitions:
 ```
 
 The caches are used to [store downloaded dependencies](https://confluence.atlassian.com/bitbucket/caching-dependencies-895552876.html) from previous builds, to speed up the next builds.
-
-### Build a Flutter project with [Github Actions](https://github.com/features/actions)
-
-Here is an example `.github/workflows/main.yml` to build a Flutter project with this docker image:
-
-```yml
-name: CI
-
-on: [push]
-
-jobs:
-  build:
-
-    runs-on: ubuntu-18.04
-    container: mingc/android-build-box:latest
-
-    steps:
-    - uses: actions/checkout@v2
-    - uses: actions/cache@v1
-      with:
-        path: /root/.gradle/caches
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
-        restore-keys: |
-          ${{ runner.os }}-gradle-
-    - name: Build
-      run: |
-        echo "Work dir: $(pwd)"
-        echo "User: $(whoami)"
-        flutter --version
-        flutter analyze
-        flutter build apk
-    - name: Archive apk
-      uses: actions/upload-artifact@v1
-      with:
-        name: apk
-        path: build/app/outputs/apk
-    - name: Test
-      run: flutter test
-    - name: Clean build to avoid action/cache error
-      run: rm -fr build
-```
 
 ### Run an Android emulator in the Docker build machine
 
@@ -218,18 +173,28 @@ If you want to build the docker image by yourself, you can use following command
 The image itself is around 5 GB, so check your free disk space before building it.
 
 ```sh
-docker build -t android-build-box .
+docker build -t android .
 ```
 
 ## Tags
 
 You can use a tag to a specific stable version, rather than `latest` of docker image,
-to avoid breaking your build. For example `mingc/android-build-box:1.22.0`
+to avoid breaking your build. For example `sampingan/android:1.22.0`
 
 **Note**: versions `1.0.0` up to `1.17.0` included every single Build Tool version and every
 Android Platform version available. This generated large Docker images, around 5 GB.
-Newer versions of `android-build-box` only include a subset of the newest Android Tools,
+Newer versions of `android` only include a subset of the newest Android Tools,
 so the Docker images are smaller.
+
+## 2.0.0
+
+BREAKING CHANGES
+
+* We remove most of unused dependencies (as we didn't use it currently) to speed up Docker build
+* Remove Flutter
+* Remove NodeJS & React Native
+* Remove Python (seems never exist previously in the author repo?)
+* Remove NDK
 
 ## 1.23.1
 
@@ -386,7 +351,7 @@ so the Docker images are smaller.
 ## Contribution
 
 If you want to enhance this docker image or fix something,
-feel free to send [pull request](https://github.com/mingchen/docker-android-build-box/pull/new/master).
+feel free to send [pull request](https://github.com/sampingantech/docker-android-build-box/pull/new/main).
 
 
 ## References

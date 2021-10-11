@@ -8,7 +8,7 @@ services:
 #
 env:
   # All the env variables need put into a single line.
-  - IMAGE_NAME=mingc/android-build-box SOURCE_BRANCH=$TRAVIS_BRANCH SOURCE_COMMIT=$TRAVIS_COMMIT DOCKER_TAG=latest
+  - IMAGE_NAME=sampingan/android SOURCE_BRANCH=$TRAVIS_BRANCH SOURCE_COMMIT=$TRAVIS_COMMIT DOCKER_TAG=latest
 
 before_install:
   - ./hooks/pre_build
@@ -18,7 +18,7 @@ before_install:
   - travis_wait 50 ./hooks/build
 
 script:
-  - docker run -it --rm $IMAGE_NAME flutter --version
+  - docker run -it --rm $IMAGE_NAME gradle --version
 
 after_script:
   - ./hooks/post_build

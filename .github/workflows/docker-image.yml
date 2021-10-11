@@ -14,11 +14,11 @@ on:
       # * * * * *
     - cron: '0 0 * * 1'  # build every Monday
   push:
-    branches: [ master, dev ]
+    branches: [ main, dev ]
     tags:
       - '*.*.*'
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
 
 
 jobs:
@@ -27,7 +27,7 @@ jobs:
 
     runs-on: ubuntu-latest
     env:
-      IMAGE_NAME: mingc/android-build-box
+      IMAGE_NAME: sampingan/android
 
     steps:
     - uses: actions/checkout@v2
@@ -36,10 +36,10 @@ jobs:
       id: meta
       uses: docker/metadata-action@v3
       with:
-        images: mingc/android-build-box
+        images: sampingan/android
         labels: |
-          org.opencontainers.image.url=https://hub.docker.com/r/mingc/android-build-box
-          org.opencontainers.image.vendor=Ming Chen
+          org.opencontainers.image.url=https://hub.docker.com/r/sampingan/android
+          org.opencontainers.image.vendor=Sampingan Tech
 
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v1
@@ -95,7 +95,6 @@ jobs:
       run: |
         TAG=$GITHUB_SHA
         docker run --rm $IMAGE_NAME:$TAG env
-        docker run --rm $IMAGE_NAME:$TAG flutter --version
 
         echo "Show current java version"
         docker run --rm $IMAGE_NAME:$TAG java -version
@@ -106,8 +105,6 @@ jobs:
         docker run -v `pwd`:/project --rm $IMAGE_NAME:$TAG bash -c 'echo "Current directory: $PWD"'
 
         docker run --rm $IMAGE_NAME:$TAG bash -c 'ls -l $ANDROID_SDK_HOME'
-        docker run --rm $IMAGE_NAME:$TAG bash -c 'ls -l $ANDROID_NDK_HOME'
-        docker run --rm $IMAGE_NAME:$TAG bash -c 'ls -l /opt/android-sdk/ndk/'
 
         cd test_projects/SampleProject/
         docker run --rm -v `pwd`:/project $IMAGE_NAME:$TAG bash -c './gradlew build'
@@ -118,8 +115,8 @@ jobs:
         docker rmi $IMAGE_NAME:$TAG
 
     - name: Login to DockerHub
-      # if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
-      if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/master' || contains(github.ref, 'refs/tags/'))
+      # if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+      if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || contains(github.ref, 'refs/tags/'))
       uses: docker/login-action@v1
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -133,7 +130,7 @@ jobs:
         # platforms: linux/amd64,linux/arm64
         platforms: linux/amd64
         # platforms: linux/arm64
-        # push: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/master' }}
-        push: ${{ github.event_name != 'pull_request' && (github.ref == 'refs/heads/master' || contains(github.ref, 'refs/tags/')) }}
-        tags: mingc/android-build-box:latest,${{ steps.meta.outputs.tags }}
+        # push: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' }}
+        push: ${{ github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || contains(github.ref, 'refs/tags/')) }}
+        tags: sampingan/android:latest,${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}

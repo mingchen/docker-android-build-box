@@ -4,7 +4,7 @@
 #
 BUILD_DATE=$(date +%Y-%m-%dT%H:%M:%S%Z)
 docker build -t $IMAGE_NAME \
-    --cache-from mingc/android-build-box:latest \
+    --cache-from sampingan/android:latest \
     --build-arg BUILD_DATE=$BUILD_DATE \
     --build-arg SOURCE_BRANCH=$SOURCE_BRANCH \
     --build-arg SOURCE_COMMIT=$SOURCE_COMMIT \
