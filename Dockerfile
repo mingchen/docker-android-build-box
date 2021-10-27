@@ -164,6 +164,12 @@ RUN mkdir -p /var/lib/jenkins/workspace && \
 
 COPY Gemfile /Gemfile
 
+# Required to distinguish host GEM_* env var
+ENV GEM_PATH /usr/local/bundle
+ENV GEM_HOME /usr/local/bundle
+RUN mkdir -p /usr/local/bundle
+ENV PATH $GEM_HOME/bin:$GEM_HOME/gems/bin:$PATH
+
 RUN echo "fastlane" && \
     cd / && \
     gem install bundler --quiet --no-document > /dev/null && \
@@ -203,7 +209,7 @@ LABEL maintainer="Mochamad Iqbal Dwi Cahyo"
 LABEL org.label-schema.schema-version="1.0"
 LABEL org.label-schema.name="sampingan/android"
 LABEL org.label-schema.version="${DOCKER_TAG}"
-LABEL org.label-schema.usage="/README.md"
+LABEL org.label-schema.usage="README.md"
 LABEL org.label-schema.docker.cmd="docker run --rm -v `pwd`:/project sampingan/android bash -c 'cd /project; ./gradlew build'"
 LABEL org.label-schema.build-date="${BUILD_DATE}"
 LABEL org.label-schema.vcs-ref="${SOURCE_COMMIT}@${SOURCE_BRANCH}"
