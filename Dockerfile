@@ -165,13 +165,20 @@ RUN mkdir -p /var/lib/jenkins/workspace && \
 COPY Gemfile /Gemfile
 
 # Required to distinguish host GEM_* env var
-ENV GEM_PATH /usr/local/bundle
 ENV GEM_HOME /usr/local/bundle
-RUN mkdir -p /usr/local/bundle
-ENV PATH $GEM_HOME/bin:$GEM_HOME/gems/bin:$PATH
+ENV BUNDLE_PATH="$GEM_HOME" \
+  BUNDLE_BIN="$GEM_HOME/bin" \
+  BUNDLE_BIN_PATH="$GEM_HOME/bin" \
+  BUNDLE_SILENCE_ROOT_WARNING=1 \
+  BUNDLE_APP_CONFIG="$GEM_HOME"
+ENV PATH $BUNDLE_BIN:$GEM_HOME/bin:$GEM_HOME/gems/bin:$PATH
 
-RUN echo "fastlane" && \
+RUN mkdir -p "$GEM_HOME" "$BUNDLE_BIN" \
+  && chmod 777 "$GEM_HOME" "$BUNDLE_BIN"
+
+RUN echo "Fastlane" && \
     cd / && \
+    rm -irf ~/.rvn ~/.gem && \
     gem install bundler --quiet --no-document > /dev/null && \
     mkdir -p /.fastlane && \
     chmod 777 /.fastlane && \
