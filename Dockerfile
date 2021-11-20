@@ -144,15 +144,14 @@ RUN echo "platforms" && \
         "platforms;android-29" \
         "platforms;android-28" \
         "platforms;android-27" \
-        "platforms;android-26" \
-        "platforms;android-25" > /dev/null
+        "platforms;android-26" > /dev/null
 
 RUN echo "platform tools" && \
     . /etc/jdk.env && \
     yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
         "platform-tools" > /dev/null
 
-RUN echo "build tools 25-30" && \
+RUN echo "build tools 26-30" && \
     . /etc/jdk.env && \
     yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
         "build-tools;31.0.0" \
@@ -160,9 +159,7 @@ RUN echo "build tools 25-30" && \
         "build-tools;29.0.3" "build-tools;29.0.2" \
         "build-tools;28.0.3" "build-tools;28.0.2" \
         "build-tools;27.0.3" "build-tools;27.0.2" "build-tools;27.0.1" \
-        "build-tools;26.0.2" "build-tools;26.0.1" "build-tools;26.0.0" \
-        "build-tools;25.0.3" "build-tools;25.0.2" \
-        "build-tools;25.0.1" "build-tools;25.0.0" > /dev/null
+        "build-tools;26.0.2" "build-tools;26.0.1" "build-tools;26.0.0" > /dev/null
 
 # seems there is no emulator on arm64
 # Warning: Failed to find package emulator
@@ -189,11 +186,6 @@ RUN ls -l $ANDROID_HOME && \
     ls -l $ANDROID_HOME/ndk/*
 
 RUN du -sh $ANDROID_HOME
-
-RUN echo "kotlin & gradle" && \
-    wget --quiet -O sdk.install.sh "https://get.sdkman.io" && \
-    bash -c "bash ./sdk.install.sh > /dev/null && source ~/.sdkman/bin/sdkman-init.sh && sdk install kotlin && sdk install gradle 7.2" && \
-    rm -f sdk.install.sh
 
 RUN echo "Flutter sdk" && \
     if [ "$(uname -m)" != "x86_64" ]; then echo "Flutter only support Linux x86 64bit. skip for $(uname -m)"; exit 0; fi && \

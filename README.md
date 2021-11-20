@@ -5,9 +5,7 @@
 
 ## Introduction
 
-An optimized **docker** image includes **Android**, **Kotlin**, **Flutter sdk**.
-
-Weekly image build to get the latest base image and updated packages.
+An optimized **Docker** image that includes the **Android SDK** and **Flutter SDK**.
 
 ## What Is Inside
 
@@ -17,8 +15,7 @@ It includes the following components:
 * Java (OpenJDK)
   * 1.8
   * 11
-* Android SDKs
-  * 25
+* Android SDKs for platforms:
   * 26
   * 27
   * 28
@@ -26,29 +23,26 @@ It includes the following components:
   * 30
   * 31
 * Android build tools:
-  * 25.0.0 25.0.1 25.0.2 25.0.3
   * 26.0.0 26.0.1 26.0.2
   * 27.0.1 27.0.2 27.0.3
   * 28.0.1 28.0.2 28.0.3
   * 29.0.2 29.0.3
   * 30.0.0 30.0.2 30.0.3
   * 31.0.0
-* Android NDK (always the latest version, side by side install)
+* Android NDK (always the latest version, side-by-side install)
 * Android Emulator
 * TestNG
-* Python 2, Python 3
+* Python 3.8.10
 * Node.js 14, npm, React Native
 * Ruby, RubyGems
 * fastlane
-* Kotlin 1.5
 * Flutter 2.5.1
 * jenv
-* Gradle 7.2
 
 ## Pull Docker Image
 
-The docker image is publicly automated build on [Docker Hub](https://hub.docker.com/r/mingc/android-build-box/)
-based on the Dockerfile in this repo, so there is no hidden stuff in it. To pull the latest docker image:
+The docker image is a publicly automated build on [Docker Hub](https://hub.docker.com/r/mingc/android-build-box/)
+based on the `Dockerfile` in this repo, so there is no hidden stuff in it. To pull the latest docker image:
 
 ```sh
 docker pull mingc/android-build-box:latest
@@ -57,7 +51,7 @@ docker pull mingc/android-build-box:latest
 **Hint:** You can use a tag to a specific stable version,
 rather than `latest` of docker image, to avoid breaking your build.
 e.g. `mingc/android-build-box:1.22.0`.
-Checkout [**Tags**](#tags) (bottom of this page) to see all the available tags.
+Take a look at the [**Tags**](#tags) section, at the bottom of this page, to see all the available tags.
 
 ## Usage
 
@@ -181,38 +175,43 @@ Using guidelines from...
 export ADB_INSTALL_TIMEOUT=30
 
 # Download an ARM system image to create an ARM emulator.
-sdkmanager "system-images;android-16;default;armeabi-v7a"
+sdkmanager "system-images;android-22;default;armeabi-v7a"
 
 # Create an ARM AVD emulator, with a 100 MB SD card storage space. Echo "no"
 # because it will ask if you want to use a custom hardware profile, and you don't.
 # https://medium.com/@AndreSand/android-emulator-on-docker-container-f20c49b129ef
 echo "no" | avdmanager create avd \
-    -n Android_4.1_API_16 \
-    -k "system-images;android-16;default;armeabi-v7a" \
+    -n Android_5.1_API_22 \
+    -k "system-images;android-22;default;armeabi-v7a" \
     -c 100M \
     --force
 
 # Launch the emulator in the background
-$ANDROID_HOME/emulator/emulator -avd Android_4.1_API_16 -no-skin -no-audio -no-window -no-boot-anim -gpu off &
+$ANDROID_HOME/emulator/emulator -avd Android_5.1_API_22 -no-skin -no-audio -no-window -no-boot-anim -gpu off &
 
 # Note: You will have to add a suitable time delay, to wait for the emulator to launch.
 ```
 
 Note that x86_64 emulators are not currently supported. See [Issue #18](https://github.com/mingchen/docker-android-build-box/issues/18) for details.
 
-### Choose Java Version
+### Choose the system Java version
 
-Both Java 1.8 and Java 11 are installed, `jenv` can be used to switch different version of java.
-The default java version is 11.
+Both Java 1.8 and Java 11 are installed. As of version 1.20, `jenv` can be used to switch between different versions of Java.
 
-The following example set java version to 8:
+| docker-android-build-box version  | Date released  | Java version available  |
+|---|---|---|
+| 1.19 and below  | 2 July 2020 and earlier  |  **Java 8** installed only |
+| 1.20 - 1.23  | 7 August 2020 - 23 Sept 2021  |  Both **Java 8 and Java 11** installed. <br>The default is Java 8. |
+| 1.23.1  | 28 September 2021  |  Both **Java 8 and Java 11** installed. <br>The default is Java 11. |
+
+The following example sets Java to version 8:
 
 ```sh
 . $HOME/.bash_profile   # Enable jenv
 jenv local 8            # Set current Java env to 8
 ```
 
-## Docker Build Image
+## Build the Docker Image
 
 If you want to build the docker image by yourself, you can use following command.
 The image itself is around 5 GB, so check your free disk space before building it.
