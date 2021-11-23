@@ -230,6 +230,10 @@ Android Platform version available. This generated large Docker images, around 5
 Newer versions of `android-build-box` only include a subset of the newest Android Tools,
 so the Docker images are smaller.
 
+## 1.24.0
+
+* PR #76: Tidy up to reduce image size @ozmium
+
 ## 1.23.1
 
 * Remove JDK 16, Android build not support JDK 16 yet.
