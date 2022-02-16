@@ -148,7 +148,7 @@ RUN du -sh $ANDROID_HOME
 
 RUN echo "kotlin & gradle" && \
     wget --quiet -O sdk.install.sh "https://get.sdkman.io" && \
-    bash -c "bash ./sdk.install.sh > /dev/null && source ~/.sdkman/bin/sdkman-init.sh && sdk install kotlin && sdk install gradle 7.2" && \
+    bash -c "bash ./sdk.install.sh > /dev/null && source ~/.sdkman/bin/sdkman-init.sh && sdk install kotlin && sdk install gradle" && \
     rm -f sdk.install.sh
 
 # Copy sdk license agreement files.
