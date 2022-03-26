@@ -191,7 +191,7 @@ RUN du -sh $ANDROID_HOME
 RUN echo "Flutter sdk" && \
     if [ "$(uname -m)" != "x86_64" ]; then echo "Flutter only support Linux x86 64bit. skip for $(uname -m)"; exit 0; fi && \
     cd /opt && \
-    wget --quiet https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_2.8.1-stable.tar.xz -O flutter.tar.xz && \
+    wget --quiet https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_2.10.3-stable.tar.xz -O flutter.tar.xz && \
     tar xf flutter.tar.xz && \
     flutter config --no-analytics && \
     rm -f flutter.tar.xz
