@@ -31,12 +31,13 @@ It includes the following components:
   * 31.0.0
 * Android NDK (always the latest version, side-by-side install)
 * Android Emulator
+* cmake
 * TestNG
 * Python 3.8.10
 * Node.js 14, npm, React Native
 * Ruby, RubyGems
 * fastlane
-* Flutter 2.5.1
+* Flutter 2.10.3
 * jenv
 
 ## Pull Docker Image
