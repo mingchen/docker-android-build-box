@@ -76,6 +76,9 @@ RUN apt-get update -qq > /dev/null && \
         vim-tiny \
         wget \
         zip \
+        zipalign \
+        s3cmd \
+        python \
         zlib1g-dev > /dev/null && \
     echo "JVM directories: `ls -l /usr/lib/jvm/`" && \
     . /etc/jdk.env && \
