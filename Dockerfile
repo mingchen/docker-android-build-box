@@ -50,6 +50,7 @@ RUN apt-get update -qq > /dev/null && \
     apt-get install -qq --no-install-recommends \
         autoconf \
         build-essential \
+        cmake \
         curl \
         file \
         git \
