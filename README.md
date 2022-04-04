@@ -30,6 +30,7 @@ It includes the following components:
   * 30.0.0 30.0.2 30.0.3
   * 31.0.0
 * Android NDK (always the latest version, side-by-side install)
+* [Android bundletool](https://github.com/google/bundletool)
 * Android Emulator
 * cmake
 * TestNG
