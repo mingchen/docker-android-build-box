@@ -176,6 +176,10 @@ RUN echo "emulator" && \
 # RUN echo "NDK" && \
 #     yes | "$ANDROID_HOME"/tools/bin/sdkmanager "ndk-bundle" > /dev/null
 
+RUN echo "bundletool" && \
+    wget -q https://github.com/google/bundletool/releases/download/1.9.1/bundletool-all-1.9.1.jar -O bundletool.jar && \
+    mv bundletool.jar $ANDROID_SDK_HOME/tools/
+
 RUN echo "NDK" && \
     NDK=$(grep 'ndk;' packages.txt | sort | tail -n1 | awk '{print $1}') && \
     NDK_VERSION=$(echo $NDK | awk -F\; '{print $2}') && \
