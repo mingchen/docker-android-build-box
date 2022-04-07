@@ -198,7 +198,7 @@ Note that x86_64 emulators are not currently supported. See [Issue #18](https://
 
 ### Choose the system Java version
 
-Both Java 1.8 and Java 11 are installed. As of version 1.20, `jenv` can be used to switch between different versions of Java.
+Both Java 1.8 and Java 11 are installed.
 
 | docker-android-build-box version  | Date released  | Java version available  |
 |---|---|---|
@@ -206,11 +206,36 @@ Both Java 1.8 and Java 11 are installed. As of version 1.20, `jenv` can be used 
 | 1.20 - 1.23  | 7 August 2020 - 23 Sept 2021  |  Both **Java 8 and Java 11** installed. <br>The default is Java 8. |
 | 1.23.1  | 28 September 2021  |  Both **Java 8 and Java 11** installed. <br>The default is Java 11. |
 
-The following example sets Java to version 8:
+Use `update-alternatives` to switch `java` version.
+
+List all the available `java` paths:
 
 ```sh
-. $HOME/.bash_profile   # Enable jenv
-jenv local 8            # Set current Java env to 8
+# update-alternatives --list java
+/usr/lib/jvm/java-11-openjdk-arm64/bin/java
+/usr/lib/jvm/java-8-openjdk-arm64/jre/bin/java
+```
+
+Switch current `java` version to **Java 8**:
+
+```sh
+# update-alternatives --set java /usr/lib/jvm/java-8-openjdk-arm64/jre/bin/java
+update-alternatives: using /usr/lib/jvm/java-8-openjdk-arm64/jre/bin/java to provide /usr/bin/java (java) in manual mode
+root@9b816ba2e3cb:/project# java -version
+openjdk version "1.8.0_312"
+OpenJDK Runtime Environment (build 1.8.0_312-8u312-b07-0ubuntu1~20.04-b07)
+OpenJDK 64-Bit Server VM (build 25.312-b07, mixed mode)
+```
+
+Switch current `java` version to **Java 11**:
+
+```sh
+# update-alternatives --set java /usr/lib/jvm/java-11-openjdk-arm64/bin/java
+update-alternatives: using /usr/lib/jvm/java-11-openjdk-arm64/bin/java to provide /usr/bin/java (java) in manual mode
+root@9b816ba2e3cb:/project# java -version
+openjdk version "11.0.14" 2022-01-18
+OpenJDK Runtime Environment (build 11.0.14+9-Ubuntu-0ubuntu2.20.04)
+OpenJDK 64-Bit Server VM (build 11.0.14+9-Ubuntu-0ubuntu2.20.04, mixed mode)
 ```
 
 ## Build the Docker Image
