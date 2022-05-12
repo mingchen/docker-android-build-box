@@ -143,6 +143,7 @@ RUN . /etc/jdk.env && \
 RUN echo "platforms" && \
     . /etc/jdk.env && \
     yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
+        "platforms;android-32" \
         "platforms;android-31" \
         "platforms;android-30" \
         "platforms;android-29" \
