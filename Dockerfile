@@ -200,6 +200,7 @@ RUN echo "Flutter sdk" && \
     cd /opt && \
     wget --quiet https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_2.10.3-stable.tar.xz -O flutter.tar.xz && \
     tar xf flutter.tar.xz && \
+    git config --global --add safe.directory $FLUTTER_HOME && \
     flutter config --no-analytics && \
     rm -f flutter.tar.xz
 
