@@ -2,8 +2,12 @@ FROM ubuntu:20.04
 
 RUN uname -a && uname -m
 
+# ANDROID_HOME is deprecated
 ENV ANDROID_HOME="/opt/android-sdk" \
+    ANDROID_SDK_HOME="/opt/android-sdk" \
+    ANDROID_SDK_ROOT="/opt/android-sdk" \
     ANDROID_NDK="/opt/android-sdk/ndk/current" \
+    ANDROID_NDK_ROOT="/opt/android-sdk/ndk/current" \
     FLUTTER_HOME="/opt/flutter"
 
 # support amd64 and arm64
@@ -16,7 +20,8 @@ RUN JDK_PLATFORM=$(if [ "$(uname -m)" = "aarch64" ]; then echo "arm64"; else ech
 ENV TZ=America/Los_Angeles
 
 # Get the latest version from https://developer.android.com/studio/index.html
-ENV ANDROID_SDK_TOOLS_VERSION="4333796"
+# "4333796"
+ENV ANDROID_SDK_TOOLS_VERSION="8512546"
 
 # nodejs version
 ENV NODE_VERSION="14.x"
@@ -39,7 +44,7 @@ ENV DEBIAN_FRONTEND="noninteractive" \
 ENV ANDROID_SDK_HOME="$ANDROID_HOME"
 ENV ANDROID_NDK_HOME="$ANDROID_NDK"
 
-ENV PATH="$JAVA_HOME/bin:$PATH:$ANDROID_SDK_HOME/emulator:$ANDROID_SDK_HOME/tools/bin:$ANDROID_SDK_HOME/tools:$ANDROID_SDK_HOME/platform-tools:$ANDROID_NDK:$FLUTTER_HOME/bin:$FLUTTER_HOME/bin/cache/dart-sdk/bin"
+ENV PATH="$JAVA_HOME/bin:$PATH:$ANDROID_SDK_HOME/emulator:$ANDROID_SDK_HOME/cmdline-tools/latest/bin:$ANDROID_SDK_HOME/tools:$ANDROID_SDK_HOME/platform-tools:$ANDROID_NDK:$FLUTTER_HOME/bin:$FLUTTER_HOME/bin/cache/dart-sdk/bin"
 
 WORKDIR /tmp
 
@@ -90,7 +95,6 @@ RUN apt-get update -qq > /dev/null && \
     curl -sL -k https://deb.nodesource.com/setup_${NODE_VERSION} \
         | bash - > /dev/null && \
     apt-get install -qq nodejs > /dev/null && \
-    apt-get clean > /dev/null && \
     curl -sS -k https://dl.yarnpkg.com/debian/pubkey.gpg \
         | apt-key add - > /dev/null && \
     echo "deb https://dl.yarnpkg.com/debian/ stable main" \
@@ -112,14 +116,19 @@ RUN apt-get update -qq > /dev/null && \
         npm-check-updates \
         react-native-cli > /dev/null && \
     npm cache clean --force > /dev/null && \
+    apt-get -y clean && apt-get -y autoremove && rm -rf /var/lib/apt/lists/* && \
     rm -rf /tmp/* /var/tmp/*
 
 # Install Android SDK
 RUN echo "sdk tools ${ANDROID_SDK_TOOLS_VERSION}" && \
     wget --quiet --output-document=sdk-tools.zip \
-        "https://dl.google.com/android/repository/sdk-tools-linux-${ANDROID_SDK_TOOLS_VERSION}.zip" && \
+        "https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_SDK_TOOLS_VERSION}_latest.zip" && \
     mkdir --parents "$ANDROID_HOME" && \
     unzip -q sdk-tools.zip -d "$ANDROID_HOME" && \
+    cd "$ANDROID_HOME" && \
+    mv cmdline-tools latest && \
+    mkdir cmdline-tools && \
+    mv latest cmdline-tools && \
     rm --force sdk-tools.zip
 
 # Install SDKs
@@ -129,12 +138,12 @@ RUN mkdir --parents "$ANDROID_HOME/.android/" && \
     echo '### User Sources for Android SDK Manager' > \
         "$ANDROID_HOME/.android/repositories.cfg" && \
     . /etc/jdk.env && \
-    yes | "$ANDROID_HOME"/tools/bin/sdkmanager --licenses > /dev/null
+    yes | "$ANDROID_HOME"/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null
 
 # List all available packages.
 # redirect to a temp file `packages.txt` for later use and avoid show progress
 RUN . /etc/jdk.env && \
-    "$ANDROID_HOME"/tools/bin/sdkmanager --list > packages.txt && \
+    "$ANDROID_HOME"/cmdline-tools/latest/bin/sdkmanager --list > packages.txt && \
     cat packages.txt | grep -v '='
 
 #
@@ -142,7 +151,7 @@ RUN . /etc/jdk.env && \
 #
 RUN echo "platforms" && \
     . /etc/jdk.env && \
-    yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
+    yes | "$ANDROID_HOME"/cmdline-tools/latest/bin/sdkmanager \
         "platforms;android-33" \
         "platforms;android-32" \
         "platforms;android-31" \
@@ -150,16 +159,17 @@ RUN echo "platforms" && \
         "platforms;android-29" \
         "platforms;android-28" \
         "platforms;android-27" \
-        "platforms;android-26" > /dev/null
+        "platforms;android-26" \
+        > /dev/null
 
 RUN echo "platform tools" && \
     . /etc/jdk.env && \
-    yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
+    yes | "$ANDROID_HOME"/cmdline-tools/latest/bin/sdkmanager \
         "platform-tools" > /dev/null
 
 RUN echo "build tools 26-30" && \
     . /etc/jdk.env && \
-    yes | "$ANDROID_HOME"/tools/bin/sdkmanager \
+    yes | "$ANDROID_HOME"/cmdline-tools/latest/bin/sdkmanager \
         "build-tools;33.0.0" \
         "build-tools;32.0.0" \
         "build-tools;31.0.0" \
@@ -174,22 +184,22 @@ RUN echo "build tools 26-30" && \
 RUN echo "emulator" && \
     if [ "$(uname -m)" != "x86_64" ]; then echo "emulator only support Linux x86 64bit. skip for $(uname -m)"; exit 0; fi && \
     . /etc/jdk.env && \
-    yes | "$ANDROID_HOME"/tools/bin/sdkmanager "emulator" > /dev/null
+    yes | "$ANDROID_HOME"/cmdline-tools/latest/bin/sdkmanager "emulator" > /dev/null
 
 # ndk-bundle does exist on arm64
 # RUN echo "NDK" && \
-#     yes | "$ANDROID_HOME"/tools/bin/sdkmanager "ndk-bundle" > /dev/null
+#     yes | "$ANDROID_HOME"/cmdline-tools/latest/bin/sdkmanager "ndk-bundle" > /dev/null
 
 RUN echo "bundletool" && \
     wget -q https://github.com/google/bundletool/releases/download/1.9.1/bundletool-all-1.9.1.jar -O bundletool.jar && \
-    mv bundletool.jar $ANDROID_SDK_HOME/tools/
+    mv bundletool.jar $ANDROID_SDK_HOME/cmdline-tools/latest/
 
 RUN echo "NDK" && \
     NDK=$(grep 'ndk;' packages.txt | sort | tail -n1 | awk '{print $1}') && \
     NDK_VERSION=$(echo $NDK | awk -F\; '{print $2}') && \
     echo "Installing $NDK" && \
     . /etc/jdk.env && \
-    yes | "$ANDROID_HOME"/tools/bin/sdkmanager "$NDK" > /dev/null && \
+    yes | "$ANDROID_HOME"/cmdline-tools/latest/bin/sdkmanager "$NDK" > /dev/null && \
     ln -sv $ANDROID_HOME/ndk/${NDK_VERSION} ${ANDROID_NDK}
 
 # List sdk and ndk directory content
