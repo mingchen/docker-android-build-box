@@ -6,8 +6,8 @@ RUN uname -a && uname -m
 ENV ANDROID_HOME="/opt/android-sdk" \
     ANDROID_SDK_HOME="/opt/android-sdk" \
     ANDROID_SDK_ROOT="/opt/android-sdk" \
-    ANDROID_NDK="/opt/android-sdk/ndk/current" \
-    ANDROID_NDK_ROOT="/opt/android-sdk/ndk/current" \
+    ANDROID_NDK="/opt/android-sdk/ndk/latest" \
+    ANDROID_NDK_ROOT="/opt/android-sdk/ndk/latest" \
     FLUTTER_HOME="/opt/flutter"
 ENV ANDROID_SDK_MANAGER=${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager
 
