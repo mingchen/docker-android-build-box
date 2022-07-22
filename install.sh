@@ -37,7 +37,7 @@ apt-get install -qq --no-install-recommends \
     libxslt-dev \
     libxml2-dev \
     m4 \
-    openjdk-8-jdk \
+    default-jdk \
     openssh-client \
     pkg-config \
     software-properties-common \
