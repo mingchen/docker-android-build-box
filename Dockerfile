@@ -19,7 +19,7 @@ ENV TZ=America/Los_Angeles
 ENV ANDROID_SDK_TOOLS_VERSION="4333796"
 
 # nodejs version
-ENV NODE_VERSION="14.x"
+ENV NODE_VERSION="16.x"
 
 # Set locale
 ENV LANG="en_US.UTF-8" \
