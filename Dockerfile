@@ -150,8 +150,7 @@ RUN echo "platforms" && \
         "platforms;android-29" \
         "platforms;android-28" \
         "platforms;android-27" \
-        "platforms;android-28" \
-        "platforms;android-27" > /dev/null
+        "platforms;android-26" > /dev/null
 
 RUN echo "platform tools" && \
     . /etc/jdk.env && \
