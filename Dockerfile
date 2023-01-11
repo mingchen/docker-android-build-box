@@ -21,8 +21,8 @@ RUN JDK_PLATFORM=$(if [ "$(uname -m)" = "aarch64" ]; then echo "arm64"; else ech
 ENV TZ=America/Los_Angeles
 
 # Get the latest version from https://developer.android.com/studio/index.html
-# "4333796"
-ENV ANDROID_SDK_TOOLS_VERSION="8512546"
+# "9123335" as of 2023/01/11
+ENV ANDROID_SDK_TOOLS_VERSION="9123335"
 
 # nodejs version
 ENV NODE_VERSION="14.x"
