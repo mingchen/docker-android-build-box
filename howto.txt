@@ -1,14 +1,11 @@
-# build image
+# short how to use this repo to build docker image from scratch and use
+
+# build image and assign it a name of android-sdk
 docker build -t android-sdk .
 
-# build app
+# See gradlew tasks for project
+docker run --rm -v ${PWD}:/project -v "$HOME/.dockercache/gradle":"/root/.gradle" android-sdk bash -c 'cd /project; ./gradlew tasks'
+
+# build app using the assembleRelease task
 docker run --rm -v ${PWD}:/project -v "$HOME/.dockercache/gradle":"/root/.gradle" android-sdk bash -c 'cd /project &&\
-	./gradlew assembleRelease -x lint'
-
-docker run --rm -v ${PWD}:/project -v "$HOME/.dockercache/gradle":"/root/.gradle" android-sdk bash -c 'cd /project; ./gradlew build -x lint'
-
-# sign from command line if gradle signingConfigs is not setup
-docker run --rm -v ${PWD}:/project -v "$HOME/.dockercache/gradle":"/root/.gradle" android-sdk bash -c 'cd /project && \
-	./gradlew build -x lint && \
-	zipalign -v -p 4 app/build/outputs/apk/debug/app-debug.apk app/build/outputs/apk/debug/app-debug-unsigned-aligned.apk && \
-	apksigner sign --ks Keystore_r90_android --out r90-release.apk app/build/outputs/apk/debug/app-debug-unsigned-aligned.apk'
+	./gradlew assembleRelease'
