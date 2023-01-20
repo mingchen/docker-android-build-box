@@ -22,6 +22,8 @@ It includes the following components:
   * 29
   * 30
   * 31
+  * 32
+  * 33
 * Android build tools:
   * 26.0.0 26.0.1 26.0.2
   * 27.0.1 27.0.2 27.0.3
@@ -29,6 +31,8 @@ It includes the following components:
   * 29.0.2 29.0.3
   * 30.0.0 30.0.2 30.0.3
   * 31.0.0
+  * 32.0.0
+  * 33.0.0
 * Android NDK (always the latest version, side-by-side install)
 * [Android bundletool](https://github.com/google/bundletool)
 * Android Emulator

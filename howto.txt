@@ -1,0 +1,11 @@
+# short how to use this repo to build docker image from scratch and use
+
+# build image and assign it a name of android-sdk
+docker build -t android-sdk .
+
+# See gradlew tasks for project
+docker run --rm -v ${PWD}:/project -v "$HOME/.dockercache/gradle":"/root/.gradle" android-sdk bash -c 'cd /project; ./gradlew tasks'
+
+# build app using the assembleRelease task
+docker run --rm -v ${PWD}:/project -v "$HOME/.dockercache/gradle":"/root/.gradle" android-sdk bash -c 'cd /project &&\
+	./gradlew assembleRelease'
