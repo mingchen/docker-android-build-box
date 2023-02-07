@@ -85,6 +85,7 @@ RUN apt-get update -qq > /dev/null && \
         zipalign \
         s3cmd \
         python \
+        python3-pip \
         zlib1g-dev > /dev/null && \
     echo "JVM directories: `ls -l /usr/lib/jvm/`" && \
     . /etc/jdk.env && \
