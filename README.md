@@ -42,7 +42,7 @@ It includes the following components:
 * Node.js 16, npm, React Native
 * Ruby, RubyGems
 * fastlane
-* Flutter 2.10.3
+* Flutter 3.0.4
 * jenv
 
 ## Pull Docker Image
