@@ -252,7 +252,7 @@ RUN git clone https://github.com/jenv/jenv.git ~/.jenv && \
     jenv add /usr/lib/jvm/java-11-openjdk-$JDK_PLATFORM && \
     jenv add /usr/lib/jvm/java-17-openjdk-$JDK_PLATFORM && \
     jenv versions && \
-    jenv global 17 && \
+    jenv global 17.0 && \
     java -version
 
 COPY README.md /README.md
