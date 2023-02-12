@@ -15,6 +15,7 @@ It includes the following components:
 * Java (OpenJDK)
   * 1.8
   * 11
+  * 17
 * Android SDKs for platforms:
   * 26
   * 27
