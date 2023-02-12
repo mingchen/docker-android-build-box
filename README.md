@@ -39,7 +39,7 @@ It includes the following components:
 * cmake
 * TestNG
 * Python 3.8.10
-* Node.js 14, npm, React Native
+* Node.js 16, npm, React Native
 * Ruby, RubyGems
 * fastlane
 * Flutter 2.10.3
