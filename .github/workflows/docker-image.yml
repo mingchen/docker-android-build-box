@@ -101,7 +101,7 @@ jobs:
         docker run --rm $IMAGE_NAME:$TAG java -version
 
         echo "Set java env to 8"
-        docker run --rm $IMAGE_NAME:$TAG bash -c ". $HOME/.bash_profile; jenv local 8; java -version"
+        docker run --rm $IMAGE_NAME:$TAG bash -c '. $HOME/.bash_profile; jenv local 1.8; java -version'
 
         docker run -v `pwd`:/project --rm $IMAGE_NAME:$TAG bash -c 'echo "Current directory: $PWD"'
 
