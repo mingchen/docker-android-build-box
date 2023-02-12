@@ -73,6 +73,7 @@ RUN apt-get update -qq > /dev/null && \
         ocaml \
         openjdk-8-jdk \
         openjdk-11-jdk \
+        openjdk-17-jdk \
         openssh-client \
         pkg-config \
         ruby-full \
@@ -249,6 +250,7 @@ RUN git clone https://github.com/jenv/jenv.git ~/.jenv && \
     java -version && \
     jenv add /usr/lib/jvm/java-8-openjdk-$JDK_PLATFORM && \
     jenv add /usr/lib/jvm/java-11-openjdk-$JDK_PLATFORM && \
+    jenv add /usr/lib/jvm/java-17-openjdk-$JDK_PLATFORM && \
     jenv versions && \
     jenv global 11 && \
     java -version
