@@ -17,8 +17,16 @@ on:
     branches: [ master, dev ]
     tags:
       - '*.*.*'
+    paths-ignore:
+      - 'README.md'
+      - 'howto.txt'  
+      - 'LICENSE'  
   pull_request:
     branches: [ master ]
+    paths-ignore:
+      - 'README.md'
+      - 'howto.txt'  
+      - 'LICENSE'  
 
 
 jobs:
