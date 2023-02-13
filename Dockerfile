@@ -14,7 +14,7 @@ ENV ANDROID_SDK_MANAGER=${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager
 # support amd64 and arm64
 RUN JDK_PLATFORM=$(if [ "$(uname -m)" = "aarch64" ]; then echo "arm64"; else echo "amd64"; fi) && \
     echo export JDK_PLATFORM=$JDK_PLATFORM >> /etc/jdk.env && \
-    echo export JAVA_HOME="/usr/lib/jvm/java-8-openjdk-$JDK_PLATFORM/" >> /etc/jdk.env && \
+    echo export JAVA_HOME="/usr/lib/jvm/java-17-openjdk-$JDK_PLATFORM/" >> /etc/jdk.env && \
     echo . /etc/jdk.env >> /etc/bash.bashrc && \
     echo . /etc/jdk.env >> /etc/profile
 
@@ -73,6 +73,7 @@ RUN apt-get update -qq > /dev/null && \
         ocaml \
         openjdk-8-jdk \
         openjdk-11-jdk \
+        openjdk-17-jdk \
         openssh-client \
         pkg-config \
         ruby-full \
@@ -240,7 +241,7 @@ RUN echo "fastlane" && \
     chmod 777 /.fastlane && \
     bundle install --quiet
 
-# Add jenv to control which version of java to use, default to 11.
+# Add jenv to control which version of java to use, default to 17.
 RUN git clone https://github.com/jenv/jenv.git ~/.jenv && \
     echo 'export PATH="$HOME/.jenv/bin:$PATH"' >> ~/.bash_profile && \
     echo 'eval "$(jenv init -)"' >> ~/.bash_profile && \
@@ -249,8 +250,9 @@ RUN git clone https://github.com/jenv/jenv.git ~/.jenv && \
     java -version && \
     jenv add /usr/lib/jvm/java-8-openjdk-$JDK_PLATFORM && \
     jenv add /usr/lib/jvm/java-11-openjdk-$JDK_PLATFORM && \
+    jenv add /usr/lib/jvm/java-17-openjdk-$JDK_PLATFORM && \
     jenv versions && \
-    jenv global 11 && \
+    jenv global 17.0 && \
     java -version
 
 COPY README.md /README.md
