@@ -60,6 +60,7 @@ RUN apt-get update -qq > /dev/null && \
         curl \
         file \
         git \
+        git-lfs \
         gpg-agent \
         less \
         libc6-dev \
