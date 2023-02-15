@@ -89,6 +89,7 @@ RUN apt-get update -qq > /dev/null && \
         python \
         python3-pip \
         zlib1g-dev > /dev/null && \
+    git lfs install > /dev/null && \
     echo "JVM directories: `ls -l /usr/lib/jvm/`" && \
     . /etc/jdk.env && \
     echo "Java version (default):" && \
