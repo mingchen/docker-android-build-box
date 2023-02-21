@@ -57,7 +57,7 @@ docker pull mingc/android-build-box:latest
 
 **Hint:** You can use a tag to a specific stable version,
 rather than `latest` of docker image, to avoid breaking your build.
-e.g. `mingc/android-build-box:1.22.0`.
+e.g. `mingc/android-build-box:1.25.0`.
 Take a look at the [**Tags**](#tags) section, at the bottom of this page, to see all the available tags.
 
 ## Usage
@@ -281,22 +281,32 @@ docker build -t android-build-box .
 ## Tags
 
 You can use a tag to a specific stable version, rather than `latest` of docker image,
-to avoid breaking your build. For example `mingc/android-build-box:1.22.0`
+to avoid breaking your build. For example `mingc/android-build-box:1.25.0`
 
 **Note**: versions `1.0.0` up to `1.17.0` included every single Build Tool version and every
 Android Platform version available. This generated large Docker images, around 5 GB.
 Newer versions of `android-build-box` only include a subset of the newest Android Tools,
 so the Docker images are smaller.
 
-## 1.24.0
+### 1.25.0
+
+* Add Java 17. @@master-bob
+* Android SDK 33 and Newer Implementation @master-bob
+* Add support for SDK version 32 @ramdroid
+* Upgrade flutter from 2.10.3 to 3.0.4 @rishavmehra
+* Upgrade Node.js to Version 16 @wwmun
+* Added pip @iBobik
+* Add git-lfs @LeonDevLifeLog
+
+### 1.24.0
 
 * PR #76: Tidy up to reduce image size @ozmium
 
-## 1.23.1
+### 1.23.1
 
 * Remove JDK 16, Android build not support JDK 16 yet.
 
-## 1.23.0
+### 1.23.0
 
  **NOTE**: missed this tag in DockerHub due to a github action error, should use `1.23.1` instead.
 
@@ -305,16 +315,16 @@ so the Docker images are smaller.
 * Fix #57: Correct repositories.cfg path
 * Add jenv to choose java version
 
-## 1.22.0
+### 1.22.0
 
 * Upgrade Nodejs from 12.x to 14.x
 * Push image to docker hub from github action directly.
 
-## 1.21.1
+### 1.21.1
 
 * Update dockerhub build hook.
 
-## 1.21.0
+### 1.21.0
 
 * Upgrade Flutter to 2.2.0
 * CI switched from travis-ci to Github Action.
