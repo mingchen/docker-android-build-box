@@ -111,6 +111,12 @@ jobs:
         echo "Set java env to 8"
         docker run --rm $IMAGE_NAME:$TAG bash -c '. $HOME/.bash_profile && jenv local 1.8 && java -version'
 
+        echo "Test jenv recognizes Java 11"
+        docker run --rm $IMAGE_NAME:$TAG bash -c 'jenv local 11 && java -version'
+
+        echo "Test jenv recognizes Java 17"
+        docker run --rm $IMAGE_NAME:$TAG bash -c 'jenv local 17 && java -version'
+
         docker run -v `pwd`:/project --rm $IMAGE_NAME:$TAG bash -c 'echo "Current directory: $PWD"'
 
         docker run --rm $IMAGE_NAME:$TAG bash -c 'ls -l $ANDROID_SDK_HOME'
