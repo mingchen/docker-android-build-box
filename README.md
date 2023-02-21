@@ -203,45 +203,71 @@ Note that x86_64 emulators are not currently supported. See [Issue #18](https://
 
 ### Choose the system Java version
 
-Both Java 1.8 and Java 11 are installed.
+Both Java 1.8, Java 11, and Java 17  are installed.
 
 | docker-android-build-box version  | Date released  | Java version available  |
 |---|---|---|
 | 1.19 and below  | 2 July 2020 and earlier  |  **Java 8** installed only |
 | 1.20 - 1.23  | 7 August 2020 - 23 Sept 2021  |  Both **Java 8 and Java 11** installed. <br>The default is Java 8. |
 | 1.23.1  | 28 September 2021  |  Both **Java 8 and Java 11** installed. <br>The default is Java 11. |
+| latest | 12 February 2023 | **Java 8**, **Java 11**, and **Java 17** installed. <br>The default is Java 17. |
 
-Use `update-alternatives` to switch `java` version.
+Use `jenv` to switch `java` version.
 
-List all the available `java` paths:
-
-```sh
-# update-alternatives --list java
-/usr/lib/jvm/java-11-openjdk-arm64/bin/java
-/usr/lib/jvm/java-8-openjdk-arm64/jre/bin/java
-```
-
-Switch current `java` version to **Java 8**:
+List all the available `java` versions:
 
 ```sh
-# update-alternatives --set java /usr/lib/jvm/java-8-openjdk-arm64/jre/bin/java
-update-alternatives: using /usr/lib/jvm/java-8-openjdk-arm64/jre/bin/java to provide /usr/bin/java (java) in manual mode
-root@9b816ba2e3cb:/project# java -version
-openjdk version "1.8.0_312"
-OpenJDK Runtime Environment (build 1.8.0_312-8u312-b07-0ubuntu1~20.04-b07)
-OpenJDK 64-Bit Server VM (build 25.312-b07, mixed mode)
+# jenv versions
+  system
+  11
+  11.0
+  11.0.17
+  17
+* 17.0 (set by /root/.jenv/version)
+  17.0.5
+  1.8
+  1.8.0.352
+  openjdk64-11.0.17
+  openjdk64-17.0.5
+  openjdk64-1.8.0.352
 ```
 
-Switch current `java` version to **Java 11**:
+Switch global `java` version to **Java 8**:
 
 ```sh
-# update-alternatives --set java /usr/lib/jvm/java-11-openjdk-arm64/bin/java
-update-alternatives: using /usr/lib/jvm/java-11-openjdk-arm64/bin/java to provide /usr/bin/java (java) in manual mode
-root@9b816ba2e3cb:/project# java -version
-openjdk version "11.0.14" 2022-01-18
-OpenJDK Runtime Environment (build 11.0.14+9-Ubuntu-0ubuntu2.20.04)
-OpenJDK 64-Bit Server VM (build 11.0.14+9-Ubuntu-0ubuntu2.20.04, mixed mode)
+root@f7e7773edb7f:/project# jenv global 1.8
+root@f7e7773edb7f:/project# java -version
+openjdk version "1.8.0_352"
+OpenJDK Runtime Environment (build 1.8.0_352-8u352-ga-1~20.04-b08)
+OpenJDK 64-Bit Server VM (build 25.352-b08, mixed mode)
 ```
+
+Switch global `java` version to **Java 11**:
+
+```sh
+root@f7e7773edb7f:/project# jenv global 11
+root@f7e7773edb7f:/project# java -version
+openjdk version "11.0.17" 2022-10-18
+OpenJDK Runtime Environment (build 11.0.17+8-post-Ubuntu-1ubuntu220.04)
+OpenJDK 64-Bit Server VM (build 11.0.17+8-post-Ubuntu-1ubuntu220.04, mixed mode, sharing)
+```
+
+Switch local, that is current folder, `java` version to **Java 1.8**:
+
+```sh
+root@f7e7773edb7f:/project# jenv local 1.8
+root@f7e7773edb7f:/project# java -version
+openjdk version "1.8.0_352"
+OpenJDK Runtime Environment (build 1.8.0_352-8u352-ga-1~20.04-b08)
+OpenJDK 64-Bit Server VM (build 25.352-b08, mixed mode)
+root@f7e7773edb7f:/project# cd ..
+root@f7e7773edb7f:/# java -version
+openjdk version "17.0.5" 2022-10-18
+OpenJDK Runtime Environment (build 17.0.5+8-Ubuntu-2ubuntu120.04)
+OpenJDK 64-Bit Server VM (build 17.0.5+8-Ubuntu-2ubuntu120.04, mixed mode, sharing)
+```
+
+This can also be done by creating a `.java-version` file in the directory. See the SampleProject file [here](test_projects/SampleProject/.java-version) for an example.
 
 ## Build the Docker Image
 
