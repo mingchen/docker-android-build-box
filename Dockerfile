@@ -242,8 +242,9 @@ RUN echo "fastlane" && \
     bundle install --quiet
 
 # Add jenv to control which version of java to use, default to 17.
+ENV PATH="/root/.jenv/shims:/root/.jenv/bin${PATH:+:${PATH}}"
 RUN git clone https://github.com/jenv/jenv.git ~/.jenv && \
-    echo 'export PATH="$HOME/.jenv/bin:$PATH"' >> ~/.bash_profile && \
+    echo '#!/usr/bin/env bash' >> ~/.bash_profile && \
     echo 'eval "$(jenv init -)"' >> ~/.bash_profile && \
     . ~/.bash_profile && \
     . /etc/jdk.env && \
