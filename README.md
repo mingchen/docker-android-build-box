@@ -48,8 +48,9 @@ It includes the following components:
 
 ## Pull Docker Image
 
-The docker image is a publicly automated build on [Docker Hub](https://hub.docker.com/r/mingc/android-build-box/)
-based on the `Dockerfile` in this repo, so there is no hidden stuff in it. To pull the latest docker image:
+The docker image is automatically built publicly on *Github Action* based on the `Dockerfile` in this repo, there is no hidden stuff in it.
+
+To pull the latest docker image:
 
 ```sh
 docker pull mingc/android-build-box:latest
