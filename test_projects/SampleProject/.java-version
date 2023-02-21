@@ -1,0 +1,5 @@
+1.8
+# Sets the java version to use via jenv
+# First line must be a java version installed and recognized by `jenv versions`
+# Valid versions are always: 1.8, 11, 11.0, 17, or 17.0
+# Valid versions are sometimes: 1.8.0.352, 11.0.17, 17.0.5
