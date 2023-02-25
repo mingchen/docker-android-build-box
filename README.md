@@ -13,7 +13,7 @@ It includes the following components:
 
 * Ubuntu 20.04
 * Java (OpenJDK)
-  * 1.8
+  * 8 (1.8)
   * 11
   * 17
 * Android SDKs for platforms:
@@ -44,7 +44,7 @@ It includes the following components:
 * Ruby, RubyGems
 * fastlane
 * Flutter 3.0.4
-* jenv
+* [jEnv](https://www.jenv.be)
 
 ## Pull Docker Image
 
@@ -275,7 +275,7 @@ This can also be done by creating a `.java-version` file in the directory. See t
 ## Build the Docker Image
 
 If you want to build the docker image by yourself, you can use following command.
-The image itself is around 5 GB, so check your free disk space before building it.
+The compressed image itself is around 6 GB and uncompressed it's around 16GB, so check your free disk space before building it.
 
 ```sh
 docker build -t android-build-box .
@@ -284,12 +284,10 @@ docker build -t android-build-box .
 ## Tags
 
 You can use a tag to a specific stable version, rather than `latest` of docker image,
-to avoid breaking your build. For example `mingc/android-build-box:1.25.0`
+to avoid breaking your build. For example `mingc/android-build-box:1.25.0`.
 
 **Note**: versions `1.0.0` up to `1.17.0` included every single Build Tool version and every
-Android Platform version available. This generated large Docker images, around 5 GB.
-Newer versions of `android-build-box` only include a subset of the newest Android Tools,
-so the Docker images are smaller.
+Android Platform version available at the time. Newer versions of `android-build-box` only include a subset of the newest Android Tools.
 
 ### 1.25.0
 
