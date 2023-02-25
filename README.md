@@ -204,16 +204,18 @@ Note that x86_64 emulators are not currently supported. See [Issue #18](https://
 
 ### Choose the system Java version
 
-Both Java 1.8, Java 11, and Java 17  are installed.
+Java 8 (1.8), Java 11, and Java 17  are installed.
 
 | docker-android-build-box version  | Date released  | Java version available  |
 |---|---|---|
 | 1.19 and below  | 2 July 2020 and earlier  |  **Java 8** installed only |
-| 1.20 - 1.23  | 7 August 2020 - 23 Sept 2021  |  Both **Java 8 and Java 11** installed. <br>The default is Java 8. |
-| 1.23.1  | 28 September 2021  |  Both **Java 8 and Java 11** installed. <br>The default is Java 11. |
-| latest | 12 February 2023 | **Java 8**, **Java 11**, and **Java 17** installed. <br>The default is Java 17. |
+| 1.20 - 1.23  | 7 August 2020 - 23 Sept 2021  |  **Java 8** and **Java 11** installed. <br>The default is Java 8. |
+| 1.23.1  | 28 September 2021  | **Java 8** and **Java 11** installed. <br>The default is Java 11. |
+| 1.25.0 | 21 February 2023 | **Java 8**, **Java 11**, and **Java 17** installed. <br>The default is Java 17. |
 
-Use `jenv` to switch `java` version.
+As of 1.23.0, `jenv` is used to switch `java` versions. Versions prior to 1.23.0 used `update-alternatives`; brief documentation is available [here](https://github.com/mingchen/docker-android-build-box/tree/95fde4a765cecf6d43b084190394fd43bef5bfd1#choose-the-system-java-version). 
+
+The following documentation is for `jenv`. Please note that if the container is removed, that is run with the `-rm` flag, changes will not persist.
 
 List all the available `java` versions:
 
@@ -291,8 +293,8 @@ so the Docker images are smaller.
 
 ### 1.25.0
 
-* Add Java 17. @@master-bob
-* Android SDK 33 and Newer Implementation @master-bob
+* Add Java 17. @master-bob
+* Android SDK 33 and Newer Implementation @master-bob, @blacix, @hanibalsk
 * Add support for SDK version 32 @ramdroid
 * Upgrade flutter from 2.10.3 to 3.0.4 @rishavmehra
 * Upgrade Node.js to Version 16 @wwmun
