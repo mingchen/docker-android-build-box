@@ -136,12 +136,12 @@ on: [push]
 jobs:
   build:
 
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     container: mingc/android-build-box:latest
 
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/cache@v1
+    - uses: actions/checkout@v3
+    - uses: actions/cache@v3
       with:
         path: /root/.gradle/caches
         key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
@@ -155,7 +155,7 @@ jobs:
         flutter analyze
         flutter build apk
     - name: Archive apk
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v3
       with:
         name: apk
         path: build/app/outputs/apk
