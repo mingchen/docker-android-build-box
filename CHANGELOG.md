@@ -15,6 +15,7 @@ Here be the changes.
 ## 1.24.0
 
 * PR #76: Tidy up to reduce image size @ozmium
+* Remove Android Platform 25
 
 ## 1.23.1
 
@@ -86,6 +87,7 @@ Here be the changes.
 ## 1.12.0
 
 * Add bundler for fastlane.
+* Add Android Platform 29
 
 ## 1.11.2
 
