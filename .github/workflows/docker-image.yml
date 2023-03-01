@@ -18,13 +18,13 @@ on:
     tags:
       - '*.*.*'
     paths-ignore:
-      - 'README.md'
+      - '*.md'
       - 'howto.txt'
       - 'LICENSE'
   pull_request:
     branches: [ master ]
     paths-ignore:
-      - 'README.md'
+      - '*.md'
       - 'howto.txt'
       - 'LICENSE'
 
