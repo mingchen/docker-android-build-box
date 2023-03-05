@@ -3,6 +3,8 @@
 
 A bunch of matrices which show the various versions of software installed for compatibility purposes. Separate matrices are present for [Java](#Installed-Java-Versions-Matrix), the [Android SDK](#Android-Platform-SDK-Versions-Matrix), the [Android Build Tools](#Android-Build-Tools-Matrix), and [all the other software](#Various-Installed-Software-Versions-Matrix).
 
+Note: 1.23.0 is *not* on Docker Hub.
+
 ## Installed Java Versions Matrix
 
 Java 8 (1.8), Java 11, and Java 17 are installed.
@@ -103,19 +105,23 @@ Leave preceeding and trailing line of this comment **blank**.
 
 ## Various Installed Software Versions Matrix
 
+[//]: # (
+| x.x.x | yyyy-mm-dd | <!--Ubunutu--> | <!--SDK T.--> | <!--NDK--> | <!--Flutter--> | <!--NodeJS--> | <!--bundletool--> |
+Leave preceeding and trailing line of this comment **blank**.
+)
 
 | docker-android-build-box<br>version  | Date released  | Ubuntu<br>version | Android SDK CLI Tools<br>version | Android NDK<br>version | Flutter<br>version | NodeJS<br>version | bundletool<br>version |
 |:--|:-:|--:|--:|--:|--:|--:|--:|
 | 1.0.0 | 2016-19-27 | 16.04<!--Ubunutu--> | ❌<!--SDK T.--> | r13<!--NDK--> | ❌<!--Flutter--> | ❌<!--NodeJS--> | ❌<!--bundletool--> |
-| 1.1.0 | 2017-11-03 | 17.10<!--Ubunutu--> | 3859397<!--SDK T.--> | 15c<!--NDK--> | ❌<!--Flutter--> | 8.x<!--NodeJS--> | ❌<!--bundletool--> |
-| 1.1.1 | 2017-11-15 | 17.10<!--Ubunutu--> | 3859397<!--SDK T.--> | 15c<!--NDK--> | ❌<!--Flutter--> | 8.x<!--NodeJS--> | ❌<!--bundletool--> |
-| 1.1.2 | 2018-01-16 | 17.10<!--Ubunutu--> | 3859397<!--SDK T.--> | 15c<!--NDK--> | ❌<!--Flutter--> | 8.x<!--NodeJS--> | ❌<!--bundletool--> |
-| 1.2.0 | 2018-01-16 | 17.10<!--Ubunutu--> | 3859397<!--SDK T.--> | 15c<!--NDK--> | ❌<!--Flutter--> | 8.x<!--NodeJS--> | ❌<!--bundletool--> |
-| 1.3.0 | 2018-11-03 | 17.10<!--Ubunutu--> | 4333796<!--SDK T.--> | 18b<!--NDK--> | ❌<!--Flutter--> | 8.x<!--NodeJS--> | ❌<!--bundletool--> |
-| 1.4.0 | 2018-11-03 | 17.10<!--Ubunutu--> | 4333796<!--SDK T.--> | 18b<!--NDK--> | ❌<!--Flutter--> | 8.x<!--NodeJS--> | ❌<!--bundletool--> |
-| 1.5.0 | 2019-01-07 | 17.10<!--Ubunutu--> | 4333796<!--SDK T.--> | 18b<!--NDK--> | 1.0.0<!--Flutter--> | 8.x<!--NodeJS--> | ❌<!--bundletool--> |
-| 1.5.1 | 2019-01-08 | 17.10<!--Ubunutu--> | 4333796<!--SDK T.--> | 18b<!--NDK--> | 1.0.0<!--Flutter--> | 8.x<!--NodeJS--> | ❌<!--bundletool--> |
-| 1.6.0 | 2019-02-02 | 17.10<!--Ubunutu--> | 4333796<!--SDK T.--> | 18b<!--NDK--> | 1.0.0<!--Flutter--> | 10.x<!--NodeJS--> | ❌<!--bundletool--> |
+| 1.1.0 | 2017-11-03 | 17.10<!--Ubunutu--> | 3859397<!--SDK T.--> | r15c<!--NDK--> | ❌<!--Flutter--> | 8.x<!--NodeJS--> | ❌<!--bundletool--> |
+| 1.1.1 | 2017-11-15 | 17.10<!--Ubunutu--> | 3859397<!--SDK T.--> | r15c<!--NDK--> | ❌<!--Flutter--> | 8.x<!--NodeJS--> | ❌<!--bundletool--> |
+| 1.1.2 | 2018-01-16 | 17.10<!--Ubunutu--> | 3859397<!--SDK T.--> | r15c<!--NDK--> | ❌<!--Flutter--> | 8.x<!--NodeJS--> | ❌<!--bundletool--> |
+| 1.2.0 | 2018-01-16 | 17.10<!--Ubunutu--> | 3859397<!--SDK T.--> | r15c<!--NDK--> | ❌<!--Flutter--> | 8.x<!--NodeJS--> | ❌<!--bundletool--> |
+| 1.3.0 | 2018-11-03 | 17.10<!--Ubunutu--> | 4333796<!--SDK T.--> | r18b<!--NDK--> | ❌<!--Flutter--> | 8.x<!--NodeJS--> | ❌<!--bundletool--> |
+| 1.4.0 | 2018-11-03 | 17.10<!--Ubunutu--> | 4333796<!--SDK T.--> | r18b<!--NDK--> | ❌<!--Flutter--> | 8.x<!--NodeJS--> | ❌<!--bundletool--> |
+| 1.5.0 | 2019-01-07 | 17.10<!--Ubunutu--> | 4333796<!--SDK T.--> | r18b<!--NDK--> | 1.0.0<!--Flutter--> | 8.x<!--NodeJS--> | ❌<!--bundletool--> |
+| 1.5.1 | 2019-01-08 | 17.10<!--Ubunutu--> | 4333796<!--SDK T.--> | r18b<!--NDK--> | 1.0.0<!--Flutter--> | 8.x<!--NodeJS--> | ❌<!--bundletool--> |
+| 1.6.0 | 2019-02-02 | 17.10<!--Ubunutu--> | 4333796<!--SDK T.--> | r18b<!--NDK--> | 1.0.0<!--Flutter--> | 10.x<!--NodeJS--> | ❌<!--bundletool--> |
 | 1.7.0 | 2019-02-04 | 17.10<!--Ubunutu--> | 4333796<!--SDK T.--> | r19<!--NDK--> | 1.0.0<!--Flutter--> | 10.x<!--NodeJS--> | ❌<!--bundletool--> |
 | 1.8.0 | 2019-03-04 | 17.10<!--Ubunutu--> | 4333796<!--SDK T.--> | r19<!--NDK--> | 1.2.1<!--Flutter--> | 10.x<!--NodeJS--> | ❌<!--bundletool--> |
 | 1.9.0 | 2019-03-08 | 18.04<!--Ubunutu--> | 4333796<!--SDK T.--> | r19<!--NDK--> | 1.2.1<!--Flutter--> | 10.x<!--NodeJS--> | ❌<!--bundletool--> |
@@ -134,9 +140,11 @@ Leave preceeding and trailing line of this comment **blank**.
 | 1.21.0 | 2021-05-21 | 18.04<!--Ubunutu--> | 4333796<!--SDK T.--> | r21d<!--NDK--> | 2.2.0<!--Flutter--> | 12.x<!--NodeJS--> | ❌<!--bundletool--> |
 | 1.21.1 | 2021-06-02 | 18.04<!--Ubunutu--> | 4333796<!--SDK T.--> | r21d<!--NDK--> | 2.2.0<!--Flutter--> | 12.x<!--NodeJS--> | ❌<!--bundletool--> |
 | 1.22.0 | 2021-08-23 | 18.04<!--Ubunutu--> | 4333796<!--SDK T.--> | r21d<!--NDK--> | 2.2.0<!--Flutter--> | 14.x<!--NodeJS--> | ❌<!--bundletool--> |
-| 1.23.0 | 2021-09-23 | 20.04<!--Ubunutu--> | 4333796<!--SDK T.--> | r22<!--NDK--> | 2.5.1<!--Flutter--> | 14.x<!--NodeJS--> | ❌<!--bundletool--> |
-| 1.23.1 | 2021-09-28 | 20.04<!--Ubunutu--> | 4333796<!--SDK T.--> | r22<!--NDK--> | 2.5.1<!--Flutter--> | 14.x<!--NodeJS--> | ❌<!--bundletool--> |
-| 1.24.0 | 2021-11-22 | 20.04<!--Ubunutu--> | 4333796<!--SDK T.--> | r22<!--NDK--> | 2.5.1<!--Flutter--> | 14.x<!--NodeJS--> | ❌<!--bundletool--> |
+| 1.23.0 | 2021-09-23 | 20.04<!--Ubunutu--> | 4333796<!--SDK T.--> | latest<!--NDK--> | 2.5.1<!--Flutter--> | 14.x<!--NodeJS--> | ❌<!--bundletool--> |
+| 1.23.1 | 2021-09-28 | 20.04<!--Ubunutu--> | 4333796<!--SDK T.--> | r23<!--NDK--> | 2.5.1<!--Flutter--> | 14.x<!--NodeJS--> | ❌<!--bundletool--> |
+| 1.24.0 | 2021-11-22 | 20.04<!--Ubunutu--> | 4333796<!--SDK T.--> | r23b<!--NDK--> | 2.5.1<!--Flutter--> | 14.x<!--NodeJS--> | ❌<!--bundletool--> |
 | 1.25.0 | 2023-02-21 | 20.04<!--Ubunutu--> | 9123335<!--SDK T.--> | r25c<!--NDK--> | 3.0.4<!--Flutter--> | 16.x<!--NodeJS--> | 1.9.1<!--bundletool--> |
 
 Note: As of 1.23.0 the latest released Android NDK at the build time is used. This means that the latest Android NDK on the release date of 1.24.0 was r22 and thus that is used. However, if one where to build 1.24.0 on 2023-02-21 (1.25.0 release date), then r25c would be installed.
+
+Note: As 1.23.0 is not on Docker Hub the NDK version is listed as "latest".
