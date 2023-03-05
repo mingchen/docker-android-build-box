@@ -21,14 +21,12 @@ on:
       - '*.md'
       - 'howto.txt'
       - 'LICENSE'
-      - 'CHANGELOG.md'
   pull_request:
     branches: [ master ]
     paths-ignore:
       - '*.md'
       - 'howto.txt'
       - 'LICENSE'
-      - 'CHANGELOG.md'
 
 
 jobs:
