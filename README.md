@@ -12,7 +12,7 @@ An optimized **Docker** image that includes the **Android SDK** and **Flutter SD
 It includes the following components:
 
 * Ubuntu 20.04
-* Java (OpenJDK)
+* Java - OpenJDK
   * 8 (1.8)
   * 11
   * 17
