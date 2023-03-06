@@ -12,8 +12,8 @@ An optimized **Docker** image that includes the **Android SDK** and **Flutter SD
 It includes the following components:
 
 * Ubuntu 20.04
-* Java (OpenJDK)
-  * 1.8
+* Java - OpenJDK
+  * 8 (1.8)
   * 11
   * 17
 * Android SDKs for platforms:
@@ -44,7 +44,9 @@ It includes the following components:
 * Ruby, RubyGems
 * fastlane
 * Flutter 3.0.4
-* jenv
+* [jEnv](https://www.jenv.be)
+
+Please also see the [matrixes](COMPATIBILITY.md) file for details on the various software installed for the various tags.
 
 ## Pull Docker Image
 
@@ -59,11 +61,14 @@ docker pull mingc/android-build-box:latest
 **Hint:** You can use a tag to a specific stable version,
 rather than `latest` of docker image, to avoid breaking your build.
 e.g. `mingc/android-build-box:1.25.0`.
-Take a look at the [**Tags**](#tags) section, at the bottom of this page, to see all the available tags.
+
+Take a look at the [**Tags List**](https://github.com/mingchen/docker-android-build-box/tags) to see all the available tags, the [Changelog](CHANGELOG.md) to see the changes between tags, and the [Compatibility Matrices](COMPATIBILITY.md) to see matrices of the various software available, that is tag `1.2.0` has SDKs x, y, and z... etc.
 
 ## Usage
 
 ### Use the image to build an Android project
+
+Please see the [caches section](#caches) for how to use caching.
 
 You can use this docker image to build your Android project with a single docker command:
 
@@ -79,23 +84,75 @@ cd <android project directory>  # change working directory to your project root 
 docker run --rm -v `pwd`:/project mingc/android-build-box bash -c 'cd /project; ./gradlew bundleRelease'
 ```
 
-
 Run docker image with interactive bash shell:
 
 ```sh
-docker run -v `pwd`:/project -it mingc/android-build-box bash
+docker run -v `pwd`:/project -it mingc/android-build-box bash -l
 ```
 
-Add the following arguments to the docker command to cache the home gradle folder:
+### Caches
 
+#### jEnv Cache
+
+To allow for the global java setting via jEnv, the file `/root/.jenv/version`, to be cached the simplest way is to cache the complete jEnv folder, `/root/.jenv/`.
+
+First create the directory on the host where jEnv will be cached. For this example it will be in `~/.dockercache/jenv/`:
+```sh
+# mkdir ~/.dockercache/jenv
+```
+
+Second create a *named volume*, named `jenv-cache`. A *named volume* is necessary to allow the container's contents of jEnv to remain. The simplest manner is as follows:
+```sh
+# docker volume create --driver local --opt type=none --opt device=~/.dockercache/jenv/ --opt o=bind jenv-cache
+```
+
+And finally when you create / run the container, be sure to include the *named volume* by adding the following to the command:
+```sh
+-v jenv-cache:"/root/.jenv/"
+```
+e.g.
+```sh
+# docker run --rm -v jenv-cache:"/root/.jenv/" mingc/android-build-box bash -l `echo "Hello World"`
+```
+
+#### Gradle Cache
+
+Add the following arguments to the docker command to cache the home gradle folder:
 ```sh
 -v "$HOME/.dockercache/gradle":"/root/.gradle"
 ```
-
 e.g.
-
 ```sh
 docker run --rm -v `pwd`:/project  -v "$HOME/.dockercache/gradle":"/root/.gradle"   mingc/android-build-box bash -c 'cd /project; ./gradlew build'
+```
+
+The final step is to turn caching on by adding:
+```sh
+org.gradle.caching=true
+```
+to your `gradle.properties`. Either the project's `gradle.properties` or the global `gradle.properties` in `$HOME/.dockercache/gradle/gradle.properties`.
+
+### Suggested gradle.properties
+
+Setting the following `jvmargs` for gradle are suggested:
+* `-Xmx8192m`
+  * Sets the max memory the JVM may use to 8192m, values of g, that is gb, are supported.
+* `-XX:MaxMetaspaceSize=1024m`
+  * Must set due to gradle bug gradle/gradle#19750, else is unbounded.
+* `-XX:+UseContainerSupport`
+  * Allow JVM to know it's in a container, optional as is default.
+* `-XX:MaxRAMPercentage=97.5`
+  * Allow JVM to use at most 97.5% of the RAM in container, can be set to 1.
+
+The total memory available to the container should be greater than the Xmx value + the MaxMetaspaceSize. For example, if 10gb is allocated to the container, and using the already listed values, then we have 10gb = 8gb (Xmx) + 1gb (MaxMetaspaceSize) + 1gb (overhead / buffer / other). If the container has 4gb of memory available than the following would be reasonable settings: 4gb = 3072m (Xmx) + 756m (MaxMetaspaceSize) + 256mb (overhead / etc).
+
+In total the `gradle.properties` would be:
+```sh
+org.gradle.jvmargs=-Xmx8192m -XX:MaxMetaspaceSize=1024m -XX:+UseContainerSupport -XX:MaxRAMPercentage=97.5
+```
+or
+```sh
+org.gradle.jvmargs=-Xmx3072m -XX:MaxMetaspaceSize=756m -XX:+UseContainerSupport -XX:MaxRAMPercentage=97.5
 ```
 
 ### Build an Android project with [Bitbucket Pipelines](https://bitbucket.org/product/features/pipelines)
@@ -136,12 +193,12 @@ on: [push]
 jobs:
   build:
 
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     container: mingc/android-build-box:latest
 
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/cache@v1
+    - uses: actions/checkout@v3
+    - uses: actions/cache@v3
       with:
         path: /root/.gradle/caches
         key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
@@ -155,7 +212,7 @@ jobs:
         flutter analyze
         flutter build apk
     - name: Archive apk
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v3
       with:
         name: apk
         path: build/app/outputs/apk
@@ -204,16 +261,11 @@ Note that x86_64 emulators are not currently supported. See [Issue #18](https://
 
 ### Choose the system Java version
 
-Both Java 1.8, Java 11, and Java 17  are installed.
+As of `1.23.0`, `jenv` is used to switch `java` versions. Versions prior to `1.23.0` used `update-alternatives`; brief documentation is available [here](https://github.com/mingchen/docker-android-build-box/tree/95fde4a765cecf6d43b084190394fd43bef5bfd1#choose-the-system-java-version). 
 
-| docker-android-build-box version  | Date released  | Java version available  |
-|---|---|---|
-| 1.19 and below  | 2 July 2020 and earlier  |  **Java 8** installed only |
-| 1.20 - 1.23  | 7 August 2020 - 23 Sept 2021  |  Both **Java 8 and Java 11** installed. <br>The default is Java 8. |
-| 1.23.1  | 28 September 2021  |  Both **Java 8 and Java 11** installed. <br>The default is Java 11. |
-| latest | 12 February 2023 | **Java 8**, **Java 11**, and **Java 17** installed. <br>The default is Java 17. |
+Please also see the [installed java versions matrix](COMPATIBILITY.md#Installed-Java-Versions-Matrix) for the installed java versions and [jEnv Cache](#jenv-cache) on how to cache the *global* java version.
 
-Use `jenv` to switch `java` version.
+The following documentation is for `jenv`. Please note that if the container is removed, that is run with the `-rm` flag, *global* changes will not persist unless jEnv is cached.
 
 List all the available `java` versions:
 
@@ -233,7 +285,7 @@ List all the available `java` versions:
   openjdk64-1.8.0.352
 ```
 
-Switch global `java` version to **Java 8**:
+Switch *global* `java` version to **Java 8**:
 
 ```sh
 root@f7e7773edb7f:/project# jenv global 1.8
@@ -243,7 +295,7 @@ OpenJDK Runtime Environment (build 1.8.0_352-8u352-ga-1~20.04-b08)
 OpenJDK 64-Bit Server VM (build 25.352-b08, mixed mode)
 ```
 
-Switch global `java` version to **Java 11**:
+Switch *global* `java` version to **Java 11**:
 
 ```sh
 root@f7e7773edb7f:/project# jenv global 11
@@ -273,192 +325,26 @@ This can also be done by creating a `.java-version` file in the directory. See t
 ## Build the Docker Image
 
 If you want to build the docker image by yourself, you can use following command.
-The image itself is around 5 GB, so check your free disk space before building it.
+The compressed image itself is around 6 GB and uncompressed it's around 16GB, so check your free disk space before building it.
 
 ```sh
 docker build -t android-build-box .
 ```
 
-## Tags
+## Changelog
 
-You can use a tag to a specific stable version, rather than `latest` of docker image,
-to avoid breaking your build. For example `mingc/android-build-box:1.25.0`
+Please see the dedicated changelog [here](CHANGELOG.md).
 
-**Note**: versions `1.0.0` up to `1.17.0` included every single Build Tool version and every
-Android Platform version available. This generated large Docker images, around 5 GB.
-Newer versions of `android-build-box` only include a subset of the newest Android Tools,
-so the Docker images are smaller.
+## Compatibility
 
-### 1.25.0
-
-* Add Java 17. @@master-bob
-* Android SDK 33 and Newer Implementation @master-bob
-* Add support for SDK version 32 @ramdroid
-* Upgrade flutter from 2.10.3 to 3.0.4 @rishavmehra
-* Upgrade Node.js to Version 16 @wwmun
-* Added pip @iBobik
-* Add git-lfs @LeonDevLifeLog
-
-### 1.24.0
-
-* PR #76: Tidy up to reduce image size @ozmium
-
-### 1.23.1
-
-* Remove JDK 16, Android build not support JDK 16 yet.
-
-### 1.23.0
-
- **NOTE**: missed this tag in DockerHub due to a github action error, should use `1.23.1` instead.
-
-* Upgrade Flutter 2.2.0 to 2.5.1
-* PR #71: Ubuunt 20.04, JDK 16, gradle 7.2 @sedwards
-* Fix #57: Correct repositories.cfg path
-* Add jenv to choose java version
-
-### 1.22.0
-
-* Upgrade Nodejs from 12.x to 14.x
-* Push image to docker hub from github action directly.
-
-### 1.21.1
-
-* Update dockerhub build hook.
-
-### 1.21.0
-
-* Upgrade Flutter to 2.2.0
-* CI switched from travis-ci to Github Action.
-* PR #63: Add cache gradle to README @dewijones92
-* PR #62: Make the Android SDK directory writeable @DanDevine
-* Fix #60: Remove BUNDLE_GEMFILE env.
-* PR #59: Fix #58: Updated README: Run emulator with ADB_INSTALL_TIMEOUT @felHR85
-
-### 1.20.0
-
-* Upgrade Flutter to 1.22.0
-* Upgrade NDK to r21d
-
-### 1.19.0
-
-* PR #50: Remove all the "extras" items of local libraries in the Android SDK  @ozmium
-* Fix #48: Add timezone setting
-
-### 1.18.0
-
-* Add platform sdk 30 and build build 30.0.0
-* PR #47: Remove old Build Tools (versions 24-17), and old Android Platform versions (versions 24-16), and old Google APIs (versions 24-16) @ozmium
-
-### 1.17.0
-
-* Add build-tools;29.0.3
-
-### 1.16.0
-
-* Upgrade Flutter to 1.17.1.
-
-### 1.15.0
-
-* PR #41: Update Dockerfile to install Yarn, fastlane using bundler. @mayankkapoor
-
-### 1.14.0
-
-* Upgrade NDK to r21.
-* Upgrade nodejs to 12.x.
-
-### 1.13.0
-
-* Upgrade flutter to v1.12.13+hotfix.8.
-
-### 1.12.0
-
-* Add bundler for fastlane.
-
-### 1.11.2
-
-* Fix #34: Add android sdk level 29 license.
-
-### 1.11.1
-
-* Add file, less and tiny-vim
-
-### 1.11.0
-
-* Upgrade NDK from r19 to r20.
-
-### 1.10.0
-
-* Upgrade Flutter from 1.2.1 to 1.5.4.
-
-### 1.9.0
-
-* Upgrade Ubuntu from 17.10 to 18.04.
-
-### 1.8.0
-
-* Upgrade Flutter from 1.0.0 to 1.2.1.
-
-### 1.7.0
-
-* Upgrade ndk from 18b to 19.
-
-### 1.6.0
-
-* Upgrade nodejs from 8.x to 10.x
-
-### 1.5.1
-
-* Do not send flutter analytics
-
-### 1.5.0
-
-* Add Flutter 1.0
-
-### 1.4.0
-
-* Add kotlin 1.3 support.
-
-### 1.3.0
-
-* PR #21: Update sdk to 28.
-
-### 1.2.0
-
-* PR #17: Update sdk to 27.
-* PR #20: Fix issue #18 Remove pre-installed x86_64 emulator. Explain how to create and launch an ARM emulator.
-
-### 1.1.2
-
-* Fix License for package not accepted issue
-
-
-### 1.1.1
-
-* Fix environment variable concatenation
-
-
-### 1.1.0
-
-* Update to latest sdk 25.2.3 and ndk 13b; add build tools 21.1.2 22.0.1 23.0.1 23.0.2 23.0.3 24 24.0.1 24.0.2 24.0.3 25 25.0.1 25.0.2 25.2.3
-* nodejs 7.x and react-native support
-* fastlane support
-
-
-### 1.0.0
-
-* Initial release
-* Android SDK 16,17,18,19.20,21,22,23,24
-* Android build tool 24.0.2
-* Android NDK r13
-* extra-android-m2repository
-* extra-google-google\_play\_services
-* extra-google-m2repository
-
+Please see the compatibility matrices [here](COMPATIBILITY.md).
 
 ## Contribution
 
 If you want to enhance this docker image or fix something,
-feel free to send [pull request](https://github.com/mingchen/docker-android-build-box/pull/new/master).
+feel free to send a [pull request](https://github.com/mingchen/docker-android-build-box/pull/new/master).
+
+Please also preface commits with `DOCS:` when editing any documentation and `CI:` when editing `.github/workflows/`.
 
 
 ## References
