@@ -261,7 +261,7 @@ Note that x86_64 emulators are not currently supported. See [Issue #18](https://
 
 ### Choose the system Java version
 
-As of 1.23.0, `jenv` is used to switch `java` versions. Versions prior to 1.23.0 used `update-alternatives`; brief documentation is available [here](https://github.com/mingchen/docker-android-build-box/tree/95fde4a765cecf6d43b084190394fd43bef5bfd1#choose-the-system-java-version). 
+As of `1.23.0`, `jenv` is used to switch `java` versions. Versions prior to `1.23.0` used `update-alternatives`; brief documentation is available [here](https://github.com/mingchen/docker-android-build-box/tree/95fde4a765cecf6d43b084190394fd43bef5bfd1#choose-the-system-java-version). 
 
 Please also see the [installed java versions matrix](COMPATIBILITY.md#Installed-Java-Versions-Matrix) for the installed java versions and [jEnv Cache](#jenv-cache) on how to cache the *global* java version.
 
