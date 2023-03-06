@@ -138,7 +138,7 @@ Setting the following `jvmargs` for gradle are suggested:
 * `-Xmx8192m`
   * Sets the max memory the JVM may use to 8192m, values of g, that is gb, are supported.
 * `-XX:MaxMetaspaceSize=1024m`
-  * Must set due to gradle bug @gradle/gradle#19750, else is unbounded.
+  * Must set due to gradle bug gradle/gradle#19750, else is unbounded.
 * `-XX:+UseContainerSupport`
   * Allow JVM to know it's in a container, optional as is default.
 * `-XX:MaxRAMPercentage=97.5`
@@ -263,9 +263,9 @@ Note that x86_64 emulators are not currently supported. See [Issue #18](https://
 
 As of 1.23.0, `jenv` is used to switch `java` versions. Versions prior to 1.23.0 used `update-alternatives`; brief documentation is available [here](https://github.com/mingchen/docker-android-build-box/tree/95fde4a765cecf6d43b084190394fd43bef5bfd1#choose-the-system-java-version). 
 
-Please also see the [installed java versions matrix](COMPATIBILITY.md#Installed-Java-Versions-Matrix) for the installed java versions and the [caches section](#jenv cache) on how to cache the global java version.
+Please also see the [installed java versions matrix](COMPATIBILITY.md#Installed-Java-Versions-Matrix) for the installed java versions and [jEnv Cache](#jenv-cache) on how to cache the *global* java version.
 
-The following documentation is for `jenv`. Please note that if the container is removed, that is run with the `-rm` flag, changes will not persist.
+The following documentation is for `jenv`. Please note that if the container is removed, that is run with the `-rm` flag, *global* changes will not persist unless jEnv is cached.
 
 List all the available `java` versions:
 
@@ -285,7 +285,7 @@ List all the available `java` versions:
   openjdk64-1.8.0.352
 ```
 
-Switch global `java` version to **Java 8**:
+Switch *global* `java` version to **Java 8**:
 
 ```sh
 root@f7e7773edb7f:/project# jenv global 1.8
@@ -295,7 +295,7 @@ OpenJDK Runtime Environment (build 1.8.0_352-8u352-ga-1~20.04-b08)
 OpenJDK 64-Bit Server VM (build 25.352-b08, mixed mode)
 ```
 
-Switch global `java` version to **Java 11**:
+Switch *global* `java` version to **Java 11**:
 
 ```sh
 root@f7e7773edb7f:/project# jenv global 11
