@@ -87,7 +87,7 @@ docker run --rm -v `pwd`:/project mingc/android-build-box bash -c 'cd /project; 
 Run docker image with interactive bash shell:
 
 ```sh
-docker run -v `pwd`:/project -it mingc/android-build-box bash
+docker run -v `pwd`:/project -it mingc/android-build-box bash -l
 ```
 
 ### Caches
@@ -106,7 +106,7 @@ Second create a *named volume*, named `jenv-cache`. A *named volume* is necessar
 # docker volume create --driver local --opt type=none --opt device=~/.dockercache/jenv/ --opt o=bind jenv-cache
 ```
 
-And finally when you crete / run the container, be sure to include the *named volume* by adding the following to the command:
+And finally when you create / run the container, be sure to include the *named volume* by adding the following to the command:
 ```sh
 -v jenv-cache:"/root/.jenv/"
 ```
