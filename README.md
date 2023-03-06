@@ -68,6 +68,8 @@ Take a look at the [**Tags List**](https://github.com/mingchen/docker-android-bu
 
 ### Use the image to build an Android project
 
+Please see the [caches section](#caches) for how to use caching.
+
 You can use this docker image to build your Android project with a single docker command:
 
 ```sh
@@ -82,23 +84,75 @@ cd <android project directory>  # change working directory to your project root 
 docker run --rm -v `pwd`:/project mingc/android-build-box bash -c 'cd /project; ./gradlew bundleRelease'
 ```
 
-
 Run docker image with interactive bash shell:
 
 ```sh
 docker run -v `pwd`:/project -it mingc/android-build-box bash
 ```
 
-Add the following arguments to the docker command to cache the home gradle folder:
+### Caches
 
+#### jEnv Cache
+
+To allow for the global java setting via jEnv, the file `/root/.jenv/version`, to be cached the simplest way is to cache the complete jEnv folder, `/root/.jenv/`.
+
+The initial step is to create a named volume. First create the directory on the host where jEnv will be cached. For this example it will be in `~/.dockercache/jenv/`:
+```sh
+# mkdir ~/.dockercache/jenv
+```
+
+Second create a *named volume*, named `jenv-cache`. A *named volume* is necessary to allow the container's contents of jEnv to remain. The simplest manner is as follows:
+```sh
+# docker volume create --driver local --opt type=none --opt device=~/.dockercache/jenv/ --opt o=bind jenv-cache
+```
+
+And finally when you start / run the container, be sure to include the *named volume* by adding the following to the command:
+```sh
+-v jenv-cache:"/root/.jenv/"
+```
+e.g.
+```sh
+# docker run --rm -v jenv-cache:"/root/.jenv/" mingc/android-build-box bash -l `echo "Hello World"`
+```
+
+#### Gradle Cache
+
+Add the following arguments to the docker command to cache the home gradle folder:
 ```sh
 -v "$HOME/.dockercache/gradle":"/root/.gradle"
 ```
-
 e.g.
-
 ```sh
 docker run --rm -v `pwd`:/project  -v "$HOME/.dockercache/gradle":"/root/.gradle"   mingc/android-build-box bash -c 'cd /project; ./gradlew build'
+```
+
+The final step is to turn caching on by adding:
+```sh
+org.gradle.caching=true
+```
+to your `gradle.properties`. Either the project's `gradle.properties` or the global `gradle.properties` in `$HOME/.dockercache/gradle/gradle.properties`.
+
+### Suggested gradle.properties
+
+Setting the following `jvmargs` for gradle are suggested:
+* `-Xmx8192m`
+  * Sets the max memory the JVM may use to 8192m, values of g, that is gb, are supported.
+* `-XX:MaxMetaspaceSize=1024m`
+  * Must set due to gradle bug @gradle/gradle#19750, else is unbounded.
+* `-XX:+UseContainerSupport`
+  * Allow JVM to know it's in a container, optional as is default.
+* `-XX:MaxRAMPercentage=97.5`
+  * Allow JVM to use at most 97.5% of the RAM in container, can be set to 1.
+
+The total memory available to the container should be greater than the Xmx value + the MaxMetaspaceSize. For example, if 10gb is allocated to the container, and using the already listed values, then we have 10gb = 8gb (Xmx) + 1gb (MaxMetaspaceSize) + 1gb (overhead / buffer / other). If the container has 4gb of memory available than the following would be reasonable settings: 4gb = 3072m (Xmx) + 756m (MaxMetaspaceSize) + 256mb (overhead / etc).
+
+In total the `gradle.properties` would be:
+```sh
+org.gradle.jvmargs=-Xmx8192m -XX:MaxMetaspaceSize=1024m -XX:+UseContainerSupport -XX:MaxRAMPercentage=97.5
+```
+or
+```sh
+org.gradle.jvmargs=-Xmx3072m -XX:MaxMetaspaceSize=756m -XX:+UseContainerSupport -XX:MaxRAMPercentage=97.5
 ```
 
 ### Build an Android project with [Bitbucket Pipelines](https://bitbucket.org/product/features/pipelines)
@@ -209,7 +263,7 @@ Note that x86_64 emulators are not currently supported. See [Issue #18](https://
 
 As of 1.23.0, `jenv` is used to switch `java` versions. Versions prior to 1.23.0 used `update-alternatives`; brief documentation is available [here](https://github.com/mingchen/docker-android-build-box/tree/95fde4a765cecf6d43b084190394fd43bef5bfd1#choose-the-system-java-version). 
 
-Please also see the [installed java versions matrix](COMPATIBILITY.md#Installed-Java-Versions-Matrix).
+Please also see the [installed java versions matrix](COMPATIBILITY.md#Installed-Java-Versions-Matrix) for the installed java versions and the [caches section](#jenv cache) on how to cache the global java version.
 
 The following documentation is for `jenv`. Please note that if the container is removed, that is run with the `-rm` flag, changes will not persist.
 
