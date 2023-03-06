@@ -342,7 +342,9 @@ Please see the compatibility matrices [here](COMPATIBILITY.md).
 ## Contribution
 
 If you want to enhance this docker image or fix something,
-feel free to send [pull request](https://github.com/mingchen/docker-android-build-box/pull/new/master).
+feel free to send a [pull request](https://github.com/mingchen/docker-android-build-box/pull/new/master).
+
+Please also preface commits with `DOCS:` when editing any documentation and `CI:` when editing `.github/workflows/`.
 
 
 ## References
