@@ -96,7 +96,7 @@ docker run -v `pwd`:/project -it mingc/android-build-box bash
 
 To allow for the global java setting via jEnv, the file `/root/.jenv/version`, to be cached the simplest way is to cache the complete jEnv folder, `/root/.jenv/`.
 
-The initial step is to create a named volume. First create the directory on the host where jEnv will be cached. For this example it will be in `~/.dockercache/jenv/`:
+First create the directory on the host where jEnv will be cached. For this example it will be in `~/.dockercache/jenv/`:
 ```sh
 # mkdir ~/.dockercache/jenv
 ```
@@ -106,7 +106,7 @@ Second create a *named volume*, named `jenv-cache`. A *named volume* is necessar
 # docker volume create --driver local --opt type=none --opt device=~/.dockercache/jenv/ --opt o=bind jenv-cache
 ```
 
-And finally when you start / run the container, be sure to include the *named volume* by adding the following to the command:
+And finally when you crete / run the container, be sure to include the *named volume* by adding the following to the command:
 ```sh
 -v jenv-cache:"/root/.jenv/"
 ```
