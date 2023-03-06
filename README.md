@@ -61,7 +61,8 @@ docker pull mingc/android-build-box:latest
 **Hint:** You can use a tag to a specific stable version,
 rather than `latest` of docker image, to avoid breaking your build.
 e.g. `mingc/android-build-box:1.25.0`.
-Take a look at the [**Tags**](#tags) section, at the bottom of this page, to see all the available tags.
+
+Take a look at the [**Tags List**](https://github.com/mingchen/docker-android-build-box/tags) to see all the available tags, the [Changelog](CHANGELOG.md) to see the changes between tags, and the [Compatibility Matrices](COMPATIBILITY.md) to see matrices of the various software available, that is tag `1.2.0` has SDKs x, y, and z... etc.
 
 ## Usage
 
@@ -275,14 +276,6 @@ The compressed image itself is around 6 GB and uncompressed it's around 16GB, so
 ```sh
 docker build -t android-build-box .
 ```
-
-## Tags
-
-You can use a tag to a specific stable version, rather than `latest` of docker image,
-to avoid breaking your build. For example `mingc/android-build-box:1.25.0`.
-
-**Note**: versions `1.0.0` up to `1.17.0` included every single Build Tool version and every
-Android Platform version available at the time. Newer versions of `android-build-box` only include a subset of the newest Android Tools.
 
 ## Changelog
 
