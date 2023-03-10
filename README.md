@@ -265,7 +265,7 @@ As of `1.23.0`, `jenv` is used to switch `java` versions. Versions prior to `1.2
 
 Please also see the [installed java versions matrix](COMPATIBILITY.md#Installed-Java-Versions-Matrix) for the installed java versions and [jEnv Cache](#jenv-cache) on how to cache the *global* java version.
 
-The following documentation is for `jenv`. Please note that if the container is removed, that is run with the `-rm` flag, *global* changes will not persist unless jEnv is cached.
+The following documentation is for `jenv`. Please note that if the container is removed, that is run with the `--rm` flag, *global* changes will not persist unless jEnv is cached.
 
 List all the available `java` versions:
 
