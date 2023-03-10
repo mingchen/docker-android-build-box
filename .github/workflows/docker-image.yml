@@ -60,6 +60,8 @@ jobs:
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@4b4e9c3e2d4531116a6f8ba8e71fc6e2cb6e6c8c
+      with:
+        driver: docker
 
     - name: Pre build
       run: |
@@ -90,13 +92,12 @@ jobs:
         # check disk space one more time
         df -h
 
-    - name: Build local docker image for test
-      # if: github.event_name != 'pull_request'
-      run: |
-        TAG=$GITHUB_SHA
-        docker build . \
-            --file Dockerfile \
-            --tag ${{ env.IMAGE_NAME}}:${{ env.TAG}}
+    - name: Build and load local docker image for test
+      uses: docker/build-push-action@v4
+      with:
+        context: .
+        load: true
+        tags: ${{ env.IMAGE_NAME}}:${{ env.TAG}}
 
     - name: Inspect local docker image
       run: |
