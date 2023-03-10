@@ -89,7 +89,6 @@ RUN apt-get update -qq > /dev/null && \
         zip \
         zipalign \
         s3cmd \
-        python \
         python3-pip \
         zlib1g-dev > /dev/null && \
     git lfs install > /dev/null && \
