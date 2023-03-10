@@ -30,6 +30,9 @@ ENV NODE_VERSION="16.x"
 #bundletool version
 ENV BUNDLETOOL_VERSION="1.14.0"
 
+#Flutter Version
+ENV FLUTTER_VERSION="3.7.7"
+
 # Set locale
 ENV LANG="en_US.UTF-8" \
     LANGUAGE="en_US.UTF-8" \
@@ -217,7 +220,7 @@ RUN du -sh $ANDROID_HOME
 RUN echo "Flutter sdk" && \
     if [ "$(uname -m)" != "x86_64" ]; then echo "Flutter only support Linux x86 64bit. skip for $(uname -m)"; exit 0; fi && \
     cd /opt && \
-    wget --quiet https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.0.4-stable.tar.xz -O flutter.tar.xz && \
+    wget --quiet https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${FLUTTER_VERSION}-stable.tar.xz -O flutter.tar.xz && \
     tar xf flutter.tar.xz && \
     git config --global --add safe.directory $FLUTTER_HOME && \
     flutter config --no-analytics && \
