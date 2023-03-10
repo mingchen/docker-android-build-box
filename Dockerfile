@@ -166,7 +166,6 @@ RUN echo "platforms" && \
         "platforms;android-29" \
         "platforms;android-28" \
         "platforms;android-27" \
-        "platforms;android-26" \
         > /dev/null
 
 RUN echo "platform tools" && \
@@ -174,7 +173,7 @@ RUN echo "platform tools" && \
     yes | $ANDROID_SDK_MANAGER \
         "platform-tools" > /dev/null
 
-RUN echo "build tools 26-30" && \
+RUN echo "build tools 27-33" && \
     . /etc/jdk.env && \
     yes | $ANDROID_SDK_MANAGER \
         "build-tools;33.0.0" \
@@ -183,8 +182,7 @@ RUN echo "build tools 26-30" && \
         "build-tools;30.0.0" "build-tools;30.0.2" "build-tools;30.0.3" \
         "build-tools;29.0.3" "build-tools;29.0.2" \
         "build-tools;28.0.3" "build-tools;28.0.2" \
-        "build-tools;27.0.3" "build-tools;27.0.2" "build-tools;27.0.1" \
-        "build-tools;26.0.2" "build-tools;26.0.1" "build-tools;26.0.0" > /dev/null
+        "build-tools;27.0.3" "build-tools;27.0.2" "build-tools;27.0.1" > /dev/null
 
 # seems there is no emulator on arm64
 # Warning: Failed to find package emulator
