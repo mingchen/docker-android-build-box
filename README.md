@@ -92,6 +92,8 @@ docker run -v `pwd`:/project -it mingc/android-build-box bash -l
 
 ### Caches
 
+Please be aware that caching will not reduce the total disk space needed, but will increase it. For example, with the [Android SDK](#android-sdk-cache) this will potentially double the amound of space. First there is the space needed for the image itself, and then the space needed for the cache. For example for `1.25.0`, the image needs 16.2GB of space and then if one where to cache the SDK, without any changes, then there would be an additional 6GB of space needed; 16.2GB (raw image) + SDK Cache (6GB by default).
+
 #### jEnv Cache
 
 To allow for the global java setting via jEnv, the file `/root/.jenv/version`, to be cached the simplest way is to cache the complete jEnv folder, `/root/.jenv/`.
@@ -132,6 +134,51 @@ org.gradle.caching=true
 ```
 to your `gradle.properties`. Either the project's `gradle.properties` or the global `gradle.properties` in `$HOME/.dockercache/gradle/gradle.properties`.
 
+#### Android SDK Cache
+
+The benefit of caching the SDK is it allows for SDK platforms / build-tools to be updated / removed in the image. For example, in `1.25.0` one could drop SDKs 27, 28, and 29; as well as adding build-tools 34. As of `1.25.0` `/opt/android-sdk/` will need about 6G of disk space.
+
+As with the [jEnv cache](#jenv-cache) a named volume will be needed.
+
+First create the directory on the host where the SDKs will be cached. For this example it will be in `~/.dockercache/android-sdk/`:
+```sh
+# mkdir ~/.dockercache/android-sdk
+```
+
+Second create a *named volume*, named `android-sdk-cache`. A *named volume* is necessary to allow the container's contents of jEnv to remain. The simplest manner is as follows:
+```sh
+# docker volume create --driver local --opt type=none --opt device=~/.dockercache/android-sdk/ --opt o=bind android-sdk-cache
+android-sdk-cache
+```
+
+And finally when you create / run the container, be sure to include the *named volume* by adding the following to the command:
+```sh
+-v android-sdk-cache:"/opt/android-sdk/"
+```
+e.g.
+```sh
+# docker run --rm -v android-sdk-cache:"/opt/android-sdk/" mingc/android-build-box bash -l
+```
+
+Now within the container one may interact with the sdkmanager to install build tools, platforms, etc as needed. Some brief commands...
+to list what is installed:
+```sh
+# sdkmanager --list_installed
+```
+To uninstall a platform:
+```sh
+# sdkmanager --uninstall 'platforms;android-26'
+```
+To install a platform:
+```sh
+# sdkmanager --install 'platforms;android-26'
+```
+Both the `--install` and `--uninstall` flags allow for a list to be passed, that is:
+```sh
+# sdkmanager --uninstall 'platforms;android-26' 'platforms;android-27'
+```
+
+Full documentation is available [here](https://developer.android.com/studio/command-line/sdkmanager).
 ### Suggested gradle.properties
 
 Setting the following `jvmargs` for gradle are suggested:
