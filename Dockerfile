@@ -27,6 +27,9 @@ ENV ANDROID_SDK_TOOLS_VERSION="9123335"
 # nodejs version
 ENV NODE_VERSION="16.x"
 
+#bundletool version
+ENV BUNDLETOOL_VERSION="1.14.0"
+
 # Set locale
 ENV LANG="en_US.UTF-8" \
     LANGUAGE="en_US.UTF-8" \
@@ -196,7 +199,7 @@ RUN echo "emulator" && \
 #     yes | $ANDROID_SDK_MANAGER "ndk-bundle" > /dev/null
 
 RUN echo "bundletool" && \
-    wget -q https://github.com/google/bundletool/releases/download/1.9.1/bundletool-all-1.9.1.jar -O bundletool.jar && \
+    wget -q https://github.com/google/bundletool/releases/download/${BUNDLETOOL_VERSION}/bundletool-all-${BUNDLETOOL_VERSION}.jar -O bundletool.jar && \
     mv bundletool.jar $ANDROID_SDK_HOME/cmdline-tools/latest/
 
 RUN echo "NDK" && \
