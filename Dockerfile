@@ -27,6 +27,12 @@ ENV ANDROID_SDK_TOOLS_VERSION="9123335"
 # nodejs version
 ENV NODE_VERSION="16.x"
 
+#bundletool version
+ENV BUNDLETOOL_VERSION="1.14.0"
+
+#Flutter Version
+ENV FLUTTER_VERSION="3.7.7"
+
 # Set locale
 ENV LANG="en_US.UTF-8" \
     LANGUAGE="en_US.UTF-8" \
@@ -86,7 +92,6 @@ RUN apt-get update -qq > /dev/null && \
         zip \
         zipalign \
         s3cmd \
-        python \
         python3-pip \
         zlib1g-dev > /dev/null && \
     git lfs install > /dev/null && \
@@ -164,7 +169,6 @@ RUN echo "platforms" && \
         "platforms;android-29" \
         "platforms;android-28" \
         "platforms;android-27" \
-        "platforms;android-26" \
         > /dev/null
 
 RUN echo "platform tools" && \
@@ -172,7 +176,7 @@ RUN echo "platform tools" && \
     yes | $ANDROID_SDK_MANAGER \
         "platform-tools" > /dev/null
 
-RUN echo "build tools 26-30" && \
+RUN echo "build tools 27-33" && \
     . /etc/jdk.env && \
     yes | $ANDROID_SDK_MANAGER \
         "build-tools;33.0.0" \
@@ -181,8 +185,7 @@ RUN echo "build tools 26-30" && \
         "build-tools;30.0.0" "build-tools;30.0.2" "build-tools;30.0.3" \
         "build-tools;29.0.3" "build-tools;29.0.2" \
         "build-tools;28.0.3" "build-tools;28.0.2" \
-        "build-tools;27.0.3" "build-tools;27.0.2" "build-tools;27.0.1" \
-        "build-tools;26.0.2" "build-tools;26.0.1" "build-tools;26.0.0" > /dev/null
+        "build-tools;27.0.3" "build-tools;27.0.2" "build-tools;27.0.1" > /dev/null
 
 # seems there is no emulator on arm64
 # Warning: Failed to find package emulator
@@ -196,7 +199,7 @@ RUN echo "emulator" && \
 #     yes | $ANDROID_SDK_MANAGER "ndk-bundle" > /dev/null
 
 RUN echo "bundletool" && \
-    wget -q https://github.com/google/bundletool/releases/download/1.9.1/bundletool-all-1.9.1.jar -O bundletool.jar && \
+    wget -q https://github.com/google/bundletool/releases/download/${BUNDLETOOL_VERSION}/bundletool-all-${BUNDLETOOL_VERSION}.jar -O bundletool.jar && \
     mv bundletool.jar $ANDROID_SDK_HOME/cmdline-tools/latest/
 
 RUN echo "NDK" && \
@@ -217,7 +220,7 @@ RUN du -sh $ANDROID_HOME
 RUN echo "Flutter sdk" && \
     if [ "$(uname -m)" != "x86_64" ]; then echo "Flutter only support Linux x86 64bit. skip for $(uname -m)"; exit 0; fi && \
     cd /opt && \
-    wget --quiet https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.0.4-stable.tar.xz -O flutter.tar.xz && \
+    wget --quiet https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${FLUTTER_VERSION}-stable.tar.xz -O flutter.tar.xz && \
     tar xf flutter.tar.xz && \
     git config --global --add safe.directory $FLUTTER_HOME && \
     flutter config --no-analytics && \
