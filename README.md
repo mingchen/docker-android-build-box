@@ -269,6 +269,8 @@ jobs:
       run: rm -fr build
 ```
 
+Note: For improved security reference the action directly by commit hash and not tag. Please see our own [action](.github/workflows/docker-image.yml) for an examples.
+
 ### Run an Android emulator in the Docker build machine
 
 Using guidelines from...
