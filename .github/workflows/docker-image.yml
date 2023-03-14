@@ -36,6 +36,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       IMAGE_NAME: mingc/android-build-box
+      TAG: ${{GITHUB_SHA}}
 
     steps:
     - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c
@@ -91,45 +92,42 @@ jobs:
         TAG=$GITHUB_SHA
         docker build . \
             --file Dockerfile \
-            --tag $IMAGE_NAME:$TAG
+            --tag ${{ env.IMAGE_NAME}}:${{ env.TAG}}
 
     - name: Inspect local docker image
       run: |
-        TAG=$GITHUB_SHA
         docker images
-        docker inspect $IMAGE_NAME:$TAG
+        docker inspect ${{ env.IMAGE_NAME}}:${{ env.TAG}}
 
     - name: Test
       run: |
-        TAG=$GITHUB_SHA
-        docker run --rm $IMAGE_NAME:$TAG env
-        docker run --rm $IMAGE_NAME:$TAG flutter --version
+        docker run --rm ${{ env.IMAGE_NAME}}:${{ env.TAG}} env
+        docker run --rm ${{ env.IMAGE_NAME}}:${{ env.TAG}} flutter --version
 
         echo "Show current java version"
-        docker run --rm $IMAGE_NAME:$TAG java -version
+        docker run --rm ${{ env.IMAGE_NAME}}:${{ env.TAG}} java -version
 
         echo "Set java env to 8"
-        docker run --rm $IMAGE_NAME:$TAG bash -c '. $HOME/.bash_profile && jenv local 1.8 && java -version'
+        docker run --rm ${{ env.IMAGE_NAME}}:${{ env.TAG}} bash -c '. $HOME/.bash_profile && jenv local 1.8 && java -version'
 
         echo "Test jenv recognizes Java 11"
-        docker run --rm $IMAGE_NAME:$TAG bash -c 'jenv local 11 && java -version'
+        docker run --rm ${{ env.IMAGE_NAME}}:${{ env.TAG}} bash -c 'jenv local 11 && java -version'
 
         echo "Test jenv recognizes Java 17"
-        docker run --rm $IMAGE_NAME:$TAG bash -c 'jenv local 17 && java -version'
+        docker run --rm ${{ env.IMAGE_NAME}}:${{ env.TAG}} bash -c 'jenv local 17 && java -version'
 
-        docker run -v `pwd`:/project --rm $IMAGE_NAME:$TAG bash -c 'echo "Current directory: $PWD"'
+        docker run -v `pwd`:/project --rm ${{ env.IMAGE_NAME}}:${{ env.TAG}} bash -c 'echo "Current directory: $PWD"'
 
-        docker run --rm $IMAGE_NAME:$TAG bash -c 'ls -l $ANDROID_SDK_HOME'
-        docker run --rm $IMAGE_NAME:$TAG bash -c 'ls -l $ANDROID_NDK_HOME'
-        docker run --rm $IMAGE_NAME:$TAG bash -c 'ls -l /opt/android-sdk/ndk/'
+        docker run --rm ${{ env.IMAGE_NAME}}:${{ env.TAG}} bash -c 'ls -l $ANDROID_SDK_HOME'
+        docker run --rm ${{ env.IMAGE_NAME}}:${{ env.TAG}} bash -c 'ls -l $ANDROID_NDK_HOME'
+        docker run --rm ${{ env.IMAGE_NAME}}:${{ env.TAG}} bash -c 'ls -l /opt/android-sdk/ndk/'
 
         cd test_projects/SampleProject/
-        docker run --rm -v `pwd`:/project $IMAGE_NAME:$TAG bash -c './gradlew build'
+        docker run --rm -v `pwd`:/project ${{ env.IMAGE_NAME}}:${{ env.TAG}} bash -c './gradlew build'
 
     - name: Remove local docker image
       run: |
-        TAG=$GITHUB_SHA
-        docker rmi $IMAGE_NAME:$TAG
+        docker rmi ${{ env.IMAGE_NAME}}:${{ env.TAG}}
 
     - name: Login to DockerHub
       # if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
