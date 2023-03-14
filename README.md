@@ -17,7 +17,6 @@ It includes the following components:
   * 11
   * 17
 * Android SDKs for platforms:
-  * 26
   * 27
   * 28
   * 29
@@ -26,7 +25,6 @@ It includes the following components:
   * 32
   * 33
 * Android build tools:
-  * 26.0.0 26.0.1 26.0.2
   * 27.0.1 27.0.2 27.0.3
   * 28.0.1 28.0.2 28.0.3
   * 29.0.2 29.0.3
@@ -43,7 +41,7 @@ It includes the following components:
 * Node.js 16, npm, React Native
 * Ruby, RubyGems
 * fastlane
-* Flutter 3.0.4
+* Flutter 3.7.7
 * [jEnv](https://www.jenv.be)
 
 Please also see the [matrixes](COMPATIBILITY.md) file for details on the various software installed for the various tags.
