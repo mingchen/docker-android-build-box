@@ -78,6 +78,10 @@ jobs:
         docker ps -a
         echo "GITHUB_SHA: $GITHUB_SHA"
 
+        # Set up env.TAG
+        echo "TAG=$GITHUB_SHA" >> $GITHUB_ENV
+        echo "TAG: $TAG"
+
         # Remove exist images to free disk space
         docker image prune -a -f
         #docker rmi $(docker images | grep -v IMAGE | awk '{print $3}')
