@@ -143,7 +143,7 @@ First create the directory on the host where the SDKs will be cached. For this e
 # mkdir ~/.dockercache/android-sdk
 ```
 
-Second create a *named volume*, named `android-sdk-cache`. A *named volume* is necessary to allow the container's contents of jEnv to remain. The simplest manner is as follows:
+Second create a named volume, named `android-sdk-cache`. A *named volume* is necessary to allow the container's contents to remain. The simplest manner is as follows:
 ```sh
 # docker volume create --driver local --opt type=none --opt device=~/.dockercache/android-sdk/ --opt o=bind android-sdk-cache
 android-sdk-cache
