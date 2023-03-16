@@ -1,0 +1,17 @@
+#.dockerignore
+
+# Ignore all .md files, except README.md
+*.md
+!README.md
+
+# Ignore the license
+LICENSE
+
+# Ignore git
+.git
+
+# Ignore Github Stuff
+.github
+
+# Ignore test projects
+test_projects
