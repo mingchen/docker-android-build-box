@@ -89,6 +89,10 @@ jobs:
         #docker rmi $(docker images | grep -v IMAGE | awk '{print $3}')
         docker images
 
+        # Remove unneeded and installed software to free up space
+        sudo rm -rf /usr/local/lib/android/sdk
+        sudo rm -rf /opt/hostedtoolcache
+
         # check disk space one more time
         df -h
 
