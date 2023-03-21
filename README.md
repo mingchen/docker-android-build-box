@@ -43,7 +43,7 @@ It includes the following components:
 * Node.js 16, npm, React Native
 * Ruby, RubyGems
 * fastlane
-* Flutter 3.0.4
+* Flutter 3.7.7
 * [jEnv](https://www.jenv.be)
 
 Please also see the [matrixes](COMPATIBILITY.md) file for details on the various software installed for the various tags.
