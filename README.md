@@ -17,7 +17,6 @@ It includes the following components:
   * 11
   * 17
 * Android SDKs for platforms:
-  * 26
   * 27
   * 28
   * 29
@@ -26,7 +25,6 @@ It includes the following components:
   * 32
   * 33
 * Android build tools:
-  * 26.0.0 26.0.1 26.0.2
   * 27.0.1 27.0.2 27.0.3
   * 28.0.1 28.0.2 28.0.3
   * 29.0.2 29.0.3
@@ -145,7 +143,7 @@ First create the directory on the host where the SDKs will be cached. For this e
 # mkdir ~/.dockercache/android-sdk
 ```
 
-Second create a *named volume*, named `android-sdk-cache`. A *named volume* is necessary to allow the container's contents of jEnv to remain. The simplest manner is as follows:
+Second create a named volume, named `android-sdk-cache`. A *named volume* is necessary to allow the container's contents to remain. The simplest manner is as follows:
 ```sh
 # docker volume create --driver local --opt type=none --opt device=~/.dockercache/android-sdk/ --opt o=bind android-sdk-cache
 android-sdk-cache
