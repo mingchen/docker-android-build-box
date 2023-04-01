@@ -1,6 +1,4 @@
-FROM ubuntu:20.04
-
-RUN uname -a && uname -m
+FROM ubuntu:20.04 as ubuntu
 
 # ANDROID_HOME is deprecated
 ENV ANDROID_HOME="/opt/android-sdk" \
@@ -10,13 +8,6 @@ ENV ANDROID_HOME="/opt/android-sdk" \
     ANDROID_NDK_ROOT="/opt/android-sdk/ndk/latest" \
     FLUTTER_HOME="/opt/flutter"
 ENV ANDROID_SDK_MANAGER=${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager
-
-# support amd64 and arm64
-RUN JDK_PLATFORM=$(if [ "$(uname -m)" = "aarch64" ]; then echo "arm64"; else echo "amd64"; fi) && \
-    echo export JDK_PLATFORM=$JDK_PLATFORM >> /etc/jdk.env && \
-    echo export JAVA_HOME="/usr/lib/jvm/java-17-openjdk-$JDK_PLATFORM/" >> /etc/jdk.env && \
-    echo . /etc/jdk.env >> /etc/bash.bashrc && \
-    echo . /etc/jdk.env >> /etc/profile
 
 ENV TZ=America/Los_Angeles
 
@@ -50,6 +41,16 @@ ENV BUNDLETOOL_VERSION="1.14.0"
 #Flutter Version
 ENV FLUTTER_VERSION="3.7.7"
 
+FROM ubuntu as base
+
+RUN uname -a && uname -m
+
+# support amd64 and arm64
+RUN JDK_PLATFORM=$(if [ "$(uname -m)" = "aarch64" ]; then echo "arm64"; else echo "amd64"; fi) && \
+    echo export JDK_PLATFORM=$JDK_PLATFORM >> /etc/jdk.env && \
+    echo export JAVA_HOME="/usr/lib/jvm/java-17-openjdk-$JDK_PLATFORM/" >> /etc/jdk.env && \
+    echo . /etc/jdk.env >> /etc/bash.bashrc && \
+    echo . /etc/jdk.env >> /etc/profile
 
 RUN apt-get clean && \
     apt-get update -qq && \
@@ -144,6 +145,7 @@ RUN echo "sdk tools ${ANDROID_SDK_TOOLS_VERSION}" && \
     mv latest cmdline-tools && \
     rm --force sdk-tools.zip
 
+FROM base as minimal
 # Install SDKs
 # Please keep these in descending order!
 # The `yes` is for accepting all non-standard tool licenses.
@@ -159,6 +161,15 @@ RUN . /etc/jdk.env && \
     $ANDROID_SDK_MANAGER --list > packages.txt && \
     cat packages.txt | grep -v '='
 
+# Copy sdk license agreement files.
+RUN mkdir -p $ANDROID_HOME/licenses
+COPY sdk/licenses/* $ANDROID_HOME/licenses/
+RUN echo "platform tools" && \
+    . /etc/jdk.env && \
+    yes | $ANDROID_SDK_MANAGER \
+        "platform-tools" > /dev/null
+
+FROM minimal as complete
 #
 # https://developer.android.com/studio/command-line/sdkmanager.html
 #
@@ -173,11 +184,6 @@ RUN echo "platforms" && \
         "platforms;android-28" \
         "platforms;android-27" \
         > /dev/null
-
-RUN echo "platform tools" && \
-    . /etc/jdk.env && \
-    yes | $ANDROID_SDK_MANAGER \
-        "platform-tools" > /dev/null
 
 RUN echo "build tools 27-33" && \
     . /etc/jdk.env && \
@@ -229,9 +235,6 @@ RUN echo "Flutter sdk" && \
     flutter config --no-analytics && \
     rm -f flutter.tar.xz
 
-# Copy sdk license agreement files.
-RUN mkdir -p $ANDROID_HOME/licenses
-COPY sdk/licenses/* $ANDROID_HOME/licenses/
 
 # Create some jenkins required directory to allow this image run with Jenkins
 RUN mkdir -p /var/lib/jenkins/workspace && \
