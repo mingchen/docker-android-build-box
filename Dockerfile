@@ -20,6 +20,23 @@ RUN JDK_PLATFORM=$(if [ "$(uname -m)" = "aarch64" ]; then echo "arm64"; else ech
 
 ENV TZ=America/Los_Angeles
 
+# Set locale
+ENV LANG="en_US.UTF-8" \
+    LANGUAGE="en_US.UTF-8" \
+    LC_ALL="en_US.UTF-8"
+
+ARG DEBIAN_FRONTEND="noninteractive" \
+    TERM=dumb \
+    DEBIAN_FRONTEND=noninteractive
+
+# Variables must be references after they are created
+ENV ANDROID_SDK_HOME="$ANDROID_HOME"
+ENV ANDROID_NDK_HOME="$ANDROID_NDK"
+
+ENV PATH="$JAVA_HOME/bin:$PATH:$ANDROID_SDK_HOME/emulator:$ANDROID_SDK_HOME/cmdline-tools/latest/bin:$ANDROID_SDK_HOME/tools:$ANDROID_SDK_HOME/platform-tools:$ANDROID_NDK:$FLUTTER_HOME/bin:$FLUTTER_HOME/bin/cache/dart-sdk/bin"
+
+# Installed Software Versions
+
 # Get the latest version from https://developer.android.com/studio/index.html
 # "9123335" as of 2023/01/11
 ENV ANDROID_SDK_TOOLS_VERSION="9123335"
@@ -33,25 +50,11 @@ ENV BUNDLETOOL_VERSION="1.14.0"
 #Flutter Version
 ENV FLUTTER_VERSION="3.7.7"
 
-# Set locale
-ENV LANG="en_US.UTF-8" \
-    LANGUAGE="en_US.UTF-8" \
-    LC_ALL="en_US.UTF-8"
 
 RUN apt-get clean && \
     apt-get update -qq && \
     apt-get install -qq -y apt-utils locales && \
     locale-gen $LANG
-
-ENV DEBIAN_FRONTEND="noninteractive" \
-    TERM=dumb \
-    DEBIAN_FRONTEND=noninteractive
-
-# Variables must be references after they are created
-ENV ANDROID_SDK_HOME="$ANDROID_HOME"
-ENV ANDROID_NDK_HOME="$ANDROID_NDK"
-
-ENV PATH="$JAVA_HOME/bin:$PATH:$ANDROID_SDK_HOME/emulator:$ANDROID_SDK_HOME/cmdline-tools/latest/bin:$ANDROID_SDK_HOME/tools:$ANDROID_SDK_HOME/platform-tools:$ANDROID_NDK:$FLUTTER_HOME/bin:$FLUTTER_HOME/bin/cache/dart-sdk/bin"
 
 WORKDIR /tmp
 
