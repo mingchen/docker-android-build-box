@@ -132,7 +132,7 @@ RUN apt-get update -qq > /dev/null && \
     apt-get -y clean && apt-get -y autoremove && rm -rf /var/lib/apt/lists/* && \
     rm -rf /tmp/* /var/tmp/*
 
-# Install Android SDK
+# Install Android SDK CLI
 RUN echo "sdk tools ${ANDROID_SDK_TOOLS_VERSION}" && \
     wget --quiet --output-document=sdk-tools.zip \
         "https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_SDK_TOOLS_VERSION}_latest.zip" && \
