@@ -59,6 +59,7 @@ RUN JDK_PLATFORM=$(if [ "$(uname -m)" = "aarch64" ]; then echo "arm64"; else ech
     echo . /etc/jdk.env >> /etc/bash.bashrc && \
     echo . /etc/jdk.env >> /etc/profile
 
+RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
 RUN apt-get clean && \
     apt-get update -qq && \
     apt-get install -qq -y apt-utils locales && \
@@ -139,6 +140,7 @@ RUN apt-get update -qq > /dev/null && \
     npm cache clean --force > /dev/null && \
     apt-get -y clean && apt-get -y autoremove && rm -rf /var/lib/apt/lists/* && \
     rm -rf /tmp/* /var/tmp/*
+RUN echo 'debconf debconf/frontend select Dialog' | debconf-set-selections
 
 # Install Android SDK CLI
 RUN echo "sdk tools ${ANDROID_SDK_TOOLS_VERSION}" && \
