@@ -3,11 +3,15 @@ ARG DEBIAN_FRONTEND="noninteractive" \
     DEBIAN_FRONTEND=noninteractive
 
 # ARGs
+# All _TAGGED can be "latest" or "tagged"
+ARG NODE_VER="16.x"
+
+ARG BUNDLETOOL_TAGGED="latest"
+ARG BUNDLETOOL_VER="1.14.0"
 
 ARG FLUTTER_TAGGED="latest"
 ARG FLUTTER_VER="3.7.7"
 
-# JENV_TAGGED can be "latest" or "tagged"
 ARG JENV_TAGGED="latest"
 ARG JENV_VER="0.5.4"
 
@@ -40,12 +44,9 @@ ENV PATH="$JAVA_HOME/bin:$PATH:$ANDROID_SDK_HOME/emulator:$ANDROID_SDK_HOME/cmdl
 # "9123335" as of 2023/01/11
 ENV ANDROID_SDK_TOOLS_VERSION="9123335"
 
-# nodejs version
-ENV NODE_VERSION="16.x"
-
-#bundletool version
-ENV BUNDLETOOL_VERSION="1.14.0"
-
+# Enivornment variables for configed software
+ENV NODE_VERSION=${NODE_VER}
+ENV BUNDLETOOL_VERSION=${BUNDLETOOL_VER}
 ENV FLUTTER_VERSION=${FLUTTER_VER}
 ENV JENV_VERSION=${JENV_VER}
 
@@ -217,9 +218,17 @@ RUN echo "emulator" && \
 # RUN echo "NDK" && \
 #     yes | $ANDROID_SDK_MANAGER "ndk-bundle" > /dev/null
 
-RUN echo "bundletool" && \
-    wget -q https://github.com/google/bundletool/releases/download/${BUNDLETOOL_VERSION}/bundletool-all-${BUNDLETOOL_VERSION}.jar -O bundletool.jar && \
-    mv bundletool.jar $ANDROID_SDK_HOME/cmdline-tools/latest/
+FROM minimal as bundletool-base
+RUN echo "bundletool"
+
+FROM bundletool-base as bundletool-tagged
+RUN wget -q https://github.com/google/bundletool/releases/download/${BUNDLETOOL_VERSION}/bundletool-all-${BUNDLETOOL_VERSION}.jar -O $ANDROID_SDK_HOME/cmdline-tools/latest/bundletool.jar
+
+FROM bundletool-base as bundletool-latest
+RUN curl -s https://api.github.com/repos/google/bundletool/releases/latest | grep "browser_download_url.*jar" | cut -d : -f 2,3 | tr -d \" | wget -O $ANDROID_SDK_HOME/cmdline-tools/latest/bundletool.jar -qi -
+
+FROM bundletool-${BUNDLETOOL_TAGGED} as bundletool-final
+RUN echo "bundletool finished"
 
 RUN echo "NDK" && \
     NDK=$(grep 'ndk;' packages.txt | sort | tail -n1 | awk '{print $1}') && \
@@ -291,6 +300,10 @@ RUN git config --global --add safe.directory ~/.jenv && \
     java -version
 
 FROM jenv-final as complete
+COPY --from=stage1 ${ANDROID_HOME} ${ANDROID_HOME}
+COPY --from=stage2 /var/lib/jenkins/workspace /var/lib/jenkins/workspace
+COPY --from=stage2 /home/jenkins /home/jenkins
+COPY --from=bundletool-final $ANDROID_SDK_HOME/cmdline-tools/latest/bundletool.jar $ANDROID_SDK_HOME/cmdline-tools/latest/bundletool.jar
 COPY README.md /README.md
 RUN    chmod -R 775 $ANDROID_HOME
 
