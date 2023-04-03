@@ -253,8 +253,7 @@ FROM minimal as stage2
 RUN mkdir -p /var/lib/jenkins/workspace && \
     mkdir -p /home/jenkins && \
     chmod 777 /home/jenkins && \
-    chmod 777 /var/lib/jenkins/workspace && \
-    chmod -R 775 $ANDROID_HOME
+    chmod 777 /var/lib/jenkins/workspace
 
 FROM flutter-final as stage3
 COPY --from=stage2 /var/lib/jenkins/workspace /var/lib/jenkins/workspace
@@ -293,6 +292,7 @@ RUN git config --global --add safe.directory ~/.jenv && \
 
 FROM jenv-final as complete
 COPY README.md /README.md
+RUN    chmod -R 775 $ANDROID_HOME
 
 ARG BUILD_DATE=""
 ARG SOURCE_BRANCH=""
