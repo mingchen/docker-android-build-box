@@ -178,7 +178,7 @@ RUN echo "platform tools" && \
     yes | $ANDROID_SDK_MANAGER \
         "platform-tools" > /dev/null
 
-FROM minimal as complete
+FROM minimal as intermediary
 #
 # https://developer.android.com/studio/command-line/sdkmanager.html
 #
@@ -263,8 +263,15 @@ RUN echo "fastlane" && \
 
 # Add jenv to control which version of java to use, default to 17.
 ENV PATH="/root/.jenv/shims:/root/.jenv/bin${PATH:+:${PATH}}"
-RUN git clone https://github.com/jenv/jenv.git ~/.jenv && \
-    echo '#!/usr/bin/env bash' >> ~/.bash_profile && \
+FROM intermediary as jenv-tagged
+RUN git clone --depth 1 --branch ${JENV_VERSION} https://github.com/jenv/jenv.git ~/.jenv
+
+FROM intermediary as jenv-latest
+RUN git clone  https://github.com/jenv/jenv.git ~/.jenv
+ENV JENV_VERSION="latest"
+
+FROM jenv-${JENV_TAGGED} as jenv-final
+RUN echo '#!/usr/bin/env bash' >> ~/.bash_profile && \
     echo 'eval "$(jenv init -)"' >> ~/.bash_profile && \
     . ~/.bash_profile && \
     . /etc/jdk.env && \
@@ -276,6 +283,7 @@ RUN git clone https://github.com/jenv/jenv.git ~/.jenv && \
     jenv global 17.0 && \
     java -version
 
+FROM jenv-final as complete
 COPY README.md /README.md
 
 ARG BUILD_DATE=""
