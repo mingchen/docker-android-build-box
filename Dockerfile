@@ -1,3 +1,12 @@
+ARG DEBIAN_FRONTEND="noninteractive" \
+    TERM=dumb \
+    DEBIAN_FRONTEND=noninteractive
+
+# jEnv ARGs
+# JENV_TAGGED can be "latest" or "tagged"
+ARG JENV_TAGGED="latest"
+ARG JENV_VER="0.5.4"
+
 FROM ubuntu:20.04 as ubuntu
 
 # ANDROID_HOME is deprecated
@@ -22,10 +31,6 @@ ENV ANDROID_NDK_HOME="$ANDROID_NDK"
 
 ENV PATH="$JAVA_HOME/bin:$PATH:$ANDROID_SDK_HOME/emulator:$ANDROID_SDK_HOME/cmdline-tools/latest/bin:$ANDROID_SDK_HOME/tools:$ANDROID_SDK_HOME/platform-tools:$ANDROID_NDK:$FLUTTER_HOME/bin:$FLUTTER_HOME/bin/cache/dart-sdk/bin"
 
-ARG DEBIAN_FRONTEND="noninteractive" \
-    TERM=dumb \
-    DEBIAN_FRONTEND=noninteractive
-
 # Installed Software Versions
 # Get the latest version from https://developer.android.com/studio/index.html
 # "9123335" as of 2023/01/11
@@ -39,6 +44,9 @@ ENV BUNDLETOOL_VERSION="1.14.0"
 
 #Flutter Version
 ENV FLUTTER_VERSION="3.7.7"
+
+# jEnv version
+ENV JENV_VERSION=${JENV_VER}
 
 FROM ubuntu as base
 
