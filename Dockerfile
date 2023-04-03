@@ -278,7 +278,8 @@ RUN git clone  https://github.com/jenv/jenv.git ~/.jenv
 ENV JENV_VERSION="latest"
 
 FROM jenv-${JENV_TAGGED} as jenv-final
-RUN echo '#!/usr/bin/env bash' >> ~/.bash_profile && \
+RUN git config --global --add safe.directory ~/.jenv && \
+    echo '#!/usr/bin/env bash' >> ~/.bash_profile && \
     echo 'eval "$(jenv init -)"' >> ~/.bash_profile && \
     . ~/.bash_profile && \
     . /etc/jdk.env && \
