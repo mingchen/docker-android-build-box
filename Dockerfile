@@ -48,7 +48,7 @@ ENV ANDROID_SDK_TOOLS_VERSION="9123335"
 ENV NODE_VERSION=${NODE_VER}
 ENV BUNDLETOOL_VERSION=${BUNDLETOOL_VER}
 ENV FLUTTER_VERSION=${FLUTTER_VER}
-ENV JENV_VERSION=${JENV_VER}
+ENV JENV_RELEASE=${JENV_VER}
 
 FROM ubuntu as base
 
@@ -277,13 +277,15 @@ RUN echo "fastlane" && \
     bundle install --quiet
 
 # Add jenv to control which version of java to use, default to 17.
+FROM stage3 as jenv-base
 ENV PATH="/root/.jenv/shims:/root/.jenv/bin${PATH:+:${PATH}}"
-FROM stage3 as jenv-tagged
-RUN git clone --depth 1 --branch ${JENV_VERSION} https://github.com/jenv/jenv.git ~/.jenv
 
-FROM stage3 as jenv-latest
+FROM jenv-base as jenv-tagged
+RUN git clone --depth 1 --branch ${JENV_RELEASE} https://github.com/jenv/jenv.git ~/.jenv
+
+FROM jenv-base as jenv-latest
 RUN git clone  https://github.com/jenv/jenv.git ~/.jenv
-ENV JENV_VERSION="latest"
+ENV JENV_RELEASE="see 'jenv --version'"
 
 FROM jenv-${JENV_TAGGED} as jenv-final
 RUN git config --global --add safe.directory ~/.jenv && \
