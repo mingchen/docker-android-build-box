@@ -2,7 +2,11 @@ ARG DEBIAN_FRONTEND="noninteractive" \
     TERM=dumb \
     DEBIAN_FRONTEND=noninteractive
 
-# jEnv ARGs
+# ARGs
+
+ARG FLUTTER_TAGGED="latest"
+ARG FLUTTER_VER="3.7.7"
+
 # JENV_TAGGED can be "latest" or "tagged"
 ARG JENV_TAGGED="latest"
 ARG JENV_VER="0.5.4"
@@ -42,10 +46,7 @@ ENV NODE_VERSION="16.x"
 #bundletool version
 ENV BUNDLETOOL_VERSION="1.14.0"
 
-#Flutter Version
-ENV FLUTTER_VERSION="3.7.7"
-
-# jEnv version
+ENV FLUTTER_VERSION=${FLUTTER_VER}
 ENV JENV_VERSION=${JENV_VER}
 
 FROM ubuntu as base
@@ -178,7 +179,7 @@ RUN echo "platform tools" && \
     yes | $ANDROID_SDK_MANAGER \
         "platform-tools" > /dev/null
 
-FROM minimal as intermediary
+FROM minimal as stage1
 #
 # https://developer.android.com/studio/command-line/sdkmanager.html
 #
@@ -235,16 +236,19 @@ RUN ls -l $ANDROID_HOME && \
 
 RUN du -sh $ANDROID_HOME
 
-RUN echo "Flutter sdk" && \
-    if [ "$(uname -m)" != "x86_64" ]; then echo "Flutter only support Linux x86 64bit. skip for $(uname -m)"; exit 0; fi && \
-    cd /opt && \
-    wget --quiet https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${FLUTTER_VERSION}-stable.tar.xz -O flutter.tar.xz && \
-    tar xf flutter.tar.xz && \
-    git config --global --add safe.directory $FLUTTER_HOME && \
-    flutter config --no-analytics && \
-    rm -f flutter.tar.xz
+# Flutter Instalation
+FROM --platform=linux/amd64 base as flutter-base
+FROM flutter-base as flutter-tagged
+RUN git clone --depth 1 --branch ${FLUTTER_VERSION} https://github.com/flutter/flutter.git /opt/flutter
 
+FROM flutter-base as flutter-latest
+RUN git clone --depth 5 -b stable https://github.com/flutter/flutter.git /opt/flutter
 
+FROM flutter-${FLUTTER_TAGGED} as flutter-final
+RUN flutter config --no-analytics && \
+    git config --global --add safe.directory $FLUTTER_HOME
+
+FROM minimal as stage2
 # Create some jenkins required directory to allow this image run with Jenkins
 RUN mkdir -p /var/lib/jenkins/workspace && \
     mkdir -p /home/jenkins && \
@@ -252,6 +256,9 @@ RUN mkdir -p /var/lib/jenkins/workspace && \
     chmod 777 /var/lib/jenkins/workspace && \
     chmod -R 775 $ANDROID_HOME
 
+FROM flutter-final as stage3
+COPY --from=stage2 /var/lib/jenkins/workspace /var/lib/jenkins/workspace
+COPY --from=stage2 /home/jenkins /home/jenkins
 COPY Gemfile /Gemfile
 
 RUN echo "fastlane" && \
@@ -263,10 +270,10 @@ RUN echo "fastlane" && \
 
 # Add jenv to control which version of java to use, default to 17.
 ENV PATH="/root/.jenv/shims:/root/.jenv/bin${PATH:+:${PATH}}"
-FROM intermediary as jenv-tagged
+FROM stage3 as jenv-tagged
 RUN git clone --depth 1 --branch ${JENV_VERSION} https://github.com/jenv/jenv.git ~/.jenv
 
-FROM intermediary as jenv-latest
+FROM stage3 as jenv-latest
 RUN git clone  https://github.com/jenv/jenv.git ~/.jenv
 ENV JENV_VERSION="latest"
 
