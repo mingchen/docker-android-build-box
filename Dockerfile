@@ -275,16 +275,15 @@ RUN git clone --depth 5 -b stable https://github.com/flutter/flutter.git ${FLUTT
 FROM flutter-${FLUTTER_TAGGED} as flutter-final
 RUN flutter config --no-analytics
 
-FROM minimal as stage2
 # Create some jenkins required directory to allow this image run with Jenkins
+FROM minimal as stage2
 RUN mkdir -p /var/lib/jenkins/workspace && \
     mkdir -p /home/jenkins && \
     chmod 777 /home/jenkins && \
     chmod 777 /var/lib/jenkins/workspace
 
-FROM flutter-final as stage3
-COPY --from=stage2 /var/lib/jenkins/workspace /var/lib/jenkins/workspace
-COPY --from=stage2 /home/jenkins /home/jenkins
+# fastlane installation
+FROM minimal as stage3
 COPY Gemfile /Gemfile
 
 RUN echo "fastlane" && \
