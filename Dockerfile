@@ -277,7 +277,7 @@ FROM flutter-${FLUTTER_TAGGED} as flutter-final
 RUN flutter config --no-analytics
 
 # Create some jenkins required directory to allow this image run with Jenkins
-FROM minimal as stage2
+FROM ubuntu as stage2
 RUN mkdir -p /var/lib/jenkins/workspace && \
     mkdir -p /home/jenkins && \
     chmod 777 /home/jenkins && \
