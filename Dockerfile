@@ -178,8 +178,8 @@ RUN mkdir --parents "$ANDROID_HOME/.android/" && \
 # List all available packages.
 # redirect to a temp file `packages.txt` for later use and avoid show progress
 RUN . /etc/jdk.env && \
-    $ANDROID_SDK_MANAGER --list > packages.txt && \
-    cat packages.txt | grep -v '='
+    $ANDROID_SDK_MANAGER --list > /tmp/packages.txt && \
+    cat /tmp/packages.txt | grep -v '='
 
 # Copy sdk license agreement files.
 RUN mkdir -p $ANDROID_HOME/licenses
@@ -243,13 +243,13 @@ FROM minimal as ndk-base
 RUN echo "NDK"
 
 FROM ndk-base as ndk-tagged
-RUN echo "Installing $NDK" && \
+RUN echo "Installing $NDK_VERSION" && \
     . /etc/jdk.env && \
     yes | $ANDROID_SDK_MANAGER ${DEBUG:+--verbose} "ndk;${NDK_VERSION}" > /dev/null && \
     ln -sv $ANDROID_HOME/ndk/${NDK_VERSION} ${ANDROID_NDK}
 
 FROM ndk-base as ndk-latest
-RUN NDK=$(grep 'ndk;' packages.txt | sort | tail -n1 | awk '{print $1}') && \
+RUN NDK=$(grep 'ndk;' /tmp/packages.txt | sort | tail -n1 | awk '{print $1}') && \
     NDK_VERSION=$(echo $NDK | awk -F\; '{print $2}') && \
     echo "Installing $NDK" && \
     . /etc/jdk.env && \
