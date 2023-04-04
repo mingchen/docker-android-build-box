@@ -258,12 +258,6 @@ RUN NDK=$(grep 'ndk;' /tmp/packages.txt | sort | tail -n1 | awk '{print $1}') &&
 
 FROM ndk-${NDK_TAGGED} as ndk-final
 
-# List sdk and ndk directory content
-RUN ls -l $ANDROID_HOME && \
-    ls -l $ANDROID_HOME/ndk && \
-    ls -l $ANDROID_HOME/ndk/*
-
-RUN du -sh $ANDROID_HOME
 
 # Flutter Instalation
 FROM --platform=linux/amd64 base as flutter-base
@@ -327,6 +321,13 @@ COPY --from=bundletool-final $ANDROID_SDK_HOME/cmdline-tools/latest/bundletool.j
 COPY --from=ndk-final ${ANDROID_NDK_ROOT}/../ ${ANDROID_NDK_ROOT}/../
 COPY README.md /README.md
 RUN    chmod -R 775 $ANDROID_HOME
+
+# List sdk and ndk directory content
+RUN ls -l $ANDROID_HOME && \
+    ls -l $ANDROID_HOME/ndk && \
+    ls -l $ANDROID_HOME/ndk/*
+
+RUN du -sh $ANDROID_HOME
 
 WORKDIR /project
 
