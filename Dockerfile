@@ -314,13 +314,14 @@ RUN git config --global --add safe.directory ~/.jenv && \
     java -version
 
 FROM jenv-final as complete
-COPY --from=stage1 ${ANDROID_HOME} ${ANDROID_HOME}
+COPY --from=stage1 --chmod=775 ${ANDROID_HOME} ${ANDROID_HOME}
 COPY --from=stage2 /var/lib/jenkins/workspace /var/lib/jenkins/workspace
 COPY --from=stage2 /home/jenkins /home/jenkins
 COPY --from=bundletool-final $ANDROID_SDK_HOME/cmdline-tools/latest/bundletool.jar $ANDROID_SDK_HOME/cmdline-tools/latest/bundletool.jar
-COPY --from=ndk-final ${ANDROID_NDK_ROOT}/../ ${ANDROID_NDK_ROOT}/../
+COPY --from=ndk-final --chmod=775 ${ANDROID_NDK_ROOT}/../ ${ANDROID_NDK_ROOT}/../
 COPY README.md /README.md
-RUN    chmod -R 775 $ANDROID_HOME
+
+RUN chmod 775 $ANDROID_HOME $ANDROID_NDK_ROOT/../
 
 # List sdk and ndk directory content
 RUN ls -l $ANDROID_HOME && \
