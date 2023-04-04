@@ -62,6 +62,8 @@ ARG TERM=dumb \
 
 RUN uname -a && uname -m
 
+RUN uname -a && uname -m
+
 # support amd64 and arm64
 RUN JDK_PLATFORM=$(if [ "$(uname -m)" = "aarch64" ]; then echo "arm64"; else echo "amd64"; fi) && \
     echo export JDK_PLATFORM=$JDK_PLATFORM >> /etc/jdk.env && \
