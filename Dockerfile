@@ -248,14 +248,13 @@ RUN du -sh $ANDROID_HOME
 # Flutter Instalation
 FROM --platform=linux/amd64 base as flutter-base
 FROM flutter-base as flutter-tagged
-RUN git clone --depth 1 --branch ${FLUTTER_VERSION} https://github.com/flutter/flutter.git /opt/flutter
+RUN git clone --depth 1 --branch ${FLUTTER_VERSION} https://github.com/flutter/flutter.git ${FLUTTER_HOME}
 
 FROM flutter-base as flutter-latest
-RUN git clone --depth 5 -b stable https://github.com/flutter/flutter.git /opt/flutter
+RUN git clone --depth 5 -b stable https://github.com/flutter/flutter.git ${FLUTTER_HOME}
 
 FROM flutter-${FLUTTER_TAGGED} as flutter-final
-RUN flutter config --no-analytics && \
-    git config --global --add safe.directory $FLUTTER_HOME
+RUN flutter config --no-analytics
 
 FROM minimal as stage2
 # Create some jenkins required directory to allow this image run with Jenkins
@@ -309,6 +308,14 @@ COPY --from=bundletool-final $ANDROID_SDK_HOME/cmdline-tools/latest/bundletool.j
 COPY README.md /README.md
 RUN    chmod -R 775 $ANDROID_HOME
 
+WORKDIR /project
+
+FROM complete as complete-flutter
+COPY --from=flutter-final ${FLUTTER_HOME} ${FLUTTER_HOME}
+COPY --from=flutter-final /root/.flutter /root/.flutter
+COPY --from=flutter-final /root/.config/flutter /root/.config/flutter
+RUN git config --global --add safe.directory ${FLUTTER_HOME}
+
 ARG BUILD_DATE=""
 ARG SOURCE_BRANCH=""
 ARG SOURCE_COMMIT=""
@@ -319,7 +326,6 @@ ENV BUILD_DATE=${BUILD_DATE} \
     SOURCE_COMMIT=${SOURCE_COMMIT} \
     DOCKER_TAG=${DOCKER_TAG}
 
-WORKDIR /project
 
 # labels, see http://label-schema.org/
 LABEL maintainer="Ming Chen"
