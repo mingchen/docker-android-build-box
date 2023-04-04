@@ -1,5 +1,8 @@
 # ARGs
 # All _TAGGED can be "latest" or "tagged"
+ARG NDK_TAGGED="latest"
+ARG NDK_VER="25.2.9519653"
+
 ARG NODE_VER="16.x"
 
 ARG BUNDLETOOL_TAGGED="latest"
@@ -47,6 +50,7 @@ ENV PATH="$JAVA_HOME/bin:$PATH:$ANDROID_SDK_HOME/emulator:$ANDROID_SDK_HOME/cmdl
 ENV ANDROID_SDK_TOOLS_VERSION="9123335"
 
 # Enivornment variables for configed software
+ENV NDK_VERSION=${NDK_VER}
 ENV NODE_VERSION=${NODE_VER}
 ENV BUNDLETOOL_VERSION=${BUNDLETOOL_VER}
 ENV FLUTTER_VERSION=${FLUTTER_VER}
@@ -234,13 +238,24 @@ RUN curl -s https://api.github.com/repos/google/bundletool/releases/latest | gre
 FROM bundletool-${BUNDLETOOL_TAGGED} as bundletool-final
 RUN echo "bundletool finished"
 
-RUN echo "NDK" && \
-    NDK=$(grep 'ndk;' packages.txt | sort | tail -n1 | awk '{print $1}') && \
+FROM minimal as ndk-base
+RUN echo "NDK"
+
+FROM ndk-base as ndk-tagged
+RUN echo "Installing $NDK" && \
+    . /etc/jdk.env && \
+    yes | $ANDROID_SDK_MANAGER "ndk;${NDK_VERSION}" > /dev/null && \
+    ln -sv $ANDROID_HOME/ndk/${NDK_VERSION} ${ANDROID_NDK}
+
+FROM ndk-base as ndk-latest
+RUN NDK=$(grep 'ndk;' packages.txt | sort | tail -n1 | awk '{print $1}') && \
     NDK_VERSION=$(echo $NDK | awk -F\; '{print $2}') && \
     echo "Installing $NDK" && \
     . /etc/jdk.env && \
     yes | $ANDROID_SDK_MANAGER "$NDK" > /dev/null && \
     ln -sv $ANDROID_HOME/ndk/${NDK_VERSION} ${ANDROID_NDK}
+
+FROM ndk-${NDK_TAGGED} as ndk-final
 
 # List sdk and ndk directory content
 RUN ls -l $ANDROID_HOME && \
@@ -309,6 +324,7 @@ COPY --from=stage1 ${ANDROID_HOME} ${ANDROID_HOME}
 COPY --from=stage2 /var/lib/jenkins/workspace /var/lib/jenkins/workspace
 COPY --from=stage2 /home/jenkins /home/jenkins
 COPY --from=bundletool-final $ANDROID_SDK_HOME/cmdline-tools/latest/bundletool.jar $ANDROID_SDK_HOME/cmdline-tools/latest/bundletool.jar
+COPY --from=ndk-final ${ANDROID_NDK_ROOT}/../ ${ANDROID_NDK_ROOT}/../
 COPY README.md /README.md
 RUN    chmod -R 775 $ANDROID_HOME
 
