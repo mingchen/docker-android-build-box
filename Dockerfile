@@ -1,7 +1,3 @@
-ARG DEBIAN_FRONTEND="noninteractive" \
-    TERM=dumb \
-    DEBIAN_FRONTEND=noninteractive
-
 # ARGs
 # All _TAGGED can be "latest" or "tagged"
 ARG NODE_VER="16.x"
@@ -16,6 +12,12 @@ ARG JENV_TAGGED="latest"
 ARG JENV_VER="0.5.4"
 
 FROM ubuntu:20.04 as ubuntu
+# Ensure ARGs are in this build context
+ARG NDK_VER
+ARG NODE_VER
+ARG BUNDLETOOL_VER
+ARG FLUTTER_VER
+ARG JENV_VER
 
 # ANDROID_HOME is deprecated
 ENV ANDROID_HOME="/opt/android-sdk" \
@@ -51,6 +53,8 @@ ENV FLUTTER_VERSION=${FLUTTER_VER}
 ENV JENV_RELEASE=${JENV_VER}
 
 FROM ubuntu as base
+ARG TERM=dumb \
+    DEBIAN_FRONTEND=noninteractive
 
 RUN uname -a && uname -m
 
