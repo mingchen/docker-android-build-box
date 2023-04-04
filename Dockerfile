@@ -165,6 +165,7 @@ RUN echo "sdk tools ${ANDROID_SDK_TOOLS_VERSION}" && \
     rm --force sdk-tools.zip
 
 FROM base as minimal
+ARG DEBUG
 # Install SDKs
 # Please keep these in descending order!
 # The `yes` is for accepting all non-standard tool licenses.
@@ -185,7 +186,7 @@ RUN mkdir -p $ANDROID_HOME/licenses
 COPY sdk/licenses/* $ANDROID_HOME/licenses/
 RUN echo "platform tools" && \
     . /etc/jdk.env && \
-    yes | $ANDROID_SDK_MANAGER \
+    yes | $ANDROID_SDK_MANAGER ${DEBUG:+--verbose} \
         "platform-tools" > /dev/null
 
 FROM minimal as stage1
@@ -194,7 +195,7 @@ FROM minimal as stage1
 #
 RUN echo "platforms" && \
     . /etc/jdk.env && \
-    yes | $ANDROID_SDK_MANAGER \
+    yes | $ANDROID_SDK_MANAGER ${DEBUG:+--verbose} \
         "platforms;android-33" \
         "platforms;android-32" \
         "platforms;android-31" \
@@ -206,7 +207,7 @@ RUN echo "platforms" && \
 
 RUN echo "build tools 27-33" && \
     . /etc/jdk.env && \
-    yes | $ANDROID_SDK_MANAGER \
+    yes | $ANDROID_SDK_MANAGER ${DEBUG:+--verbose} \
         "build-tools;33.0.0" \
         "build-tools;32.0.0" \
         "build-tools;31.0.0" \
@@ -244,7 +245,7 @@ RUN echo "NDK"
 FROM ndk-base as ndk-tagged
 RUN echo "Installing $NDK" && \
     . /etc/jdk.env && \
-    yes | $ANDROID_SDK_MANAGER "ndk;${NDK_VERSION}" > /dev/null && \
+    yes | $ANDROID_SDK_MANAGER ${DEBUG:+--verbose} "ndk;${NDK_VERSION}" > /dev/null && \
     ln -sv $ANDROID_HOME/ndk/${NDK_VERSION} ${ANDROID_NDK}
 
 FROM ndk-base as ndk-latest
@@ -252,7 +253,7 @@ RUN NDK=$(grep 'ndk;' packages.txt | sort | tail -n1 | awk '{print $1}') && \
     NDK_VERSION=$(echo $NDK | awk -F\; '{print $2}') && \
     echo "Installing $NDK" && \
     . /etc/jdk.env && \
-    yes | $ANDROID_SDK_MANAGER "$NDK" > /dev/null && \
+    yes | $ANDROID_SDK_MANAGER ${DEBUG:+--verbose} "$NDK" > /dev/null && \
     ln -sv $ANDROID_HOME/ndk/${NDK_VERSION} ${ANDROID_NDK}
 
 FROM ndk-${NDK_TAGGED} as ndk-final
