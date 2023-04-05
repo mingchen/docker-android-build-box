@@ -23,11 +23,8 @@ ARG BUNDLETOOL_VER
 ARG FLUTTER_VER
 ARG JENV_VER
 
-# TODO - ANDROID_SDK_ROOT is deprecated ANDROID_HOME is ok.
-# https://web.archive.org/web/20230326080511/https://developer.android.com/studio/command-line/variables
 ENV ANDROID_HOME="/opt/android-sdk" \
     ANDROID_SDK_HOME="/opt/android-sdk" \
-    ANDROID_SDK_ROOT="/opt/android-sdk" \
     ANDROID_NDK="/opt/android-sdk/ndk/latest" \
     ANDROID_NDK_ROOT="/opt/android-sdk/ndk/latest" \
     FLUTTER_HOME="/opt/flutter"
