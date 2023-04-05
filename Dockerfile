@@ -171,6 +171,7 @@ RUN echo "sdk tools ${ANDROID_SDK_TOOLS_VERSION}" && \
     rm --force sdk-tools.zip
 
 RUN echo '# Installed Versions of Specified Software' >> ${INSTALLED_VERSIONS} && \
+    echo "ANDROID_SDK_TOOLS_VERSION=${ANDROID_SDK_TOOLS_VERSION}" && \
     echo "NODE_VERSION="${NODE_VERSION} >> ${INSTALLED_VERSIONS}
 
 FROM base as minimal
