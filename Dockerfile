@@ -15,6 +15,10 @@ ARG FLUTTER_VER="3.7.7"
 ARG JENV_TAGGED="latest"
 ARG JENV_VER="0.5.4"
 
+# file to export ENV variables of installed version of software for any software with a latest option
+ARG INSTALLED_TEMP="/tmp/.temp_version"
+ARG INSTALLED_VERSIONS="/root/installed-versions.txt"
+
 FROM ubuntu:20.04 as ubuntu
 # Ensure ARGs are in this build context
 ARG NDK_VER
@@ -22,6 +26,9 @@ ARG NODE_VER
 ARG BUNDLETOOL_VER
 ARG FLUTTER_VER
 ARG JENV_VER
+
+ARG INSTALLED_TEMP
+ARG INSTALLED_VERSIONS
 
 ENV ANDROID_HOME="/opt/android-sdk" \
     ANDROID_SDK_HOME="/opt/android-sdk" \
@@ -163,6 +170,9 @@ RUN echo "sdk tools ${ANDROID_SDK_TOOLS_VERSION}" && \
     mv latest cmdline-tools && \
     rm --force sdk-tools.zip
 
+RUN echo '# Installed Versions of Specified Software' >> ${INSTALLED_VERSIONS} && \
+    echo "NODE_VERSION="${NODE_VERSION} >> ${INSTALLED_VERSIONS}
+
 FROM base as minimal
 ARG DEBUG
 # Install SDKs
@@ -187,6 +197,7 @@ RUN echo "platform tools" && \
     . /etc/jdk.env && \
     yes | $ANDROID_SDK_MANAGER ${DEBUG:+--verbose} \
         "platform-tools" > /dev/null
+
 
 FROM minimal as stage1
 #
@@ -232,9 +243,13 @@ RUN echo "bundletool"
 
 FROM bundletool-base as bundletool-tagged
 RUN wget -q https://github.com/google/bundletool/releases/download/${BUNDLETOOL_VERSION}/bundletool-all-${BUNDLETOOL_VERSION}.jar -O $ANDROID_SDK_HOME/cmdline-tools/latest/bundletool.jar
+RUN echo "BUNDLETOOL_VERSION=${BUNDLETOOL_VERSION}" >> ${INSTALLED_TEMP}
 
 FROM bundletool-base as bundletool-latest
-RUN curl -s https://api.github.com/repos/google/bundletool/releases/latest | grep "browser_download_url.*jar" | cut -d : -f 2,3 | tr -d \" | wget -O $ANDROID_SDK_HOME/cmdline-tools/latest/bundletool.jar -qi -
+RUN TEMP=$(curl -s https://api.github.com/repos/google/bundletool/releases/latest) && \
+    echo "$TEMP" | grep "browser_download_url.*jar" | cut -d : -f 2,3 | tr -d \" | wget -O $ANDROID_SDK_HOME/cmdline-tools/latest/bundletool.jar -qi - && \
+    TAG_NAME=$(echo "$TEMP" | grep "tag_name" | cut -d : -f 2,3 | tr -d \"\ ,) && \
+    echo "BUNDLETOOL_VERSION=$TAG_NAME" >> ${INSTALLED_TEMP}
 
 FROM bundletool-${BUNDLETOOL_TAGGED} as bundletool-final
 RUN echo "bundletool finished"
@@ -244,10 +259,11 @@ FROM minimal as ndk-base
 RUN echo "NDK"
 
 FROM ndk-base as ndk-tagged
-RUN echo "Installing $NDK_VERSION" && \
+RUN echo "Installing ${NDK_VERSION}" && \
     . /etc/jdk.env && \
     yes | $ANDROID_SDK_MANAGER ${DEBUG:+--verbose} "ndk;${NDK_VERSION}" > /dev/null && \
     ln -sv $ANDROID_HOME/ndk/${NDK_VERSION} ${ANDROID_NDK}
+RUN echo "NDK_VERSION=${NDK_VERSION}" >> ${INSTALLED_TEMP}
 
 FROM ndk-base as ndk-latest
 RUN NDK=$(grep 'ndk;' /tmp/packages.txt | sort | tail -n1 | awk '{print $1}') && \
@@ -255,7 +271,8 @@ RUN NDK=$(grep 'ndk;' /tmp/packages.txt | sort | tail -n1 | awk '{print $1}') &&
     echo "Installing $NDK" && \
     . /etc/jdk.env && \
     yes | $ANDROID_SDK_MANAGER ${DEBUG:+--verbose} "$NDK" > /dev/null && \
-    ln -sv $ANDROID_HOME/ndk/${NDK_VERSION} ${ANDROID_NDK}
+    ln -sv $ANDROID_HOME/ndk/$NDK_VERSION ${ANDROID_NDK} && \
+    echo "NDK_VERSION=$NDK_VERSION" >> ${INSTALLED_TEMP}
 
 FROM ndk-${NDK_TAGGED} as ndk-final
 RUN echo "NDK finished"
@@ -263,10 +280,12 @@ RUN echo "NDK finished"
 # Flutter Instalation
 FROM --platform=linux/amd64 base as flutter-base
 FROM flutter-base as flutter-tagged
-RUN git clone --depth 1 --branch ${FLUTTER_VERSION} https://github.com/flutter/flutter.git ${FLUTTER_HOME}
+RUN git clone --depth 1 --branch ${FLUTTER_VERSION} https://github.com/flutter/flutter.git ${FLUTTER_HOME} && \
+    echo "FLUTTER_VERSION=${FLUTTER_VERSION}" >> ${INSTALLED_TEMP}
 
 FROM flutter-base as flutter-latest
-RUN git clone --depth 5 -b stable https://github.com/flutter/flutter.git ${FLUTTER_HOME}
+RUN git clone --depth 5 -b stable https://github.com/flutter/flutter.git ${FLUTTER_HOME} && \
+    cd ${FLUTTER_HOME} && echo "FLUTTER_VERSION="$(git describe --tags HEAD) >> ${INSTALLED_TEMP}
 
 FROM flutter-${FLUTTER_TAGGED} as flutter-final
 RUN flutter config --no-analytics
@@ -294,11 +313,12 @@ FROM stage3 as jenv-base
 ENV PATH="/root/.jenv/shims:/root/.jenv/bin${PATH:+:${PATH}}"
 
 FROM jenv-base as jenv-tagged
-RUN git clone --depth 1 --branch ${JENV_RELEASE} https://github.com/jenv/jenv.git ~/.jenv
+RUN git clone --depth 1 --branch ${JENV_RELEASE} https://github.com/jenv/jenv.git ~/.jenv && \
+    echo "JENV_RELEASE=${JENV_RELEASE}" >> ${INSTALLED_TEMP}
 
 FROM jenv-base as jenv-latest
-RUN git clone  https://github.com/jenv/jenv.git ~/.jenv
-ENV JENV_RELEASE="see 'jenv --version'"
+RUN git clone  https://github.com/jenv/jenv.git ~/.jenv && \
+    cd ~/.jenv && echo "JENV_RELEASE=$(git describe --tags HEAD)" >> ${INSTALLED_TEMP}
 
 FROM jenv-${JENV_TAGGED} as jenv-final
 RUN git config --global --add safe.directory ~/.jenv && \
@@ -320,9 +340,19 @@ COPY --from=stage2 /var/lib/jenkins/workspace /var/lib/jenkins/workspace
 COPY --from=stage2 /home/jenkins /home/jenkins
 COPY --from=bundletool-final $ANDROID_SDK_HOME/cmdline-tools/latest/bundletool.jar $ANDROID_SDK_HOME/cmdline-tools/latest/bundletool.jar
 COPY --from=ndk-final --chmod=775 ${ANDROID_NDK_ROOT}/../ ${ANDROID_NDK_ROOT}/../
+
+COPY --from=bundletool-final ${INSTALLED_TEMP} /tmp/.bundletool_version
+COPY --from=ndk-final ${INSTALLED_TEMP} /tmp/.ndk_version
+COPY --from=jenv-final ${INSTALLED_TEMP} /tmp/.jenv_version
+
 COPY README.md /README.md
 
 RUN chmod 775 $ANDROID_HOME $ANDROID_NDK_ROOT/../
+
+RUN cat /tmp/.bundletool_version >> ${INSTALLED_VERSIONS} && \
+    cat /tmp/.ndk_version >> ${INSTALLED_VERSIONS} && \
+    cat /tmp/.jenv_version >> ${INSTALLED_VERSIONS} && \
+    rm /tmp/.*_version
 
 # List sdk and ndk directory content
 RUN ls -l $ANDROID_HOME && \
@@ -337,7 +367,12 @@ FROM complete as complete-flutter
 COPY --from=flutter-final ${FLUTTER_HOME} ${FLUTTER_HOME}
 COPY --from=flutter-final /root/.flutter /root/.flutter
 COPY --from=flutter-final /root/.config/flutter /root/.config/flutter
-RUN git config --global --add safe.directory ${FLUTTER_HOME}
+COPY --from=flutter-final ${INSTALLED_TEMP} /tmp/.flutter_version
+
+RUN git config --global --add safe.directory ${FLUTTER_HOME} && \
+    cat /tmp/.flutter_version >> ${INSTALLED_VERSIONS} && \
+    rm /tmp/.*_version
+
 
 ARG BUILD_DATE=""
 ARG SOURCE_BRANCH=""
