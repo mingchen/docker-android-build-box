@@ -1,5 +1,6 @@
 # ARGs
 # All _TAGGED can be "latest" or "tagged"
+# when _TAGGED is "tagged" the version in _VER copied to _VERSION will be used.
 ARG NDK_TAGGED="latest"
 ARG NDK_VER="25.2.9519653"
 
@@ -22,7 +23,8 @@ ARG BUNDLETOOL_VER
 ARG FLUTTER_VER
 ARG JENV_VER
 
-# ANDROID_HOME is deprecated
+# TODO - ANDROID_SDK_ROOT is deprecated ANDROID_HOME is ok.
+# https://web.archive.org/web/20230326080511/https://developer.android.com/studio/command-line/variables
 ENV ANDROID_HOME="/opt/android-sdk" \
     ANDROID_SDK_HOME="/opt/android-sdk" \
     ANDROID_SDK_ROOT="/opt/android-sdk" \
@@ -229,6 +231,7 @@ RUN echo "emulator" && \
 # RUN echo "NDK" && \
 #     yes | $ANDROID_SDK_MANAGER "ndk-bundle" > /dev/null
 
+# bundletool Installation
 FROM minimal as bundletool-base
 RUN echo "bundletool"
 
@@ -241,6 +244,7 @@ RUN curl -s https://api.github.com/repos/google/bundletool/releases/latest | gre
 FROM bundletool-${BUNDLETOOL_TAGGED} as bundletool-final
 RUN echo "bundletool finished"
 
+# NDK Installation
 FROM minimal as ndk-base
 RUN echo "NDK"
 
@@ -259,7 +263,7 @@ RUN NDK=$(grep 'ndk;' /tmp/packages.txt | sort | tail -n1 | awk '{print $1}') &&
     ln -sv $ANDROID_HOME/ndk/${NDK_VERSION} ${ANDROID_NDK}
 
 FROM ndk-${NDK_TAGGED} as ndk-final
-
+RUN echo "NDK finished"
 
 # Flutter Instalation
 FROM --platform=linux/amd64 base as flutter-base
