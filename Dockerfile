@@ -31,9 +31,9 @@ ARG JENV_VER
 
 ARG DIRWORK
 ARG FINAL_DIRWORK
+
 ARG INSTALLED_TEMP
 ARG INSTALLED_VERSIONS
-
 
 ENV ANDROID_HOME="/opt/android-sdk" \
     ANDROID_SDK_HOME="/opt/android-sdk" \
@@ -179,10 +179,10 @@ RUN echo '# Installed Versions of Specified Software' >> ${INSTALLED_VERSIONS} &
     echo "ANDROID_SDK_TOOLS_VERSION=${ANDROID_SDK_TOOLS_VERSION}" && \
     echo "NODE_VERSION="${NODE_VERSION} >> ${INSTALLED_VERSIONS}
 
+# minimal build stage
+# intended as a final target
 FROM base as minimal
 ARG DEBUG
-# Install SDKs
-# Please keep these in descending order!
 # The `yes` is for accepting all non-standard tool licenses.
 RUN mkdir --parents "$ANDROID_HOME/.android/" && \
     echo '### User Sources for Android SDK Manager' > \
@@ -206,8 +206,12 @@ RUN echo "platform tools" && \
 
 WORKDIR ${FINAL_DIRWORK}
 
+# stage1 build stage
+# installs the intended android SDKs
 FROM minimal as stage1
 WORKDIR ${DIRWORK}
+# Install SDKs
+# Please keep these in descending order!
 #
 # https://developer.android.com/studio/command-line/sdkmanager.html
 #
@@ -245,7 +249,7 @@ RUN echo "emulator" && \
 # RUN echo "NDK" && \
 #     yes | $ANDROID_SDK_MANAGER "ndk-bundle" > /dev/null
 
-# bundletool Installation
+# bundletool build stage
 FROM minimal as bundletool-base
 WORKDIR ${DIRWORK}
 RUN echo "bundletool"
@@ -263,7 +267,7 @@ RUN TEMP=$(curl -s https://api.github.com/repos/google/bundletool/releases/lates
 FROM bundletool-${BUNDLETOOL_TAGGED} as bundletool-final
 RUN echo "bundletool finished"
 
-# NDK Installation
+# NDK Build Stage
 FROM minimal as ndk-base
 WORKDIR ${DIRWORK}
 RUN echo "NDK"
@@ -287,9 +291,9 @@ RUN NDK=$(grep 'ndk;' ${DIRWORK}/packages.txt | sort | tail -n1 | awk '{print $1
 FROM ndk-${NDK_TAGGED} as ndk-final
 RUN echo "NDK finished"
 
-# Flutter Instalation
+# Flutter build stage
 FROM --platform=linux/amd64 base as flutter-base
-WORKDir ${DIRWORK}
+WORKDIR ${DIRWORK}
 FROM flutter-base as flutter-tagged
 RUN git clone --depth 1 --branch ${FLUTTER_VERSION} https://github.com/flutter/flutter.git ${FLUTTER_HOME} && \
     echo "FLUTTER_VERSION=${FLUTTER_VERSION}" >> ${INSTALLED_TEMP}
@@ -309,7 +313,7 @@ RUN mkdir -p /var/lib/jenkins/workspace && \
     chmod 777 /home/jenkins && \
     chmod 777 /var/lib/jenkins/workspace
 
-# fastlane installation
+# fastlane build stage
 FROM minimal as stage3
 WORKDIR ${DIRWORK}
 COPY Gemfile /Gemfile
@@ -321,6 +325,7 @@ RUN echo "fastlane" && \
     chmod 777 /.fastlane && \
     bundle install --quiet
 
+# jenv build stage
 # Add jenv to control which version of java to use, default to 17.
 FROM stage3 as jenv-base
 ENV PATH="/root/.jenv/shims:/root/.jenv/bin${PATH:+:${PATH}}"
@@ -347,6 +352,8 @@ RUN git config --global --add safe.directory ~/.jenv && \
     jenv global 17.0 && \
     java -version
 
+# complete build stage
+# intended as a final target
 FROM jenv-final as complete
 COPY --from=stage1 --chmod=775 ${ANDROID_HOME} ${ANDROID_HOME}
 COPY --from=stage2 /var/lib/jenkins/workspace /var/lib/jenkins/workspace
@@ -376,6 +383,8 @@ RUN du -sh $ANDROID_HOME
 
 WORKDIR ${FINAL_DIRWORK}
 
+# complete-flutter
+# intended as a final-target, has complete build stage and flutter
 FROM complete as complete-flutter
 COPY --from=flutter-final ${FLUTTER_HOME} ${FLUTTER_HOME}
 COPY --from=flutter-final /root/.flutter /root/.flutter
