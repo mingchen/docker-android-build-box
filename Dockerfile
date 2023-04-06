@@ -46,7 +46,8 @@ ENV ANDROID_HOME="/opt/android-sdk" \
     ANDROID_SDK_HOME="/opt/android-sdk" \
     ANDROID_NDK="/opt/android-sdk/ndk/latest" \
     ANDROID_NDK_ROOT="/opt/android-sdk/ndk/latest" \
-    FLUTTER_HOME="/opt/flutter"
+    FLUTTER_HOME="/opt/flutter" \
+    JENV_HOME="/root/.jenv"
 ENV ANDROID_SDK_MANAGER=${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager
 
 ENV TZ=America/Los_Angeles
@@ -340,18 +341,18 @@ RUN TEMP=$(bundler exec fastlane --version) && \
 # jenv build stage
 # Add jenv to control which version of java to use, default to 17.
 FROM stage3 as jenv-base
-ENV PATH="/root/.jenv/shims:/root/.jenv/bin${PATH:+:${PATH}}"
+ENV PATH="${JENV_HOME}/shims:${JENV_HOME}/bin${PATH:+:${PATH}}"
 
 FROM jenv-base as jenv-tagged
-RUN git clone --depth 1 --branch ${JENV_RELEASE} https://github.com/jenv/jenv.git ~/.jenv && \
+RUN git clone --depth 1 --branch ${JENV_RELEASE} https://github.com/jenv/jenv.git $JENV_HOME && \
     echo "JENV_RELEASE=${JENV_RELEASE}" >> ${INSTALLED_TEMP}
 
 FROM jenv-base as jenv-latest
-RUN git clone  https://github.com/jenv/jenv.git ~/.jenv && \
-    cd ~/.jenv && echo "JENV_RELEASE=$(git describe --tags HEAD)" >> ${INSTALLED_TEMP}
+RUN git clone  https://github.com/jenv/jenv.git $JENV_HOME && \
+    cd $JENV_HOME && echo "JENV_RELEASE=$(git describe --tags HEAD)" >> ${INSTALLED_TEMP}
 
 FROM jenv-${JENV_TAGGED} as jenv-final
-RUN git config --global --add safe.directory ~/.jenv && \
+RUN git config --global --add safe.directory $JENV_HOME && \
     echo '#!/usr/bin/env bash' >> ~/.bash_profile && \
     echo 'eval "$(jenv init -)"' >> ~/.bash_profile && \
     . ~/.bash_profile && \
