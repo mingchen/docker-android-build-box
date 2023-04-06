@@ -16,6 +16,7 @@ ARG JENV_TAGGED="latest"
 ARG JENV_VER="0.5.4"
 
 ARG DIRWORK="/tmp"
+ARG FINAL_DIRWORK="/project"
 # file to export ENV variables of installed version of software for any software with a latest option
 ARG INSTALLED_TEMP="${DIRWORK}/.temp_version"
 ARG INSTALLED_VERSIONS="/root/installed-versions.txt"
@@ -29,6 +30,7 @@ ARG FLUTTER_VER
 ARG JENV_VER
 
 ARG DIRWORK
+ARG FINAL_DIRWORK
 ARG INSTALLED_TEMP
 ARG INSTALLED_VERSIONS
 
@@ -365,7 +367,7 @@ RUN ls -l $ANDROID_HOME && \
 
 RUN du -sh $ANDROID_HOME
 
-WORKDIR /project
+WORKDIR ${FINAL_DIRWORK}
 
 FROM complete as complete-flutter
 COPY --from=flutter-final ${FLUTTER_HOME} ${FLUTTER_HOME}
@@ -395,6 +397,6 @@ LABEL org.label-schema.schema-version="1.0"
 LABEL org.label-schema.name="mingc/android-build-box"
 LABEL org.label-schema.version="${DOCKER_TAG}"
 LABEL org.label-schema.usage="/README.md"
-LABEL org.label-schema.docker.cmd="docker run --rm -v `pwd`:/project mingc/android-build-box bash -c 'cd /project; ./gradlew build'"
+LABEL org.label-schema.docker.cmd="docker run --rm -v `pwd`:${FINAL_DIRWORK} mingc/android-build-box bash -c './gradlew build'"
 LABEL org.label-schema.build-date="${BUILD_DATE}"
 LABEL org.label-schema.vcs-ref="${SOURCE_COMMIT}@${SOURCE_BRANCH}"
