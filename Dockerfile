@@ -15,8 +15,9 @@ ARG FLUTTER_VER="3.7.7"
 ARG JENV_TAGGED="latest"
 ARG JENV_VER="0.5.4"
 
+ARG DIRWORK="/tmp"
 # file to export ENV variables of installed version of software for any software with a latest option
-ARG INSTALLED_TEMP="/tmp/.temp_version"
+ARG INSTALLED_TEMP="${DIRWORK}/.temp_version"
 ARG INSTALLED_VERSIONS="/root/installed-versions.txt"
 
 FROM ubuntu:20.04 as ubuntu
@@ -27,8 +28,10 @@ ARG BUNDLETOOL_VER
 ARG FLUTTER_VER
 ARG JENV_VER
 
+ARG DIRWORK
 ARG INSTALLED_TEMP
 ARG INSTALLED_VERSIONS
+
 
 ENV ANDROID_HOME="/opt/android-sdk" \
     ANDROID_SDK_HOME="/opt/android-sdk" \
@@ -81,7 +84,7 @@ RUN apt-get clean && \
     apt-get install -qq -y apt-utils locales && \
     locale-gen $LANG
 
-WORKDIR /tmp
+WORKDIR ${DIRWORK}
 
 # Installing packages
 RUN apt-get update -qq > /dev/null && \
@@ -155,7 +158,7 @@ RUN apt-get update -qq > /dev/null && \
         react-native-cli > /dev/null && \
     npm cache clean --force > /dev/null && \
     apt-get -y clean && apt-get -y autoremove && rm -rf /var/lib/apt/lists/* && \
-    rm -rf /tmp/* /var/tmp/*
+    rm -rf ${DIRWORK}/* /var/tmp/*
 RUN echo 'debconf debconf/frontend select Dialog' | debconf-set-selections
 
 # Install Android SDK CLI
@@ -188,8 +191,8 @@ RUN mkdir --parents "$ANDROID_HOME/.android/" && \
 # List all available packages.
 # redirect to a temp file `packages.txt` for later use and avoid show progress
 RUN . /etc/jdk.env && \
-    $ANDROID_SDK_MANAGER --list > /tmp/packages.txt && \
-    cat /tmp/packages.txt | grep -v '='
+    $ANDROID_SDK_MANAGER --list > ${DIRWORK}/packages.txt && \
+    cat ${DIRWORK}/packages.txt | grep -v '='
 
 # Copy sdk license agreement files.
 RUN mkdir -p $ANDROID_HOME/licenses
@@ -267,7 +270,7 @@ RUN echo "Installing ${NDK_VERSION}" && \
 RUN echo "NDK_VERSION=${NDK_VERSION}" >> ${INSTALLED_TEMP}
 
 FROM ndk-base as ndk-latest
-RUN NDK=$(grep 'ndk;' /tmp/packages.txt | sort | tail -n1 | awk '{print $1}') && \
+RUN NDK=$(grep 'ndk;' ${DIRWORK}/packages.txt | sort | tail -n1 | awk '{print $1}') && \
     NDK_VERSION=$(echo $NDK | awk -F\; '{print $2}') && \
     echo "Installing $NDK" && \
     . /etc/jdk.env && \
@@ -342,18 +345,18 @@ COPY --from=stage2 /home/jenkins /home/jenkins
 COPY --from=bundletool-final $ANDROID_SDK_HOME/cmdline-tools/latest/bundletool.jar $ANDROID_SDK_HOME/cmdline-tools/latest/bundletool.jar
 COPY --from=ndk-final --chmod=775 ${ANDROID_NDK_ROOT}/../ ${ANDROID_NDK_ROOT}/../
 
-COPY --from=bundletool-final ${INSTALLED_TEMP} /tmp/.bundletool_version
-COPY --from=ndk-final ${INSTALLED_TEMP} /tmp/.ndk_version
-COPY --from=jenv-final ${INSTALLED_TEMP} /tmp/.jenv_version
+COPY --from=bundletool-final ${INSTALLED_TEMP} ${DIRWORK}/.bundletool_version
+COPY --from=ndk-final ${INSTALLED_TEMP} ${DIRWORK}/.ndk_version
+COPY --from=jenv-final ${INSTALLED_TEMP} ${DIRWORK}/.jenv_version
 
 COPY README.md /README.md
 
 RUN chmod 775 $ANDROID_HOME $ANDROID_NDK_ROOT/../
 
-RUN cat /tmp/.bundletool_version >> ${INSTALLED_VERSIONS} && \
-    cat /tmp/.ndk_version >> ${INSTALLED_VERSIONS} && \
-    cat /tmp/.jenv_version >> ${INSTALLED_VERSIONS} && \
-    rm /tmp/.*_version
+RUN cat ${DIRWORK}/.bundletool_version >> ${INSTALLED_VERSIONS} && \
+    cat ${DIRWORK}/.ndk_version >> ${INSTALLED_VERSIONS} && \
+    cat ${DIRWORK}/.jenv_version >> ${INSTALLED_VERSIONS} && \
+    rm ${DIRWORK}/.*_version
 
 # List sdk and ndk directory content
 RUN ls -l $ANDROID_HOME && \
@@ -368,11 +371,11 @@ FROM complete as complete-flutter
 COPY --from=flutter-final ${FLUTTER_HOME} ${FLUTTER_HOME}
 COPY --from=flutter-final /root/.flutter /root/.flutter
 COPY --from=flutter-final /root/.config/flutter /root/.config/flutter
-COPY --from=flutter-final ${INSTALLED_TEMP} /tmp/.flutter_version
+COPY --from=flutter-final ${INSTALLED_TEMP} ${DIRWORK}/.flutter_version
 
 RUN git config --global --add safe.directory ${FLUTTER_HOME} && \
-    cat /tmp/.flutter_version >> ${INSTALLED_VERSIONS} && \
-    rm /tmp/.*_version
+    cat ${DIRWORK}/.flutter_version >> ${INSTALLED_VERSIONS} && \
+    rm ${DIRWORK}/.*_version
 
 
 ARG BUILD_DATE=""
