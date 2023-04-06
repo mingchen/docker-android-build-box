@@ -7,6 +7,10 @@
 ARG ANDROID_SDK_TOOLS_TAGGED="latest"
 ARG ANDROID_SDK_TOOLS_VERSION="9123335"
 
+# Valid values are last7 or tagged
+# last7 will grab the last 7 android-sdks
+ARG ANDROID_SDKS="last7"
+
 ARG NDK_TAGGED="latest"
 ARG NDK_VERSION="25.2.9519653"
 
@@ -25,7 +29,7 @@ ARG JENV_VERSION="0.5.4"
 
 ARG DIRWORK="/tmp"
 ARG FINAL_DIRWORK="/project"
-# file to export ENV variables of installed version of software for any software with a latest option
+
 ARG INSTALLED_TEMP="${DIRWORK}/.temp_version"
 ARG INSTALLED_VERSIONS="/root/installed-versions.txt"
 
@@ -43,6 +47,8 @@ ARG FINAL_DIRWORK
 
 ARG INSTALLED_TEMP
 ARG INSTALLED_VERSIONS
+
+ARG SDK_PACKAGES="${DIRWORK}/packages.txt"
 
 ENV ANDROID_HOME="/opt/android-sdk" \
     ANDROID_SDK_HOME="/opt/android-sdk" \
@@ -177,10 +183,10 @@ RUN mkdir --parents "$ANDROID_HOME/.android/" && \
     yes | $ANDROID_SDK_MANAGER --licenses > /dev/null
 
 # List all available packages.
-# redirect to a temp file `packages.txt` for later use and avoid show progress
+# redirect to a temp file ${SDK_PACKAGES} for later use and avoid show progress
 RUN . /etc/jdk.env && \
-    $ANDROID_SDK_MANAGER --list > ${DIRWORK}/packages.txt && \
-    cat ${DIRWORK}/packages.txt | grep -v '='
+    $ANDROID_SDK_MANAGER --list > ${SDK_PACKAGES} && \
+    cat ${SDK_PACKAGES} | grep -v '='
 
 # Copy sdk license agreement files.
 RUN mkdir -p $ANDROID_HOME/licenses
@@ -194,8 +200,20 @@ WORKDIR ${FINAL_DIRWORK}
 
 # stage1 build stage
 # installs the intended android SDKs
-FROM minimal as stage1
+FROM --platform=linux/amd64 minimal as stage1-base
 WORKDIR ${DIRWORK}
+
+# seems there is no emulator on arm64
+# Warning: Failed to find package emulator
+RUN echo "emulator" && \
+    if [ "$(uname -m)" != "x86_64" ]; then echo "emulator only support Linux x86 64bit. skip for $(uname -m)"; exit 0; fi && \
+    . /etc/jdk.env && \
+    yes | $ANDROID_SDK_MANAGER "emulator" > /dev/null
+
+FROM --platform=linux/arm64 minimal as stage1-base
+WORKDIR ${DIRWORK}
+
+FROM stage1-base as stage1-tagged
 # Install SDKs
 # Please keep these in descending order!
 #
@@ -224,16 +242,30 @@ RUN echo "build tools 27-33" && \
         "build-tools;28.0.3" "build-tools;28.0.2" \
         "build-tools;27.0.3" "build-tools;27.0.2" "build-tools;27.0.1" > /dev/null
 
-# seems there is no emulator on arm64
-# Warning: Failed to find package emulator
-RUN echo "emulator" && \
-    if [ "$(uname -m)" != "x86_64" ]; then echo "emulator only support Linux x86 64bit. skip for $(uname -m)"; exit 0; fi && \
-    . /etc/jdk.env && \
-    yes | $ANDROID_SDK_MANAGER "emulator" > /dev/null
-
 # ndk-bundle does exist on arm64
 # RUN echo "NDK" && \
 #     yes | $ANDROID_SDK_MANAGER "ndk-bundle" > /dev/null
+
+FROM stage1-base as stage1-last7
+ENV LAST7_PACKAGES="android-sdks.txt"
+RUN cat ${SDK_PACKAGES} | grep "platforms;android-[[:digit:]][[:digit:]]\+ " | tail -n7 | awk '{print $1}' \
+    >> $LAST7_PACKAGES
+RUN TEMP2=$(cat ${SDK_PACKAGES} | grep "platforms;android-[[:digit:]][[:digit:]]\+ " | tail -n7 | awk '{print $1}' | grep -o '[0-9]\+') && \
+    cat ${SDK_PACKAGES} | grep "build-tools;$(echo "$TEMP2" | head -n1)" | awk '{print $1}' >> $LAST7_PACKAGES && \
+    cat ${SDK_PACKAGES} | grep "build-tools;$(echo "$TEMP2" | head -n2 | tail -n1)" | awk '{print $1}' >> $LAST7_PACKAGES && \
+    cat ${SDK_PACKAGES} | grep "build-tools;$(echo "$TEMP2" | head -n3 | tail -n1)" | awk '{print $1}' >> $LAST7_PACKAGES && \
+    cat ${SDK_PACKAGES} | grep "build-tools;$(echo "$TEMP2" | head -n4 | tail -n1)" | awk '{print $1}' >> $LAST7_PACKAGES && \
+    cat ${SDK_PACKAGES} | grep "build-tools;$(echo "$TEMP2" | head -n5 | tail -n1)" | awk '{print $1}' >> $LAST7_PACKAGES && \
+    cat ${SDK_PACKAGES} | grep "build-tools;$(echo "$TEMP2" | head -n6 | tail -n1)" | awk '{print $1}' >> $LAST7_PACKAGES && \
+    cat ${SDK_PACKAGES} | grep "build-tools;$(echo "$TEMP2" | head -n7 | tail -n1)" | awk '{print $1}' >> $LAST7_PACKAGES
+
+RUN echo "installing: $(cat $LAST7_PACKAGES)" && \
+    . /etc/jdk.env && \
+    yes | ${ANDROID_SDK_MANAGER} ${DEBUG:+--verbose} --package_file=$LAST7_PACKAGES
+
+FROM stage1-${ANDROID_SDKS} as stage1-final
+RUN echo "Android SDKs, Build tools, etc Installed: " >> ${INSTALLED_TEMP} && \
+    ${ANDROID_SDK_MANAGER} --list_installed >> ${INSTALLED_TEMP}
 
 # bundletool build stage
 FROM minimal as bundletool-base
@@ -266,7 +298,7 @@ RUN echo "Installing ${NDK_VERSION}" && \
 RUN echo "NDK_VERSION=${NDK_VERSION}" >> ${INSTALLED_TEMP}
 
 FROM ndk-base as ndk-latest
-RUN NDK=$(grep 'ndk;' ${DIRWORK}/packages.txt | sort | tail -n1 | awk '{print $1}') && \
+RUN NDK=$(grep 'ndk;' ${SDK_PACKAGES} | sort | tail -n1 | awk '{print $1}') && \
     NDK_VERSION=$(echo $NDK | awk -F\; '{print $2}') && \
     echo "Installing $NDK" && \
     . /etc/jdk.env && \
@@ -387,12 +419,13 @@ RUN git config --global --add safe.directory $JENV_HOME && \
 # complete build stage
 # intended as a final target
 FROM jenv-final as complete
-COPY --from=stage1 --chmod=775 ${ANDROID_HOME} ${ANDROID_HOME}
+COPY --from=stage1-final --chmod=775 ${ANDROID_HOME} ${ANDROID_HOME}
 COPY --from=stage2 /var/lib/jenkins/workspace /var/lib/jenkins/workspace
 COPY --from=stage2 /home/jenkins /home/jenkins
 COPY --from=bundletool-final $ANDROID_SDK_HOME/cmdline-tools/latest/bundletool.jar $ANDROID_SDK_HOME/cmdline-tools/latest/bundletool.jar
 COPY --from=ndk-final --chmod=775 ${ANDROID_NDK_ROOT}/../ ${ANDROID_NDK_ROOT}/../
 
+COPY --from=stage1-final ${INSTALLED_TEMP} ${DIRWORK}/.sdks_version
 COPY --from=bundletool-final ${INSTALLED_TEMP} ${DIRWORK}/.bundletool_version
 COPY --from=ndk-final ${INSTALLED_TEMP} ${DIRWORK}/.ndk_version
 COPY --from=node-final ${INSTALLED_TEMP} ${DIRWORK}/.node_version
@@ -406,6 +439,7 @@ RUN cat ${DIRWORK}/.bundletool_version >> ${INSTALLED_VERSIONS} && \
     cat ${DIRWORK}/.ndk_version >> ${INSTALLED_VERSIONS} && \
     cat ${DIRWORK}/.node_version >> ${INSTALLED_VERSIONS} && \
     cat ${DIRWORK}/.jenv_version >> ${INSTALLED_VERSIONS} && \
+    cat ${DIRWORK}/.sdks_version >> ${INSTALLED_VERSIONS} && \
     rm ${DIRWORK}/.*_version
 
 # List sdk and ndk directory content
