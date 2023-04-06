@@ -204,8 +204,10 @@ RUN echo "platform tools" && \
     yes | $ANDROID_SDK_MANAGER ${DEBUG:+--verbose} \
         "platform-tools" > /dev/null
 
+WORKDIR ${FINAL_DIRWORK}
 
 FROM minimal as stage1
+WORKDIR ${DIRWORK}
 #
 # https://developer.android.com/studio/command-line/sdkmanager.html
 #
@@ -245,6 +247,7 @@ RUN echo "emulator" && \
 
 # bundletool Installation
 FROM minimal as bundletool-base
+WORKDIR ${DIRWORK}
 RUN echo "bundletool"
 
 FROM bundletool-base as bundletool-tagged
@@ -262,6 +265,7 @@ RUN echo "bundletool finished"
 
 # NDK Installation
 FROM minimal as ndk-base
+WORKDIR ${DIRWORK}
 RUN echo "NDK"
 
 FROM ndk-base as ndk-tagged
@@ -285,6 +289,7 @@ RUN echo "NDK finished"
 
 # Flutter Instalation
 FROM --platform=linux/amd64 base as flutter-base
+WORKDir ${DIRWORK}
 FROM flutter-base as flutter-tagged
 RUN git clone --depth 1 --branch ${FLUTTER_VERSION} https://github.com/flutter/flutter.git ${FLUTTER_HOME} && \
     echo "FLUTTER_VERSION=${FLUTTER_VERSION}" >> ${INSTALLED_TEMP}
@@ -298,6 +303,7 @@ RUN flutter config --no-analytics
 
 # Create some jenkins required directory to allow this image run with Jenkins
 FROM ubuntu as stage2
+WORKDIR ${DIRWORK}
 RUN mkdir -p /var/lib/jenkins/workspace && \
     mkdir -p /home/jenkins && \
     chmod 777 /home/jenkins && \
@@ -305,6 +311,7 @@ RUN mkdir -p /var/lib/jenkins/workspace && \
 
 # fastlane installation
 FROM minimal as stage3
+WORKDIR ${DIRWORK}
 COPY Gemfile /Gemfile
 
 RUN echo "fastlane" && \
