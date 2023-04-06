@@ -324,6 +324,9 @@ RUN echo "fastlane" && \
     mkdir -p /.fastlane && \
     chmod 777 /.fastlane && \
     bundle install --quiet
+RUN TEMP=$(bundler exec fastlane --version) && \
+    FASTLANE_VERSION=$(echo "$TEMP" | grep fastlane | tail -n 1 | tr -d 'fastlane\ ') && \
+    echo "FASTLANE_VERSION=$FASTLANE_VERSION" >> ${INSTALLED_TEMP}
 
 # jenv build stage
 # Add jenv to control which version of java to use, default to 17.
