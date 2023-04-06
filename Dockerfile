@@ -1,6 +1,12 @@
 # ARGs
+# Installed Software Versions
 # All _TAGGED can be "latest" or "tagged"
 # when _TAGGED is "tagged" the version in _VER copied to _VERSION will be used.
+
+# "9123335" as of 2023/01/11
+ARG ANDROID_SDK_TOOLS_TAGGED="latest"
+ARG ANDROID_SDK_TOOLS_VERSION="9123335"
+
 ARG NDK_TAGGED="latest"
 ARG NDK_VERSION="25.2.9519653"
 
@@ -23,6 +29,7 @@ ARG INSTALLED_VERSIONS="/root/installed-versions.txt"
 
 FROM ubuntu:20.04 as ubuntu
 # Ensure ARGs are in this build context
+ARG ANDROID_SDK_TOOLS_VERSION
 ARG NDK_VERSION
 ARG NODE_VERSION
 ARG BUNDLETOOL_VERSION
@@ -55,12 +62,8 @@ ENV ANDROID_NDK_HOME="$ANDROID_NDK"
 
 ENV PATH="$JAVA_HOME/bin:$PATH:$ANDROID_SDK_HOME/emulator:$ANDROID_SDK_HOME/cmdline-tools/latest/bin:$ANDROID_SDK_HOME/tools:$ANDROID_SDK_HOME/platform-tools:$ANDROID_NDK:$FLUTTER_HOME/bin:$FLUTTER_HOME/bin/cache/dart-sdk/bin"
 
-# Installed Software Versions
-# Get the latest version from https://developer.android.com/studio/index.html
-# "9123335" as of 2023/01/11
-ENV ANDROID_SDK_TOOLS_VERSION="9123335"
 
-FROM ubuntu as base
+FROM ubuntu as pre-base
 ARG TERM=dumb \
     DEBIAN_FRONTEND=noninteractive
 
@@ -156,20 +159,33 @@ RUN apt-get update -qq > /dev/null && \
     rm -rf ${DIRWORK}/* /var/tmp/*
 RUN echo 'debconf debconf/frontend select Dialog' | debconf-set-selections
 
+# preliminary base-base stage
 # Install Android SDK CLI
+FROM pre-base as base-base
+RUN echo '# Installed Versions of Specified Software' >> ${INSTALLED_VERSIONS}
+
+FROM base-base as base-tagged
 RUN echo "sdk tools ${ANDROID_SDK_TOOLS_VERSION}" && \
     wget --quiet --output-document=sdk-tools.zip \
         "https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_SDK_TOOLS_VERSION}_latest.zip" && \
-    mkdir --parents "$ANDROID_HOME" && \
+    echo "ANDROID_SDK_TOOLS_VERSION=${ANDROID_SDK_TOOLS_VERSION}" >> ${INSTALLED_VERSIONS}
+
+FROM pre-base as base-latest
+RUN TEMP=$(curl -S https://developer.android.com/studio/index.html) && \
+    ANDROID_SDK_TOOLS_VERSION=$(echo "$TEMP" | grep commandlinetools-linux | tail -n 1 | cut -d \- -f 3 | tr -d _latest.zip\</em\>\<\/p\>) && \
+    echo "sdk tools $ANDROID_SDK_TOOLS_VERSION" && \
+    wget --quiet --output-document=sdk-tools.zip \
+        "https://dl.google.com/android/repository/commandlinetools-linux-"$ANDROID_SDK_TOOLS_VERSION"_latest.zip" && \
+    echo "ANDROID_SDK_TOOLS_VERSION=$ANDROID_SDK_TOOLS_VERSION" >> ${INSTALLED_VERSIONS}
+
+FROM base-${ANDROID_SDK_TOOLS_TAGGED} as base
+RUN  mkdir --parents "$ANDROID_HOME" && \
     unzip -q sdk-tools.zip -d "$ANDROID_HOME" && \
     cd "$ANDROID_HOME" && \
     mv cmdline-tools latest && \
     mkdir cmdline-tools && \
     mv latest cmdline-tools && \
-    rm --force sdk-tools.zip
-
-RUN echo '# Installed Versions of Specified Software' >> ${INSTALLED_VERSIONS} && \
-    echo "ANDROID_SDK_TOOLS_VERSION=${ANDROID_SDK_TOOLS_VERSION}" && \
+    rm --force sdk-tools.zip && \
     echo "NODE_VERSION="${NODE_VERSION} >> ${INSTALLED_VERSIONS}
 
 # minimal build stage
