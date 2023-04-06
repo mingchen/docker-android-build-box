@@ -10,6 +10,8 @@ ARG ANDROID_SDK_TOOLS_VERSION="9123335"
 ARG NDK_TAGGED="latest"
 ARG NDK_VERSION="25.2.9519653"
 
+# Use "lts.x" for latest LTS Node
+ARG NODE_TAGGED="latest"
 ARG NODE_VERSION="16.x"
 
 ARG BUNDLETOOL_TAGGED="latest"
@@ -131,31 +133,6 @@ RUN apt-get update -qq > /dev/null && \
     java -version && \
     echo "set timezone" && \
     ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone && \
-    echo "nodejs, npm, cordova, ionic, react-native" && \
-    curl -sL -k https://deb.nodesource.com/setup_${NODE_VERSION} \
-        | bash - > /dev/null && \
-    apt-get install -qq nodejs > /dev/null && \
-    curl -sS -k https://dl.yarnpkg.com/debian/pubkey.gpg \
-        | apt-key add - > /dev/null && \
-    echo "deb https://dl.yarnpkg.com/debian/ stable main" \
-        | tee /etc/apt/sources.list.d/yarn.list > /dev/null && \
-    apt-get update -qq > /dev/null && \
-    apt-get install -qq yarn > /dev/null && \
-    rm -rf /var/lib/apt/lists/ && \
-    npm install --quiet -g npm > /dev/null && \
-    npm install --quiet -g \
-        bower \
-        cordova \
-        eslint \
-        gulp \
-        ionic \
-        jshint \
-        karma-cli \
-        mocha \
-        node-gyp \
-        npm-check-updates \
-        react-native-cli > /dev/null && \
-    npm cache clean --force > /dev/null && \
     apt-get -y clean && apt-get -y autoremove && rm -rf /var/lib/apt/lists/* && \
     rm -rf ${DIRWORK}/* /var/tmp/*
 RUN echo 'debconf debconf/frontend select Dialog' | debconf-set-selections
@@ -186,8 +163,7 @@ RUN  mkdir --parents "$ANDROID_HOME" && \
     mv cmdline-tools latest && \
     mkdir cmdline-tools && \
     mv latest cmdline-tools && \
-    rm --force sdk-tools.zip && \
-    echo "NODE_VERSION="${NODE_VERSION} >> ${INSTALLED_VERSIONS}
+    rm --force sdk-tools.zip
 
 # minimal build stage
 # intended as a final target
@@ -323,7 +299,7 @@ RUN mkdir -p /var/lib/jenkins/workspace && \
     chmod 777 /home/jenkins && \
     chmod 777 /var/lib/jenkins/workspace
 
-# fastlane build stage
+# fastlane and node build stage
 FROM minimal as stage3
 WORKDIR ${DIRWORK}
 COPY Gemfile /Gemfile
@@ -338,9 +314,52 @@ RUN TEMP=$(bundler exec fastlane --version) && \
     FASTLANE_VERSION=$(echo "$TEMP" | grep fastlane | tail -n 1 | tr -d 'fastlane\ ') && \
     echo "FASTLANE_VERSION=$FASTLANE_VERSION" >> ${INSTALLED_TEMP}
 
+# Node build Stage
+FROM stage3 as node-base
+RUN echo "nodejs, npm, cordova, ionic, react-native"
+ENV NODE_ENV=production
+
+# Install Node
+FROM node-base as node-tagged
+RUN TEMP=$(curl -sL -k https://deb.nodesource.com/setup_${NODE_VERSION}) && \
+        echo "$TEMP" | bash - > /dev/null && \
+    NODE_VERSION=$(echo "$TEMP" | grep NODENAME= | cut -d = -f 2 | tr -d \") && \
+    echo "NODE_VERSION=$NODE_VERSION" >> ${INSTALLED_TEMP}
+
+FROM node-base as node-latest
+RUN TEMP=$(curl -sL -k https://deb.nodesource.com/setup_lts.x) && \
+        echo "$TEMP" | bash - > /dev/null && \
+    NODE_VERSION=$(echo "$TEMP" | grep NODENAME= | cut -d = -f 2 | tr -d \") && \
+    echo "NODE_VERSION=$NODE_VERSION" >> ${INSTALLED_TEMP}
+
+FROM node-${NODE_TAGGED} as node-final
+RUN apt-get install -qq nodejs > /dev/null && \
+    curl -sS -k https://dl.yarnpkg.com/debian/pubkey.gpg \
+        | apt-key add - > /dev/null && \
+    echo "deb https://dl.yarnpkg.com/debian/ stable main" \
+        | tee /etc/apt/sources.list.d/yarn.list > /dev/null && \
+    apt-get update -qq > /dev/null && \
+    apt-get install -qq yarn > /dev/null && \
+    rm -rf /var/lib/apt/lists/ && \
+    npm install --quiet -g npm > /dev/null && \
+    npm install --quiet -g \
+        bower \
+        cordova \
+        eslint \
+        gulp \
+        ionic \
+        jshint \
+        karma-cli \
+        mocha \
+        node-gyp \
+        npm-check-updates \
+        react-native-cli > /dev/null && \
+    npm cache clean --force > /dev/null && \
+    apt-get -y clean && apt-get -y autoremove && rm -rf /var/lib/apt/lists/*
+
 # jenv build stage
 # Add jenv to control which version of java to use, default to 17.
-FROM stage3 as jenv-base
+FROM node-final as jenv-base
 ENV PATH="${JENV_HOME}/shims:${JENV_HOME}/bin${PATH:+:${PATH}}"
 
 FROM jenv-base as jenv-tagged
@@ -376,6 +395,7 @@ COPY --from=ndk-final --chmod=775 ${ANDROID_NDK_ROOT}/../ ${ANDROID_NDK_ROOT}/..
 
 COPY --from=bundletool-final ${INSTALLED_TEMP} ${DIRWORK}/.bundletool_version
 COPY --from=ndk-final ${INSTALLED_TEMP} ${DIRWORK}/.ndk_version
+COPY --from=node-final ${INSTALLED_TEMP} ${DIRWORK}/.node_version
 COPY --from=jenv-final ${INSTALLED_TEMP} ${DIRWORK}/.jenv_version
 
 COPY README.md /README.md
@@ -384,6 +404,7 @@ RUN chmod 775 $ANDROID_HOME $ANDROID_NDK_ROOT/../
 
 RUN cat ${DIRWORK}/.bundletool_version >> ${INSTALLED_VERSIONS} && \
     cat ${DIRWORK}/.ndk_version >> ${INSTALLED_VERSIONS} && \
+    cat ${DIRWORK}/.node_version >> ${INSTALLED_VERSIONS} && \
     cat ${DIRWORK}/.jenv_version >> ${INSTALLED_VERSIONS} && \
     rm ${DIRWORK}/.*_version
 
