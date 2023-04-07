@@ -68,6 +68,8 @@ FROM ubuntu as pre-base
 ARG TERM=dumb \
     DEBIAN_FRONTEND=noninteractive
 
+WORKDIR ${DIRWORK}
+
 RUN uname -a && uname -m
 
 # support amd64 and arm64
@@ -82,8 +84,6 @@ RUN apt-get clean && \
     apt-get update -qq && \
     apt-get install -qq -y apt-utils locales && \
     locale-gen $LANG
-
-WORKDIR ${DIRWORK}
 
 # Installing packages
 RUN apt-get update -qq > /dev/null && \
