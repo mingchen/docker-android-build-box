@@ -236,19 +236,17 @@ WORKDIR ${FINAL_DIRWORK}
 
 # stage1 build stage
 # installs the intended android SDKs
-FROM --platform=linux/amd64 minimal as stage1-base
+FROM minimal as stage1-independent-base
 WORKDIR ${DIRWORK}
 
-
-# seems there is no emulator on arm64
-# Warning: Failed to find package emulator
+FROM --platform=linux/amd64 stage1-independent-base as stage1-base
 RUN echo "emulator" && \
-    if [ "$(uname -m)" != "x86_64" ]; then echo "emulator only support Linux x86 64bit. skip for $(uname -m)"; exit 0; fi && \
     . /etc/jdk.env && \
     yes | $ANDROID_SDK_MANAGER "emulator" > /dev/null
 
-FROM --platform=linux/arm64 minimal as stage1-base
-WORKDIR ${DIRWORK}
+FROM --platform=linux/arm64 stage1-independent-base as stage1-base
+# seems there is no emulator on arm64
+# Warning: Failed to find package emulator
 
 FROM stage1-base as stage1-tagged
 # Install SDKs
