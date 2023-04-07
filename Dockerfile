@@ -153,7 +153,7 @@ RUN echo "sdk tools ${ANDROID_SDK_TOOLS_VERSION}" && \
         "https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_SDK_TOOLS_VERSION}_latest.zip" && \
     echo "ANDROID_SDK_TOOLS_VERSION=${ANDROID_SDK_TOOLS_VERSION}" >> ${INSTALLED_VERSIONS}
 
-FROM pre-base as base-latest
+FROM base-base as base-latest
 RUN TEMP=$(curl -S https://developer.android.com/studio/index.html) && \
     ANDROID_SDK_TOOLS_VERSION=$(echo "$TEMP" | grep commandlinetools-linux | tail -n 1 | cut -d \- -f 3 | tr -d _latest.zip\</em\>\<\/p\>) && \
     echo "sdk tools $ANDROID_SDK_TOOLS_VERSION" && \
@@ -196,7 +196,6 @@ RUN echo '#!/usr/bin/env bash' >> ~/.bash_profile && \
     java -version
 
 # minimal build stage
-# intended as a final target
 FROM base as minimal
 ARG DEBUG
 # The `yes` is for accepting all non-standard tool licenses.
@@ -220,12 +219,17 @@ RUN echo "platform tools" && \
     yes | $ANDROID_SDK_MANAGER ${DEBUG:+--verbose} \
         "platform-tools" > /dev/null
 
+# minimal-final build stage
+# intended as a functional bare-bones installation
+FROM minimal as minimal-final
 COPY --from=jenv-final ${JENV_HOME} ${JENV_HOME}
 COPY --from=jenv-final ${INSTALLED_TEMP} ${DIRWORK}/.jenv_version
 COPY --from=jenv-final /root/.bash_profile /root/.bash_profile
 
 RUN git config --global --add safe.directory ${JENV_HOME} && \
     cat ${DIRWORK}/.jenv_version >> ${INSTALLED_VERSIONS} && \
+    echo "Android SDKs, Build tools, etc Installed: " >> ${INSTALLED_VERSIONS} && \
+    ${ANDROID_SDK_MANAGER} --list_installed | tail --lines=2 >> ${INSTALLED_VERSIONS} && \
     rm ${DIRWORK}/.*_version
 
 WORKDIR ${FINAL_DIRWORK}
@@ -234,6 +238,7 @@ WORKDIR ${FINAL_DIRWORK}
 # installs the intended android SDKs
 FROM --platform=linux/amd64 minimal as stage1-base
 WORKDIR ${DIRWORK}
+
 
 # seems there is no emulator on arm64
 # Warning: Failed to find package emulator
@@ -435,7 +440,6 @@ COPY --from=jenv-final /root/.bash_profile /root/.bash_profile
 COPY --from=stage1-final ${INSTALLED_TEMP} ${DIRWORK}/.sdks_version
 COPY --from=bundletool-final ${INSTALLED_TEMP} ${DIRWORK}/.bundletool_version
 COPY --from=ndk-final ${INSTALLED_TEMP} ${DIRWORK}/.ndk_version
-COPY --from=node-final ${INSTALLED_TEMP} ${DIRWORK}/.node_version
 COPY --from=jenv-final ${INSTALLED_TEMP} ${DIRWORK}/.jenv_version
 
 COPY README.md /README.md
@@ -443,11 +447,7 @@ COPY README.md /README.md
 RUN chmod 775 $ANDROID_HOME $ANDROID_NDK_ROOT/../
 
 RUN git config --global --add safe.directory ${JENV_HOME} && \
-    cat ${DIRWORK}/.bundletool_version >> ${INSTALLED_VERSIONS} && \
-    cat ${DIRWORK}/.ndk_version >> ${INSTALLED_VERSIONS} && \
-    cat ${DIRWORK}/.node_version >> ${INSTALLED_VERSIONS} && \
-    cat ${DIRWORK}/.jenv_version >> ${INSTALLED_VERSIONS} && \
-    cat ${DIRWORK}/.sdks_version >> ${INSTALLED_VERSIONS} && \
+    cat ${DIRWORK}/.*_version >> ${INSTALLED_VERSIONS} && \
     rm ${DIRWORK}/.*_version
 
 # List sdk and ndk directory content
