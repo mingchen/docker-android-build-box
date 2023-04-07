@@ -69,8 +69,7 @@ ENV LANG="en_US.UTF-8" \
 ENV ANDROID_SDK_HOME="$ANDROID_HOME"
 ENV ANDROID_NDK_HOME="$ANDROID_NDK"
 
-ENV PATH="$JAVA_HOME/bin:$PATH:$ANDROID_SDK_HOME/emulator:$ANDROID_SDK_HOME/cmdline-tools/latest/bin:$ANDROID_SDK_HOME/tools:$ANDROID_SDK_HOME/platform-tools:$ANDROID_NDK:$FLUTTER_HOME/bin:$FLUTTER_HOME/bin/cache/dart-sdk/bin"
-
+ENV PATH="${JENV_HOME}/shims:${JENV_HOME}/bin:$JAVA_HOME/bin:$PATH:$ANDROID_SDK_HOME/emulator:$ANDROID_SDK_HOME/cmdline-tools/latest/bin:$ANDROID_SDK_HOME/tools:$ANDROID_SDK_HOME/platform-tools:$ANDROID_NDK:$FLUTTER_HOME/bin:$FLUTTER_HOME/bin/cache/dart-sdk/bin"
 
 FROM ubuntu as pre-base
 ARG TERM=dumb \
@@ -171,6 +170,31 @@ RUN  mkdir --parents "$ANDROID_HOME" && \
     mv latest cmdline-tools && \
     rm --force sdk-tools.zip
 
+# jenv build stage
+# Add jenv to control which version of java to use, default to 17.
+FROM base as jenv-base
+
+FROM jenv-base as jenv-tagged
+RUN git clone --depth 1 --branch ${JENV_RELEASE} https://github.com/jenv/jenv.git ${JENV_HOME} && \
+    echo "JENV_RELEASE=${JENV_RELEASE}" >> ${INSTALLED_TEMP}
+
+FROM jenv-base as jenv-latest
+RUN git clone  https://github.com/jenv/jenv.git ${JENV_HOME} && \
+    cd ${JENV_HOME} && echo "JENV_RELEASE=$(git describe --tags HEAD)" >> ${INSTALLED_TEMP}
+
+FROM jenv-${JENV_TAGGED} as jenv-final
+RUN echo '#!/usr/bin/env bash' >> ~/.bash_profile && \
+    echo 'eval "$(jenv init -)"' >> ~/.bash_profile && \
+    . ~/.bash_profile && \
+    . /etc/jdk.env && \
+    java -version && \
+    jenv add /usr/lib/jvm/java-8-openjdk-$JDK_PLATFORM && \
+    jenv add /usr/lib/jvm/java-11-openjdk-$JDK_PLATFORM && \
+    jenv add /usr/lib/jvm/java-17-openjdk-$JDK_PLATFORM && \
+    jenv versions && \
+    jenv global 17.0 && \
+    java -version
+
 # minimal build stage
 # intended as a final target
 FROM base as minimal
@@ -195,6 +219,14 @@ RUN echo "platform tools" && \
     . /etc/jdk.env && \
     yes | $ANDROID_SDK_MANAGER ${DEBUG:+--verbose} \
         "platform-tools" > /dev/null
+
+COPY --from=jenv-final ${JENV_HOME} ${JENV_HOME}
+COPY --from=jenv-final ${INSTALLED_TEMP} ${DIRWORK}/.jenv_version
+COPY --from=jenv-final /root/.bash_profile /root/.bash_profile
+
+RUN git config --global --add safe.directory ${JENV_HOME} && \
+    cat ${DIRWORK}/.jenv_version >> ${INSTALLED_VERSIONS} && \
+    rm ${DIRWORK}/.*_version
 
 WORKDIR ${FINAL_DIRWORK}
 
@@ -389,41 +421,16 @@ RUN apt-get install -qq nodejs > /dev/null && \
     npm cache clean --force > /dev/null && \
     apt-get -y clean && apt-get -y autoremove && rm -rf /var/lib/apt/lists/*
 
-# jenv build stage
-# Add jenv to control which version of java to use, default to 17.
-FROM node-final as jenv-base
-ENV PATH="${JENV_HOME}/shims:${JENV_HOME}/bin${PATH:+:${PATH}}"
-
-FROM jenv-base as jenv-tagged
-RUN git clone --depth 1 --branch ${JENV_RELEASE} https://github.com/jenv/jenv.git $JENV_HOME && \
-    echo "JENV_RELEASE=${JENV_RELEASE}" >> ${INSTALLED_TEMP}
-
-FROM jenv-base as jenv-latest
-RUN git clone  https://github.com/jenv/jenv.git $JENV_HOME && \
-    cd $JENV_HOME && echo "JENV_RELEASE=$(git describe --tags HEAD)" >> ${INSTALLED_TEMP}
-
-FROM jenv-${JENV_TAGGED} as jenv-final
-RUN git config --global --add safe.directory $JENV_HOME && \
-    echo '#!/usr/bin/env bash' >> ~/.bash_profile && \
-    echo 'eval "$(jenv init -)"' >> ~/.bash_profile && \
-    . ~/.bash_profile && \
-    . /etc/jdk.env && \
-    java -version && \
-    jenv add /usr/lib/jvm/java-8-openjdk-$JDK_PLATFORM && \
-    jenv add /usr/lib/jvm/java-11-openjdk-$JDK_PLATFORM && \
-    jenv add /usr/lib/jvm/java-17-openjdk-$JDK_PLATFORM && \
-    jenv versions && \
-    jenv global 17.0 && \
-    java -version
-
 # complete build stage
 # intended as a final target
-FROM jenv-final as complete
+FROM node-final as complete
 COPY --from=stage1-final --chmod=775 ${ANDROID_HOME} ${ANDROID_HOME}
 COPY --from=stage2 /var/lib/jenkins/workspace /var/lib/jenkins/workspace
 COPY --from=stage2 /home/jenkins /home/jenkins
 COPY --from=bundletool-final $ANDROID_SDK_HOME/cmdline-tools/latest/bundletool.jar $ANDROID_SDK_HOME/cmdline-tools/latest/bundletool.jar
 COPY --from=ndk-final --chmod=775 ${ANDROID_NDK_ROOT}/../ ${ANDROID_NDK_ROOT}/../
+COPY --from=jenv-final ${JENV_HOME} ${JENV_HOME}
+COPY --from=jenv-final /root/.bash_profile /root/.bash_profile
 
 COPY --from=stage1-final ${INSTALLED_TEMP} ${DIRWORK}/.sdks_version
 COPY --from=bundletool-final ${INSTALLED_TEMP} ${DIRWORK}/.bundletool_version
@@ -435,7 +442,8 @@ COPY README.md /README.md
 
 RUN chmod 775 $ANDROID_HOME $ANDROID_NDK_ROOT/../
 
-RUN cat ${DIRWORK}/.bundletool_version >> ${INSTALLED_VERSIONS} && \
+RUN git config --global --add safe.directory ${JENV_HOME} && \
+    cat ${DIRWORK}/.bundletool_version >> ${INSTALLED_VERSIONS} && \
     cat ${DIRWORK}/.ndk_version >> ${INSTALLED_VERSIONS} && \
     cat ${DIRWORK}/.node_version >> ${INSTALLED_VERSIONS} && \
     cat ${DIRWORK}/.jenv_version >> ${INSTALLED_VERSIONS} && \
