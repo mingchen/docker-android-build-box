@@ -195,6 +195,14 @@ RUN echo '#!/usr/bin/env bash' >> ~/.bash_profile && \
     jenv global 17.0 && \
     java -version
 
+# Create some jenkins required directory to allow this image run with Jenkins
+FROM ubuntu as stage2
+WORKDIR ${DIRWORK}
+RUN mkdir -p /var/lib/jenkins/workspace && \
+    mkdir -p /home/jenkins && \
+    chmod 777 /home/jenkins && \
+    chmod 777 /var/lib/jenkins/workspace
+
 # minimal build stage
 FROM base as minimal
 ARG DEBUG
@@ -222,9 +230,13 @@ RUN echo "platform tools" && \
 # minimal-final build stage
 # intended as a functional bare-bones installation
 FROM minimal as minimal-final
+COPY --from=stage2 /var/lib/jenkins/workspace /var/lib/jenkins/workspace
+COPY --from=stage2 /home/jenkins /home/jenkins
 COPY --from=jenv-final ${JENV_HOME} ${JENV_HOME}
 COPY --from=jenv-final ${INSTALLED_TEMP} ${DIRWORK}/.jenv_version
 COPY --from=jenv-final /root/.bash_profile /root/.bash_profile
+
+RUN chmod 775 $ANDROID_HOME
 
 RUN git config --global --add safe.directory ${JENV_HOME} && \
     cat ${DIRWORK}/.jenv_version >> ${INSTALLED_VERSIONS} && \
@@ -357,14 +369,6 @@ RUN git clone --depth 5 -b stable https://github.com/flutter/flutter.git ${FLUTT
 
 FROM flutter-${FLUTTER_TAGGED} as flutter-final
 RUN flutter config --no-analytics
-
-# Create some jenkins required directory to allow this image run with Jenkins
-FROM ubuntu as stage2
-WORKDIR ${DIRWORK}
-RUN mkdir -p /var/lib/jenkins/workspace && \
-    mkdir -p /home/jenkins && \
-    chmod 777 /home/jenkins && \
-    chmod 777 /var/lib/jenkins/workspace
 
 # fastlane and node build stage
 FROM minimal as stage3
