@@ -241,8 +241,11 @@ WORKDIR ${FINAL_DIRWORK}
 
 # stage1 build stage
 # installs the intended android SDKs
+#
+# https://developer.android.com/studio/command-line/sdkmanager.html
 FROM minimal as stage1-independent-base
 WORKDIR ${DIRWORK}
+ARG PACKAGES_FILENAME="android-sdks.txt"
 
 FROM --platform=linux/amd64 stage1-independent-base as stage1-base
 RUN echo "emulator" && \
@@ -254,40 +257,10 @@ FROM --platform=linux/arm64 stage1-independent-base as stage1-base
 # Warning: Failed to find package emulator
 
 FROM stage1-base as stage1-tagged
-# Install SDKs
-# Please keep these in descending order!
-#
-# https://developer.android.com/studio/command-line/sdkmanager.html
-#
-RUN echo "platforms" && \
-    . /etc/jdk.env && \
-    yes | $ANDROID_SDK_MANAGER ${DEBUG:+--verbose} \
-        "platforms;android-33" \
-        "platforms;android-32" \
-        "platforms;android-31" \
-        "platforms;android-30" \
-        "platforms;android-29" \
-        "platforms;android-28" \
-        "platforms;android-27" \
-        > /dev/null
-
-RUN echo "build tools 27-33" && \
-    . /etc/jdk.env && \
-    yes | $ANDROID_SDK_MANAGER ${DEBUG:+--verbose} \
-        "build-tools;33.0.0" \
-        "build-tools;32.0.0" \
-        "build-tools;31.0.0" \
-        "build-tools;30.0.0" "build-tools;30.0.2" "build-tools;30.0.3" \
-        "build-tools;29.0.3" "build-tools;29.0.2" \
-        "build-tools;28.0.3" "build-tools;28.0.2" \
-        "build-tools;27.0.3" "build-tools;27.0.2" "build-tools;27.0.1" > /dev/null
-
-# ndk-bundle does exist on arm64
-# RUN echo "NDK" && \
-#     yes | $ANDROID_SDK_MANAGER "ndk-bundle" > /dev/null
+COPY tagged_sdk_packages_list.txt $PACKAGES_FILENAME
 
 FROM stage1-base as stage1-last7
-ENV LAST7_PACKAGES="android-sdks.txt"
+ARG LAST7_PACKAGES=$PACKAGES_FILENAME
 RUN cat ${SDK_PACKAGES_LIST} | grep "platforms;android-[[:digit:]][[:digit:]]\+ " | tail -n7 | awk '{print $1}' \
     >> $LAST7_PACKAGES
 # Get all build tools for aforementioned platforms. Extract the numbers then find the build-tools for each number.
@@ -300,13 +273,13 @@ RUN TEMP2=$(cat ${SDK_PACKAGES_LIST} | grep "platforms;android-[[:digit:]][[:dig
     cat ${SDK_PACKAGES_LIST} | grep "build-tools;$(echo "$TEMP2" | head -n6 | tail -n1)" | awk '{print $1}' >> $LAST7_PACKAGES && \
     cat ${SDK_PACKAGES_LIST} | grep "build-tools;$(echo "$TEMP2" | head -n7 | tail -n1)" | awk '{print $1}' >> $LAST7_PACKAGES
 
-RUN echo "installing: $(cat $LAST7_PACKAGES)" && \
-    . /etc/jdk.env && \
-    yes | ${ANDROID_SDK_MANAGER} ${DEBUG:+--verbose} --package_file=$LAST7_PACKAGES
-
 FROM stage1-${ANDROID_SDKS} as stage1-final
+RUN echo "installing: $(cat $PACKAGES_FILENAME)" && \
+    . /etc/jdk.env && \
+    yes | ${ANDROID_SDK_MANAGER} ${DEBUG:+--verbose} --package_file=$LAST7_PACKAGES > /dev/null
+
 RUN echo "Android SDKs, Build tools, etc Installed: " >> ${INSTALLED_TEMP} && \
-    ${ANDROID_SDK_MANAGER} --list_installed >> ${INSTALLED_TEMP}
+    ${ANDROID_SDK_MANAGER} --list_installed | tail --lines=2 >> ${INSTALLED_TEMP}
 
 # bundletool build stage
 FROM minimal as bundletool-base
