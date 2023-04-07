@@ -166,6 +166,8 @@ RUN  mkdir --parents "$ANDROID_HOME" && \
 # jenv build stage
 # Add jenv to control which version of java to use, default to 17.
 FROM base as jenv-base
+RUN echo '#!/usr/bin/env bash' >> ~/.bash_profile && \
+    echo 'eval "$(jenv init -)"' >> ~/.bash_profile
 
 FROM jenv-base as jenv-tagged
 RUN git clone --depth 1 --branch ${JENV_RELEASE} https://github.com/jenv/jenv.git ${JENV_HOME} && \
@@ -176,9 +178,7 @@ RUN git clone  https://github.com/jenv/jenv.git ${JENV_HOME} && \
     cd ${JENV_HOME} && echo "JENV_RELEASE=$(git describe --tags HEAD)" >> ${INSTALLED_TEMP}
 
 FROM jenv-${JENV_TAGGED} as jenv-final
-RUN echo '#!/usr/bin/env bash' >> ~/.bash_profile && \
-    echo 'eval "$(jenv init -)"' >> ~/.bash_profile && \
-    . ~/.bash_profile && \
+RUN . ~/.bash_profile && \
     . /etc/jdk.env && \
     java -version && \
     jenv add /usr/lib/jvm/java-8-openjdk-$JDK_PLATFORM && \
