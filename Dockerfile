@@ -1,20 +1,19 @@
-# ARGs
 # Installed Software Versions
-# All _TAGGED can be "latest" or "tagged"
-# when _TAGGED is "tagged" the version in _VER copied to _VERSION will be used.
+# Most _TAGGED can be "latest" or "tagged"
+# when _TAGGED is "tagged" the version in _VER will be used.
+# _TAGGED is used to handle the build stages
 
 # "9123335" as of 2023/01/11
 ARG ANDROID_SDK_TOOLS_TAGGED="latest"
 ARG ANDROID_SDK_TOOLS_VERSION="9123335"
 
-# Valid values are last7 or tagged
-# last7 will grab the last 7 android-sdks
+# Valid values are "last7" or "tagged"
+# "last7" will grab the last 7 android-sdks
 ARG ANDROID_SDKS="last7"
 
 ARG NDK_TAGGED="latest"
 ARG NDK_VERSION="25.2.9519653"
 
-# Use "lts.x" for latest LTS Node
 ARG NODE_TAGGED="latest"
 ARG NODE_VERSION="16.x"
 
@@ -370,7 +369,7 @@ RUN git clone --depth 5 -b stable https://github.com/flutter/flutter.git ${FLUTT
 FROM flutter-${FLUTTER_TAGGED} as flutter-final
 RUN flutter config --no-analytics
 
-# fastlane and node build stage
+# fastlane build stage
 FROM minimal as stage3
 WORKDIR ${DIRWORK}
 COPY Gemfile /Gemfile
