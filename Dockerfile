@@ -439,7 +439,7 @@ COPY --from=jenv-final ${JENV_HOME} ${JENV_HOME}
 COPY --from=jenv-final ${INSTALLED_TEMP} ${DIRWORK}/.jenv_version
 COPY --from=jenv-final /root/.bash_profile /root/.bash_profile
 
-RUN chmod 775 $ANDROID_HOME
+RUN chmod 775 -R $ANDROID_HOME
 
 RUN git config --global --add safe.directory ${JENV_HOME} && \
     cat ${DIRWORK}/.jenv_version >> ${INSTALLED_VERSIONS} && \
