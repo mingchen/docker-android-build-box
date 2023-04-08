@@ -426,6 +426,33 @@ RUN apt-get install -qq nodejs > /dev/null && \
     apt-get -y clean && apt-get -y autoremove && rm -rf /var/lib/apt/lists/*
 RUN echo 'debconf debconf/frontend select Dialog' | debconf-set-selections
 
+RUN YARN_VERSION=$(yarn --version) && \
+    NPM_VERSION=$(npm --version) && \
+    BOWER_VERSION=$(bower --version) && \
+    CORDOVA_VERSION=$(cordova --version) && \
+    ESLINT_VERSION=$(eslint --version) && \
+    GULP_VERSION=$(gulp --version) && \
+    IONIC_VERSION=$(ionic --version) && \
+    JSHINT_VERSION=$(jshint --version) && \
+    KARMA_CLI_VERSION=$(karma-cli --version) && \
+    MOCHA_VERSION=$(mocha --version) && \
+    NODE_GYP_VERSION=$(node-gyp --version) && \
+    NPM_CHECK_UPDATES_VERSION=$(npm-check-updates --version) && \
+    REACT_NATIVE_CLI_VERSION=$(react-native-cli --version) && \
+    echo "YARN_VERSION=$YARN_VERSION" >> ${INSTALLED_TEMP} && \
+    echo "NPM_VERSION=$NPM_VERSION" >> ${INSTALLED_TEMP} && \
+    echo "BOWER_VERSION=$BOWER_VERSION" >> ${INSTALLED_TEMP} && \
+    echo "CORDOVA_VERSION=$CORDOVA_VERSION" >> ${INSTALLED_TEMP} && \
+    echo "ESLINT_VERSION=$ESLINT_VERSION" >> ${INSTALLED_TEMP} && \
+    echo "GULP_VERSION=$GULP_VERSION" >> ${INSTALLED_TEMP} && \
+    echo "IONIC_VERSION=$IONIC_VERSION" >> ${INSTALLED_TEMP} && \
+    echo "JSHINT_VERSION=$JSHINT_VERSION" >> ${INSTALLED_TEMP} && \
+    echo "KARMA_CLI_VERSION=$KARMA_CLI_VERSION" >> ${INSTALLED_TEMP} && \
+    echo "MOCHA_VERSION=$MOCHA_VERSION" >> ${INSTALLED_TEMP} && \
+    echo "NODE_GYP_VERSION=$NODE_GYP_VERSION" >> ${INSTALLED_TEMP} && \
+    echo "NPM_CHECK_UPDATES_VERSION=$NPM_CHECK_UPDATES_VERSION" >> ${INSTALLED_TEMP} && \
+    echo "REACT_NATIVE_CLI_VERSION=$REACT_NATIVE_CLI_VERSION" >> ${INSTALLED_TEMP}
+
 #----------~~~~~~~~~~**********~~~~~~~~~~~-----------#
 #                FINAL BUILD TARGETS
 #----------~~~~~~~~~~**********~~~~~~~~~~~-----------#
@@ -469,6 +496,7 @@ COPY --from=stage1-final ${INSTALLED_TEMP} ${DIRWORK}/.sdks_version
 COPY --from=bundletool-final ${INSTALLED_TEMP} ${DIRWORK}/.bundletool_version
 COPY --from=ndk-final ${INSTALLED_TEMP} ${DIRWORK}/.ndk_version
 COPY --from=jenv-final ${INSTALLED_TEMP} ${DIRWORK}/.jenv_version
+COPY --from=node-final ${INSTALLED_TEMP} ${DIRWORK}/.node_version
 
 COPY README.md /README.md
 
