@@ -381,6 +381,7 @@ RUN TEMP=$(bundler exec fastlane --version) && \
 FROM stage3 as node-base
 RUN echo "nodejs, npm, cordova, ionic, react-native"
 ENV NODE_ENV=production
+RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
 
 # Install Node
 FROM node-base as node-tagged
@@ -419,6 +420,7 @@ RUN apt-get install -qq nodejs > /dev/null && \
         react-native-cli > /dev/null && \
     npm cache clean --force > /dev/null && \
     apt-get -y clean && apt-get -y autoremove && rm -rf /var/lib/apt/lists/*
+RUN echo 'debconf debconf/frontend select Dialog' | debconf-set-selections
 
 #----------~~~~~~~~~~**********~~~~~~~~~~~-----------#
 #                FINAL BUILD TARGETS
