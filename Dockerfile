@@ -7,9 +7,9 @@
 ARG ANDROID_SDK_TOOLS_TAGGED="latest"
 ARG ANDROID_SDK_TOOLS_VERSION="9123335"
 
-# Valid values are "last7" or "tagged"
-# "last7" will grab the last 7 android-sdks
-ARG ANDROID_SDKS="last7"
+# Valid values are "last8" or "tagged"
+# "last8" will grab the last 8 android-sdks
+ARG ANDROID_SDKS="last8"
 
 ARG NDK_TAGGED="latest"
 ARG NDK_VERSION="25.2.9519653"
@@ -270,24 +270,24 @@ FROM --platform=linux/arm64 stage1-independent-base as stage1-base
 FROM stage1-base as stage1-tagged
 COPY tagged_sdk_packages_list.txt $PACKAGES_FILENAME
 
-FROM stage1-base as stage1-last7
-ARG LAST7_PACKAGES=$PACKAGES_FILENAME
-RUN cat ${SDK_PACKAGES_LIST} | grep "platforms;android-[[:digit:]][[:digit:]]\+ " | tail -n7 | awk '{print $1}' \
-    >> $LAST7_PACKAGES
+FROM stage1-base as stage1-last8
+ARG LAST8_PACKAGES=$PACKAGES_FILENAME
+RUN cat ${SDK_PACKAGES_LIST} | grep "platforms;android-[[:digit:]][[:digit:]]\+" | tail -n8 | awk '{print $1}' \
+    >> $LAST8_PACKAGES
 # Get all build tools for aforementioned platforms. Extract the numbers then find the build-tools for each number.
-RUN TEMP2=$(cat ${SDK_PACKAGES_LIST} | grep "platforms;android-[[:digit:]][[:digit:]]\+ " | tail -n7 | awk '{print $1}' | grep -o '[0-9]\+') && \
-    cat ${SDK_PACKAGES_LIST} | grep "build-tools;$(echo "$TEMP2" | head -n1)" | awk '{print $1}' >> $LAST7_PACKAGES && \
-    cat ${SDK_PACKAGES_LIST} | grep "build-tools;$(echo "$TEMP2" | head -n2 | tail -n1)" | awk '{print $1}' >> $LAST7_PACKAGES && \
-    cat ${SDK_PACKAGES_LIST} | grep "build-tools;$(echo "$TEMP2" | head -n3 | tail -n1)" | awk '{print $1}' >> $LAST7_PACKAGES && \
-    cat ${SDK_PACKAGES_LIST} | grep "build-tools;$(echo "$TEMP2" | head -n4 | tail -n1)" | awk '{print $1}' >> $LAST7_PACKAGES && \
-    cat ${SDK_PACKAGES_LIST} | grep "build-tools;$(echo "$TEMP2" | head -n5 | tail -n1)" | awk '{print $1}' >> $LAST7_PACKAGES && \
-    cat ${SDK_PACKAGES_LIST} | grep "build-tools;$(echo "$TEMP2" | head -n6 | tail -n1)" | awk '{print $1}' >> $LAST7_PACKAGES && \
-    cat ${SDK_PACKAGES_LIST} | grep "build-tools;$(echo "$TEMP2" | head -n7 | tail -n1)" | awk '{print $1}' >> $LAST7_PACKAGES
+RUN TEMP2=$(cat $LAST8_PACKAGES | grep -o '[0-9][0-9]\+' | sort -u) && \
+    cat ${SDK_PACKAGES_LIST} | grep "build-tools;$(echo "$TEMP2" | head -n1)" | awk '{print $1}' >> $LAST8_PACKAGES && \
+    cat ${SDK_PACKAGES_LIST} | grep "build-tools;$(echo "$TEMP2" | head -n2 | tail -n1)" | awk '{print $1}' >> $LAST8_PACKAGES && \
+    cat ${SDK_PACKAGES_LIST} | grep "build-tools;$(echo "$TEMP2" | head -n3 | tail -n1)" | awk '{print $1}' >> $LAST8_PACKAGES && \
+    cat ${SDK_PACKAGES_LIST} | grep "build-tools;$(echo "$TEMP2" | head -n4 | tail -n1)" | awk '{print $1}' >> $LAST8_PACKAGES && \
+    cat ${SDK_PACKAGES_LIST} | grep "build-tools;$(echo "$TEMP2" | head -n5 | tail -n1)" | awk '{print $1}' >> $LAST8_PACKAGES && \
+    cat ${SDK_PACKAGES_LIST} | grep "build-tools;$(echo "$TEMP2" | head -n6 | tail -n1)" | awk '{print $1}' >> $LAST8_PACKAGES && \
+    cat ${SDK_PACKAGES_LIST} | grep "build-tools;$(echo "$TEMP2" | head -n7 | tail -n1)" | awk '{print $1}' >> $LAST8_PACKAGES
 
 FROM stage1-${ANDROID_SDKS} as stage1-final
 RUN echo "installing: $(cat $PACKAGES_FILENAME)" && \
     . /etc/jdk.env && \
-    yes | ${ANDROID_SDK_MANAGER} ${DEBUG:+--verbose} --package_file=$LAST7_PACKAGES > /dev/null
+    yes | ${ANDROID_SDK_MANAGER} ${DEBUG:+--verbose} --package_file=$LAST8_PACKAGES > /dev/null
 
 RUN echo "Android SDKs, Build tools, etc Installed: " >> ${INSTALLED_TEMP} && \
     ${ANDROID_SDK_MANAGER} --list_installed | tail --lines=+2 >> ${INSTALLED_TEMP}
