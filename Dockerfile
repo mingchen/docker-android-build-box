@@ -175,6 +175,10 @@ RUN  mkdir --parents "$ANDROID_HOME" && \
     mv latest cmdline-tools && \
     rm --force sdk-tools.zip
 
+# Copy sdk license agreement files.
+RUN mkdir -p $ANDROID_HOME/licenses
+COPY sdk/licenses/* $ANDROID_HOME/licenses/
+
 #----------~~~~~~~~~~**********~~~~~~~~~~~-----------#
 #                INTERMEDIARY TARGETS
 #----------~~~~~~~~~~**********~~~~~~~~~~~-----------#
@@ -238,9 +242,6 @@ RUN . /etc/jdk.env && \
     $ANDROID_SDK_MANAGER --list > ${SDK_PACKAGES_LIST} && \
     cat ${SDK_PACKAGES_LIST} | grep -v '='
 
-# Copy sdk license agreement files.
-RUN mkdir -p $ANDROID_HOME/licenses
-COPY sdk/licenses/* $ANDROID_HOME/licenses/
 RUN echo "platform tools" && \
     . /etc/jdk.env && \
     yes | $ANDROID_SDK_MANAGER ${DEBUG:+--verbose} \
