@@ -91,8 +91,8 @@ RUN JDK_PLATFORM=$(if [ "$(uname -m)" = "aarch64" ]; then echo "arm64"; else ech
     echo . /etc/jdk.env >> /etc/bash.bashrc && \
     echo . /etc/jdk.env >> /etc/profile
 
-RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
-RUN apt-get clean && \
+RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections && \
+    apt-get clean && \
     apt-get update -qq && \
     apt-get install -qq -y apt-utils locales && \
     locale-gen $LANG
@@ -144,8 +144,8 @@ RUN apt-get update -qq > /dev/null && \
     echo "set timezone" && \
     ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone && \
     apt-get -y clean && apt-get -y autoremove && rm -rf /var/lib/apt/lists/* && \
-    rm -rf ${DIRWORK}/* /var/tmp/*
-RUN echo 'debconf debconf/frontend select Dialog' | debconf-set-selections
+    rm -rf ${DIRWORK}/* /var/tmp/* && \
+    echo 'debconf debconf/frontend select Dialog' | debconf-set-selections
 
 # preliminary base-base stage
 # Install Android SDK CLI
@@ -272,10 +272,12 @@ COPY tagged_sdk_packages_list.txt $PACKAGES_FILENAME
 
 FROM stage1-base as stage1-last8
 ARG LAST8_PACKAGES=$PACKAGES_FILENAME
+# Get last 8 platforms
+# Extract platform version numbers, removing duplicates (TEMP2).
+# find the build-tools for each number.
 RUN cat ${SDK_PACKAGES_LIST} | grep "platforms;android-[[:digit:]][[:digit:]]\+" | tail -n8 | awk '{print $1}' \
-    >> $LAST8_PACKAGES
-# Get all build tools for aforementioned platforms. Extract the numbers then find the build-tools for each number.
-RUN TEMP2=$(cat $LAST8_PACKAGES | grep -o '[0-9][0-9]\+' | sort -u) && \
+    >> $LAST8_PACKAGES && \
+    TEMP2=$(cat $LAST8_PACKAGES | grep -o '[0-9][0-9]\+' | sort -u) && \
     cat ${SDK_PACKAGES_LIST} | grep "build-tools;$(echo "$TEMP2" | head -n1)" | awk '{print $1}' >> $LAST8_PACKAGES && \
     cat ${SDK_PACKAGES_LIST} | grep "build-tools;$(echo "$TEMP2" | head -n2 | tail -n1)" | awk '{print $1}' >> $LAST8_PACKAGES && \
     cat ${SDK_PACKAGES_LIST} | grep "build-tools;$(echo "$TEMP2" | head -n3 | tail -n1)" | awk '{print $1}' >> $LAST8_PACKAGES && \
@@ -301,8 +303,8 @@ WORKDIR ${DIRWORK}
 RUN echo "bundletool"
 
 FROM bundletool-base as bundletool-tagged
-RUN wget -q https://github.com/google/bundletool/releases/download/${BUNDLETOOL_VERSION}/bundletool-all-${BUNDLETOOL_VERSION}.jar -O $ANDROID_SDK_HOME/cmdline-tools/latest/bundletool.jar
-RUN echo "BUNDLETOOL_VERSION=${BUNDLETOOL_VERSION}" >> ${INSTALLED_TEMP}
+RUN wget -q https://github.com/google/bundletool/releases/download/${BUNDLETOOL_VERSION}/bundletool-all-${BUNDLETOOL_VERSION}.jar -O $ANDROID_SDK_HOME/cmdline-tools/latest/bundletool.jar && \
+    echo "BUNDLETOOL_VERSION=${BUNDLETOOL_VERSION}" >> ${INSTALLED_TEMP}
 
 FROM bundletool-base as bundletool-latest
 RUN TEMP=$(curl -s https://api.github.com/repos/google/bundletool/releases/latest) && \
@@ -325,8 +327,8 @@ FROM ndk-base as ndk-tagged
 RUN echo "Installing ${NDK_VERSION}" && \
     . /etc/jdk.env && \
     yes | $ANDROID_SDK_MANAGER ${DEBUG:+--verbose} "ndk;${NDK_VERSION}" > /dev/null && \
-    ln -sv $ANDROID_HOME/ndk/${NDK_VERSION} ${ANDROID_NDK}
-RUN echo "NDK_VERSION=${NDK_VERSION}" >> ${INSTALLED_TEMP}
+    ln -sv $ANDROID_HOME/ndk/${NDK_VERSION} ${ANDROID_NDK} && \
+    echo "NDK_VERSION=${NDK_VERSION}" >> ${INSTALLED_TEMP}
 
 FROM ndk-base as ndk-latest
 RUN NDK=$(grep 'ndk;' ${SDK_PACKAGES_LIST} | sort | tail -n1 | awk '{print $1}') && \
@@ -370,8 +372,8 @@ RUN echo "fastlane" && \
     gem install bundler --quiet --no-document > /dev/null && \
     mkdir -p /.fastlane && \
     chmod 777 /.fastlane && \
-    bundle install --quiet
-RUN TEMP=$(bundler exec fastlane --version) && \
+    bundle install --quiet && \
+    TEMP=$(bundler exec fastlane --version) && \
     BUNDLER_VERSION=$(bundler --version | cut -d ' ' -f 3) && \
     RAKE_VERSION=$(bundler exec rake --version | cut -d ' ' -f 3) && \
     FASTLANE_VERSION=$(echo "$TEMP" | grep fastlane | tail -n 1 | tr -d 'fastlane\ ') && \
@@ -383,9 +385,9 @@ RUN TEMP=$(bundler exec fastlane --version) && \
 # build-target: node-final
 #----------~~~~~~~~~~*****
 FROM stage3 as node-base
-RUN echo "nodejs, npm, cordova, ionic, react-native"
 ENV NODE_ENV=production
-RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
+RUN echo "nodejs, npm, cordova, ionic, react-native" && \
+    echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
 
 # Install Node
 FROM node-base as node-tagged
@@ -417,10 +419,9 @@ RUN apt-get install -qq nodejs > /dev/null && \
         npm-check-updates \
         @react-native-community/cli > /dev/null && \
     npm cache clean --force > /dev/null && \
-    apt-get -y clean && apt-get -y autoremove && rm -rf /var/lib/apt/lists/*
-RUN echo 'debconf debconf/frontend select Dialog' | debconf-set-selections
-
-RUN NODE_VERSION=$(node --version) && \
+    apt-get -y clean && apt-get -y autoremove && rm -rf /var/lib/apt/lists/* && \
+    echo 'debconf debconf/frontend select Dialog' | debconf-set-selections && \
+    NODE_VERSION=$(node --version) && \
     YARN_VERSION=$(yarn --version) && \
     echo "NODE_VERSION=$NODE_VERSION" >> ${INSTALLED_TEMP} && \
     echo "YARN_VERSION=$YARN_VERSION" >> ${INSTALLED_TEMP} && \
@@ -444,9 +445,8 @@ COPY --from=jenv-final ${JENV_HOME} ${JENV_HOME}
 COPY --from=jenv-final ${INSTALLED_TEMP} ${DIRWORK}/.jenv_version
 COPY --from=jenv-final /root/.bash_profile /root/.bash_profile
 
-RUN chmod 775 -R $ANDROID_HOME
-
-RUN git config --global --add safe.directory ${JENV_HOME} && \
+RUN chmod 775 -R $ANDROID_HOME && \
+    git config --global --add safe.directory ${JENV_HOME} && \
     cat ${DIRWORK}/.jenv_version >> ${INSTALLED_VERSIONS} && \
     echo "Android SDKs, Build tools, etc Installed: " >> ${INSTALLED_VERSIONS} && \
     ${ANDROID_SDK_MANAGER} --list_installed | tail --lines=+2 >> ${INSTALLED_VERSIONS} && \
@@ -474,18 +474,14 @@ COPY --from=node-final ${INSTALLED_TEMP} ${DIRWORK}/.node_version
 
 COPY README.md /README.md
 
-RUN chmod 775 $ANDROID_HOME $ANDROID_NDK_ROOT/../
-
-RUN git config --global --add safe.directory ${JENV_HOME} && \
+RUN chmod 775 $ANDROID_HOME $ANDROID_NDK_ROOT/../ && \
+    git config --global --add safe.directory ${JENV_HOME} && \
     cat ${DIRWORK}/.*_version >> ${INSTALLED_VERSIONS} && \
-    rm ${DIRWORK}/.*_version
-
-# List sdk and ndk directory content
-RUN ls -l $ANDROID_HOME && \
+    rm ${DIRWORK}/.*_version && \
+    ls -l $ANDROID_HOME && \
     ls -l $ANDROID_HOME/ndk && \
-    ls -l $ANDROID_HOME/ndk/*
-
-RUN du -sh $ANDROID_HOME
+    ls -l $ANDROID_HOME/ndk/* && \
+    du -sh $ANDROID_HOME
 
 WORKDIR ${FINAL_DIRWORK}
 
