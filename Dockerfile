@@ -220,25 +220,6 @@ RUN echo "platform tools" && \
     yes | $ANDROID_SDK_MANAGER ${DEBUG:+--verbose} \
         "platform-tools" > /dev/null
 
-# minimal-final build stage
-# intended as a functional bare-bones installation
-FROM minimal as minimal-final
-COPY --from=stage2 /var/lib/jenkins/workspace /var/lib/jenkins/workspace
-COPY --from=stage2 /home/jenkins /home/jenkins
-COPY --from=jenv-final ${JENV_HOME} ${JENV_HOME}
-COPY --from=jenv-final ${INSTALLED_TEMP} ${DIRWORK}/.jenv_version
-COPY --from=jenv-final /root/.bash_profile /root/.bash_profile
-
-RUN chmod 775 $ANDROID_HOME
-
-RUN git config --global --add safe.directory ${JENV_HOME} && \
-    cat ${DIRWORK}/.jenv_version >> ${INSTALLED_VERSIONS} && \
-    echo "Android SDKs, Build tools, etc Installed: " >> ${INSTALLED_VERSIONS} && \
-    ${ANDROID_SDK_MANAGER} --list_installed | tail --lines=2 >> ${INSTALLED_VERSIONS} && \
-    rm ${DIRWORK}/.*_version
-
-WORKDIR ${FINAL_DIRWORK}
-
 # stage1 build stage
 # installs the intended android SDKs
 #
@@ -394,6 +375,25 @@ RUN apt-get install -qq nodejs > /dev/null && \
         react-native-cli > /dev/null && \
     npm cache clean --force > /dev/null && \
     apt-get -y clean && apt-get -y autoremove && rm -rf /var/lib/apt/lists/*
+
+# minimal-final build stage
+# intended as a functional bare-bones installation
+FROM minimal as minimal-final
+COPY --from=stage2 /var/lib/jenkins/workspace /var/lib/jenkins/workspace
+COPY --from=stage2 /home/jenkins /home/jenkins
+COPY --from=jenv-final ${JENV_HOME} ${JENV_HOME}
+COPY --from=jenv-final ${INSTALLED_TEMP} ${DIRWORK}/.jenv_version
+COPY --from=jenv-final /root/.bash_profile /root/.bash_profile
+
+RUN chmod 775 $ANDROID_HOME
+
+RUN git config --global --add safe.directory ${JENV_HOME} && \
+    cat ${DIRWORK}/.jenv_version >> ${INSTALLED_VERSIONS} && \
+    echo "Android SDKs, Build tools, etc Installed: " >> ${INSTALLED_VERSIONS} && \
+    ${ANDROID_SDK_MANAGER} --list_installed | tail --lines=2 >> ${INSTALLED_VERSIONS} && \
+    rm ${DIRWORK}/.*_version
+
+WORKDIR ${FINAL_DIRWORK}
 
 # complete build stage
 # intended as a final target
