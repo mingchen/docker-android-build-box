@@ -1,6 +1,6 @@
 # Installed Software Versions
 # Most _TAGGED can be "latest" or "tagged"
-# when _TAGGED is "tagged" the version in _VER will be used.
+# when _TAGGED is "tagged" the version in _VERSION will be used.
 # _TAGGED is used to handle the build stages
 
 # "9123335" as of 2023/01/11
@@ -26,6 +26,15 @@ ARG FLUTTER_VERSION="3.7.7"
 ARG JENV_TAGGED="latest"
 ARG JENV_VERSION="0.5.4"
 
+#----------~~~~~~~~~~**********~~~~~~~~~~~-----------#
+#                PRELIMINARY TARGETS
+#----------~~~~~~~~~~**********~~~~~~~~~~~-----------#
+# All following targets should have their root as either these two targets,
+# ubuntu and base.
+
+#----------~~~~~~~~~~*****
+# build-target: ubunutu
+#----------~~~~~~~~~~*****
 FROM ubuntu:20.04 as ubuntu
 # Ensure ARGs are in this build context
 ARG ANDROID_SDK_TOOLS_VERSION
@@ -64,6 +73,9 @@ ENV ANDROID_NDK_HOME="$ANDROID_NDK"
 
 ENV PATH="${JENV_HOME}/shims:${JENV_HOME}/bin:$JAVA_HOME/bin:$PATH:$ANDROID_SDK_HOME/emulator:$ANDROID_SDK_HOME/cmdline-tools/latest/bin:$ANDROID_SDK_HOME/tools:$ANDROID_SDK_HOME/platform-tools:$ANDROID_NDK:$FLUTTER_HOME/bin:$FLUTTER_HOME/bin/cache/dart-sdk/bin"
 
+#----------~~~~~~~~~~*****
+# build-target: base
+#----------~~~~~~~~~~*****
 FROM ubuntu as pre-base
 ARG TERM=dumb \
     DEBIAN_FRONTEND=noninteractive
@@ -163,6 +175,14 @@ RUN  mkdir --parents "$ANDROID_HOME" && \
     mv latest cmdline-tools && \
     rm --force sdk-tools.zip
 
+#----------~~~~~~~~~~**********~~~~~~~~~~~-----------#
+#                INTERMEDIARY TARGETS
+#----------~~~~~~~~~~**********~~~~~~~~~~~-----------#
+# build targets used to craft the targets for deployment to production
+
+#----------~~~~~~~~~~*****
+# build-target: jenv-final
+#----------~~~~~~~~~~*****
 # jenv build stage
 # Add jenv to control which version of java to use, default to 17.
 FROM base as jenv-base
@@ -188,6 +208,9 @@ RUN . ~/.bash_profile && \
     jenv global 17.0 && \
     java -version
 
+#----------~~~~~~~~~~*****
+# build-target: stage2
+#----------~~~~~~~~~~*****
 # Create some jenkins required directory to allow this image run with Jenkins
 FROM ubuntu as stage2
 WORKDIR ${DIRWORK}
@@ -196,6 +219,9 @@ RUN mkdir -p /var/lib/jenkins/workspace && \
     chmod 777 /home/jenkins && \
     chmod 777 /var/lib/jenkins/workspace
 
+#----------~~~~~~~~~~*****
+# build-target: minimal
+#----------~~~~~~~~~~*****
 # minimal build stage
 FROM base as minimal
 ARG DEBUG
@@ -220,6 +246,9 @@ RUN echo "platform tools" && \
     yes | $ANDROID_SDK_MANAGER ${DEBUG:+--verbose} \
         "platform-tools" > /dev/null
 
+#----------~~~~~~~~~~*****
+# build-target: stage1-final
+#----------~~~~~~~~~~*****
 # stage1 build stage
 # installs the intended android SDKs
 #
@@ -262,6 +291,9 @@ RUN echo "installing: $(cat $PACKAGES_FILENAME)" && \
 RUN echo "Android SDKs, Build tools, etc Installed: " >> ${INSTALLED_TEMP} && \
     ${ANDROID_SDK_MANAGER} --list_installed | tail --lines=2 >> ${INSTALLED_TEMP}
 
+#----------~~~~~~~~~~*****
+# build-target: bundletool-final
+#----------~~~~~~~~~~*****
 # bundletool build stage
 FROM minimal as bundletool-base
 WORKDIR ${DIRWORK}
@@ -280,6 +312,9 @@ RUN TEMP=$(curl -s https://api.github.com/repos/google/bundletool/releases/lates
 FROM bundletool-${BUNDLETOOL_TAGGED} as bundletool-final
 RUN echo "bundletool finished"
 
+#----------~~~~~~~~~~*****
+# build-target: ndk-final
+#----------~~~~~~~~~~*****
 # NDK Build Stage
 FROM minimal as ndk-base
 WORKDIR ${DIRWORK}
@@ -304,6 +339,9 @@ RUN NDK=$(grep 'ndk;' ${SDK_PACKAGES_LIST} | sort | tail -n1 | awk '{print $1}')
 FROM ndk-${NDK_TAGGED} as ndk-final
 RUN echo "NDK finished"
 
+#----------~~~~~~~~~~*****
+# build-target: flutter-final
+#----------~~~~~~~~~~*****
 # Flutter build stage
 FROM --platform=linux/amd64 base as flutter-base
 WORKDIR ${DIRWORK}
@@ -318,6 +356,9 @@ RUN git clone --depth 5 -b stable https://github.com/flutter/flutter.git ${FLUTT
 FROM flutter-${FLUTTER_TAGGED} as flutter-final
 RUN flutter config --no-analytics
 
+#----------~~~~~~~~~~*****
+# build-target: stage3
+#----------~~~~~~~~~~*****
 # fastlane build stage
 FROM minimal as stage3
 WORKDIR ${DIRWORK}
@@ -333,7 +374,9 @@ RUN TEMP=$(bundler exec fastlane --version) && \
     FASTLANE_VERSION=$(echo "$TEMP" | grep fastlane | tail -n 1 | tr -d 'fastlane\ ') && \
     echo "FASTLANE_VERSION=$FASTLANE_VERSION" >> ${INSTALLED_TEMP}
 
-# Node build Stage
+#----------~~~~~~~~~~*****
+# build-target: node-final
+#----------~~~~~~~~~~*****
 FROM stage3 as node-base
 RUN echo "nodejs, npm, cordova, ionic, react-native"
 ENV NODE_ENV=production
@@ -376,7 +419,15 @@ RUN apt-get install -qq nodejs > /dev/null && \
     npm cache clean --force > /dev/null && \
     apt-get -y clean && apt-get -y autoremove && rm -rf /var/lib/apt/lists/*
 
-# minimal-final build stage
+#----------~~~~~~~~~~**********~~~~~~~~~~~-----------#
+#                FINAL BUILD TARGETS
+#----------~~~~~~~~~~**********~~~~~~~~~~~-----------#
+# All targets which follow are intended to be used as a final target
+# for use by users. Otherwise known as production ready.
+
+#----------~~~~~~~~~~*****
+# build-target: minimal-final
+#----------~~~~~~~~~~*****
 # intended as a functional bare-bones installation
 FROM minimal as minimal-final
 COPY --from=stage2 /var/lib/jenkins/workspace /var/lib/jenkins/workspace
@@ -395,8 +446,9 @@ RUN git config --global --add safe.directory ${JENV_HOME} && \
 
 WORKDIR ${FINAL_DIRWORK}
 
-# complete build stage
-# intended as a final target
+#----------~~~~~~~~~~*****
+# build-target: complete
+#----------~~~~~~~~~~*****
 FROM node-final as complete
 COPY --from=stage1-final --chmod=775 ${ANDROID_HOME} ${ANDROID_HOME}
 COPY --from=stage2 /var/lib/jenkins/workspace /var/lib/jenkins/workspace
@@ -428,8 +480,9 @@ RUN du -sh $ANDROID_HOME
 
 WORKDIR ${FINAL_DIRWORK}
 
-# complete-flutter
-# intended as a final-target, has complete build stage and flutter
+#----------~~~~~~~~~~*****
+# build-target: complete-flutter
+#----------~~~~~~~~~~*****
 FROM --platform=linux/amd64 complete as complete-flutter
 COPY --from=flutter-final ${FLUTTER_HOME} ${FLUTTER_HOME}
 COPY --from=flutter-final /root/.flutter /root/.flutter
