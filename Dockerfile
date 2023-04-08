@@ -372,7 +372,11 @@ RUN echo "fastlane" && \
     chmod 777 /.fastlane && \
     bundle install --quiet
 RUN TEMP=$(bundler exec fastlane --version) && \
+    BUNDLER_VERSION=$(bundler --version | cut -d ' ' -f 3) && \
+    RAKE_VERSION=$(bundler exec rake --version | cut -d ' ' -f 3) && \
     FASTLANE_VERSION=$(echo "$TEMP" | grep fastlane | tail -n 1 | tr -d 'fastlane\ ') && \
+    echo "BUNDLER_VERSION=$BUNDLER_VERSION" >> ${INSTALLED_TEMP} && \
+    echo "RAKE_VERSION=$RAKE_VERSION" >> ${INSTALLED_TEMP} && \
     echo "FASTLANE_VERSION=$FASTLANE_VERSION" >> ${INSTALLED_TEMP}
 
 #----------~~~~~~~~~~*****
