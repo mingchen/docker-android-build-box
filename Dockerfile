@@ -389,16 +389,10 @@ RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selectio
 
 # Install Node
 FROM node-base as node-tagged
-RUN TEMP=$(curl -sL -k https://deb.nodesource.com/setup_${NODE_VERSION}) && \
-        echo "$TEMP" | bash - > /dev/null && \
-    NODE_VERSION=$(echo "$TEMP" | grep NODENAME= | cut -d = -f 2 | tr -d \") && \
-    echo "NODE_VERSION=$NODE_VERSION" >> ${INSTALLED_TEMP}
+RUN curl -sL -k https://deb.nodesource.com/setup_${NODE_VERSION} | bash - > /dev/null
 
 FROM node-base as node-latest
-RUN TEMP=$(curl -sL -k https://deb.nodesource.com/setup_lts.x) && \
-        echo "$TEMP" | bash - > /dev/null && \
-    NODE_VERSION=$(echo "$TEMP" | grep NODENAME= | cut -d = -f 2 | tr -d \") && \
-    echo "NODE_VERSION=$NODE_VERSION" >> ${INSTALLED_TEMP}
+RUN curl -sL -k https://deb.nodesource.com/setup_lts.x | bash - > /dev/null
 
 FROM node-${NODE_TAGGED} as node-final
 RUN apt-get install -qq nodejs > /dev/null && \
@@ -426,7 +420,8 @@ RUN apt-get install -qq nodejs > /dev/null && \
     apt-get -y clean && apt-get -y autoremove && rm -rf /var/lib/apt/lists/*
 RUN echo 'debconf debconf/frontend select Dialog' | debconf-set-selections
 
-RUN YARN_VERSION=$(yarn --version) && \
+RUN NODE_VERSION=$(node --version) && \
+    YARN_VERSION=$(yarn --version) && \
     NPM_VERSION=$(npm --version) && \
     BOWER_VERSION=$(bower --version) && \
     CORDOVA_VERSION=$(cordova --version) && \
@@ -439,6 +434,7 @@ RUN YARN_VERSION=$(yarn --version) && \
     NODE_GYP_VERSION=$(node-gyp --version) && \
     NPM_CHECK_UPDATES_VERSION=$(npm-check-updates --version) && \
     REACT_NATIVE_CLI_VERSION=$(react-native-cli --version) && \
+    echo "NODE_VERSION=$NODE_VERSION" >> ${INSTALLED_TEMP} && \
     echo "YARN_VERSION=$YARN_VERSION" >> ${INSTALLED_TEMP} && \
     echo "NPM_VERSION=$NPM_VERSION" >> ${INSTALLED_TEMP} && \
     echo "BOWER_VERSION=$BOWER_VERSION" >> ${INSTALLED_TEMP} && \
