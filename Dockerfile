@@ -290,7 +290,7 @@ RUN echo "installing: $(cat $PACKAGES_FILENAME)" && \
     yes | ${ANDROID_SDK_MANAGER} ${DEBUG:+--verbose} --package_file=$LAST7_PACKAGES > /dev/null
 
 RUN echo "Android SDKs, Build tools, etc Installed: " >> ${INSTALLED_TEMP} && \
-    ${ANDROID_SDK_MANAGER} --list_installed | tail --lines=2 >> ${INSTALLED_TEMP}
+    ${ANDROID_SDK_MANAGER} --list_installed | tail --lines=+2 >> ${INSTALLED_TEMP}
 
 #----------~~~~~~~~~~*****
 # build-target: bundletool-final
@@ -444,7 +444,7 @@ RUN chmod 775 $ANDROID_HOME
 RUN git config --global --add safe.directory ${JENV_HOME} && \
     cat ${DIRWORK}/.jenv_version >> ${INSTALLED_VERSIONS} && \
     echo "Android SDKs, Build tools, etc Installed: " >> ${INSTALLED_VERSIONS} && \
-    ${ANDROID_SDK_MANAGER} --list_installed | tail --lines=2 >> ${INSTALLED_VERSIONS} && \
+    ${ANDROID_SDK_MANAGER} --list_installed | tail --lines=+2 >> ${INSTALLED_VERSIONS} && \
     rm ${DIRWORK}/.*_version
 
 WORKDIR ${FINAL_DIRWORK}
