@@ -287,7 +287,7 @@ RUN TEMP2=$(cat $LAST8_PACKAGES | grep -o '[0-9][0-9]\+' | sort -u) && \
 FROM stage1-${ANDROID_SDKS} as stage1-final
 RUN echo "installing: $(cat $PACKAGES_FILENAME)" && \
     . /etc/jdk.env && \
-    yes | ${ANDROID_SDK_MANAGER} ${DEBUG:+--verbose} --package_file=$LAST8_PACKAGES > /dev/null
+    yes | ${ANDROID_SDK_MANAGER} ${DEBUG:+--verbose} --package_file=$PACKAGES_FILENAME > /dev/null
 
 RUN echo "Android SDKs, Build tools, etc Installed: " >> ${INSTALLED_TEMP} && \
     ${ANDROID_SDK_MANAGER} --list_installed | tail --lines=+2 >> ${INSTALLED_TEMP}
