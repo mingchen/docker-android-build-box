@@ -295,6 +295,7 @@ RUN echo "installing: $(cat $PACKAGES_FILENAME)" && \
     yes | ${ANDROID_SDK_MANAGER} ${DEBUG:+--verbose} --package_file=$PACKAGES_FILENAME > /dev/null
 
 RUN echo "Android SDKs, Build tools, etc Installed: " >> ${INSTALLED_TEMP} && \
+    . /etc/jdk.env && \
     ${ANDROID_SDK_MANAGER} --list_installed | tail --lines=+2 >> ${INSTALLED_TEMP}
 
 #----------~~~~~~~~~~*****
@@ -453,6 +454,7 @@ RUN chmod 775 -R $ANDROID_HOME && \
     git config --global --add safe.directory ${JENV_HOME} && \
     cat ${DIRWORK}/.jenv_version >> ${INSTALLED_VERSIONS} && \
     echo "Android SDKs, Build tools, etc Installed: " >> ${INSTALLED_VERSIONS} && \
+    . /etc/jdk.env && \
     ${ANDROID_SDK_MANAGER} --list_installed | tail --lines=+2 >> ${INSTALLED_VERSIONS} && \
     rm ${DIRWORK}/.*_version
 
