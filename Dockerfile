@@ -501,18 +501,6 @@ RUN git config --global --add safe.directory ${FLUTTER_HOME} && \
     cat ${DIRWORK}/.flutter_version >> ${INSTALLED_VERSIONS} && \
     rm ${DIRWORK}/.*_version
 
-
-ARG BUILD_DATE=""
-ARG SOURCE_BRANCH=""
-ARG SOURCE_COMMIT=""
-ARG DOCKER_TAG=""
-
-ENV BUILD_DATE=${BUILD_DATE} \
-    SOURCE_BRANCH=${SOURCE_BRANCH} \
-    SOURCE_COMMIT=${SOURCE_COMMIT} \
-    DOCKER_TAG=${DOCKER_TAG}
-
-
 # labels, see http://label-schema.org/
 LABEL maintainer="Ming Chen"
 LABEL org.label-schema.schema-version="1.0"
