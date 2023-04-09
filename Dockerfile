@@ -273,18 +273,21 @@ COPY tagged_sdk_packages_list.txt $PACKAGES_FILENAME
 FROM stage1-base as stage1-last8
 ARG LAST8_PACKAGES=$PACKAGES_FILENAME
 # Get last 8 platforms
-# Extract platform version numbers, removing duplicates (TEMP2).
-# find the build-tools for each number.
-RUN cat ${SDK_PACKAGES_LIST} | grep "platforms;android-[[:digit:]][[:digit:]]\+" | tail -n8 | awk '{print $1}' \
+# Extract platform version numbers.
+# for each (while) platform number find any extensions
+# for each (while) platform number get all the build-tools
+# lastly get any potential build-tools; for next platform release
+RUN cat ${SDK_PACKAGES_LIST} | grep "platforms;android-[[:digit:]][[:digit:]]\+ " | tail -n8 | awk '{print $1}' \
     >> $LAST8_PACKAGES && \
-    TEMP2=$(cat $LAST8_PACKAGES | grep -o '[0-9][0-9]\+' | sort -u) && \
-    cat ${SDK_PACKAGES_LIST} | grep "build-tools;$(echo "$TEMP2" | head -n1)" | awk '{print $1}' >> $LAST8_PACKAGES && \
-    cat ${SDK_PACKAGES_LIST} | grep "build-tools;$(echo "$TEMP2" | head -n2 | tail -n1)" | awk '{print $1}' >> $LAST8_PACKAGES && \
-    cat ${SDK_PACKAGES_LIST} | grep "build-tools;$(echo "$TEMP2" | head -n3 | tail -n1)" | awk '{print $1}' >> $LAST8_PACKAGES && \
-    cat ${SDK_PACKAGES_LIST} | grep "build-tools;$(echo "$TEMP2" | head -n4 | tail -n1)" | awk '{print $1}' >> $LAST8_PACKAGES && \
-    cat ${SDK_PACKAGES_LIST} | grep "build-tools;$(echo "$TEMP2" | head -n5 | tail -n1)" | awk '{print $1}' >> $LAST8_PACKAGES && \
-    cat ${SDK_PACKAGES_LIST} | grep "build-tools;$(echo "$TEMP2" | head -n6 | tail -n1)" | awk '{print $1}' >> $LAST8_PACKAGES && \
-    cat ${SDK_PACKAGES_LIST} | grep "build-tools;$(echo "$TEMP2" | head -n7 | tail -n1)" | awk '{print $1}' >> $LAST8_PACKAGES
+    PLATFORM_NUMBERS=$(cat $LAST8_PACKAGES | grep -o '[0-9][0-9]\+' | sort -u) && \
+    i=$(echo "$PLATFORM_NUMBERS" | head -n1) && \
+    end=$(echo "$PLATFORM_NUMBERS" | tail -n1) && \
+    while [ $i -le $end ]; do \
+        cat ${SDK_PACKAGES_LIST} | grep "platforms;android-$i-" | awk '{print $1}' >> $LAST8_PACKAGES; \
+        cat ${SDK_PACKAGES_LIST} | grep "build-tools;$i" | awk '{print $1}' >> $LAST8_PACKAGES; \
+        i=$(($i+1)); \
+    done; \
+    cat ${SDK_PACKAGES_LIST} | grep "build-tools;$i" | awk '{print $1}' >> $LAST8_PACKAGES
 
 FROM stage1-${ANDROID_SDKS} as stage1-final
 RUN echo "installing: $(cat $PACKAGES_FILENAME)" && \
