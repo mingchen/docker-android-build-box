@@ -8,7 +8,8 @@ ARG ANDROID_SDK_TOOLS_TAGGED="latest"
 ARG ANDROID_SDK_TOOLS_VERSION="9123335"
 
 # Valid values are "last8" or "tagged"
-# "last8" will grab the last 8 android-sdks
+# "last8" will grab the last 8 android-sdks, including extensions and
+# any potential future build tool release candidates
 ARG ANDROID_SDKS="last8"
 
 ARG NDK_TAGGED="latest"
@@ -27,13 +28,13 @@ ARG JENV_TAGGED="latest"
 ARG JENV_VERSION="0.5.4"
 
 #----------~~~~~~~~~~**********~~~~~~~~~~~-----------#
-#                PRELIMINARY TARGETS
+#                PRELIMINARY STAGES
 #----------~~~~~~~~~~**********~~~~~~~~~~~-----------#
-# All following targets should have their root as either these two targets,
+# All following stages should have their root as either these two stages,
 # ubuntu and base.
 
 #----------~~~~~~~~~~*****
-# build-target: ubunutu
+# build stage: ubunutu
 #----------~~~~~~~~~~*****
 FROM ubuntu:20.04 as ubuntu
 # Ensure ARGs are in this build context
@@ -74,7 +75,7 @@ ENV ANDROID_NDK_HOME="$ANDROID_NDK"
 ENV PATH="${JENV_HOME}/shims:${JENV_HOME}/bin:$JAVA_HOME/bin:$PATH:$ANDROID_SDK_HOME/emulator:$ANDROID_SDK_HOME/cmdline-tools/latest/bin:$ANDROID_SDK_HOME/tools:$ANDROID_SDK_HOME/platform-tools:$ANDROID_NDK:$FLUTTER_HOME/bin:$FLUTTER_HOME/bin/cache/dart-sdk/bin"
 
 #----------~~~~~~~~~~*****
-# build-target: base
+# build stage: base
 #----------~~~~~~~~~~*****
 FROM ubuntu as pre-base
 ARG TERM=dumb \
@@ -180,14 +181,14 @@ RUN mkdir -p $ANDROID_HOME/licenses
 COPY sdk/licenses/* $ANDROID_HOME/licenses/
 
 #----------~~~~~~~~~~**********~~~~~~~~~~~-----------#
-#                INTERMEDIARY TARGETS
+#                INTERMEDIARY STAGES
 #----------~~~~~~~~~~**********~~~~~~~~~~~-----------#
-# build targets used to craft the targets for deployment to production
+# build stages used to craft the targets for deployment to production
 
 #----------~~~~~~~~~~*****
-# build-target: jenv-final
+# build stage: jenv-final
 #----------~~~~~~~~~~*****
-# jenv build stage
+# jenv
 # Add jenv to control which version of java to use, default to 17.
 FROM base as jenv-base
 RUN echo '#!/usr/bin/env bash' >> ~/.bash_profile && \
@@ -213,7 +214,7 @@ RUN . ~/.bash_profile && \
     java -version
 
 #----------~~~~~~~~~~*****
-# build-target: stage2
+# build stage: stage2
 #----------~~~~~~~~~~*****
 # Create some jenkins required directory to allow this image run with Jenkins
 FROM ubuntu as stage2
@@ -224,9 +225,9 @@ RUN mkdir -p /var/lib/jenkins/workspace && \
     chmod 777 /var/lib/jenkins/workspace
 
 #----------~~~~~~~~~~*****
-# build-target: minimal
+# build stage: minimal
 #----------~~~~~~~~~~*****
-# minimal build stage
+# minimal
 FROM base as minimal
 ARG DEBUG
 # The `yes` is for accepting all non-standard tool licenses.
@@ -248,9 +249,8 @@ RUN echo "platform tools" && \
         "platform-tools" > /dev/null
 
 #----------~~~~~~~~~~*****
-# build-target: stage1-final
+# build stage: stage1-final
 #----------~~~~~~~~~~*****
-# stage1 build stage
 # installs the intended android SDKs
 #
 # https://developer.android.com/studio/command-line/sdkmanager.html
@@ -276,7 +276,7 @@ ARG LAST8_PACKAGES=$PACKAGES_FILENAME
 # Extract platform version numbers.
 # for each (while) platform number find any extensions
 # for each (while) platform number get all the build-tools
-# lastly get any potential build-tools; for next platform release
+# lastly get any potential build-tools for next platform release
 RUN cat ${SDK_PACKAGES_LIST} | grep "platforms;android-[[:digit:]][[:digit:]]\+ " | tail -n8 | awk '{print $1}' \
     >> $LAST8_PACKAGES && \
     PLATFORM_NUMBERS=$(cat $LAST8_PACKAGES | grep -o '[0-9][0-9]\+' | sort -u) && \
@@ -298,9 +298,9 @@ RUN echo "Android SDKs, Build tools, etc Installed: " >> ${INSTALLED_TEMP} && \
     ${ANDROID_SDK_MANAGER} --list_installed | tail --lines=+2 >> ${INSTALLED_TEMP}
 
 #----------~~~~~~~~~~*****
-# build-target: bundletool-final
+# build stage: bundletool-final
 #----------~~~~~~~~~~*****
-# bundletool build stage
+# bundletool
 FROM minimal as bundletool-base
 WORKDIR ${DIRWORK}
 RUN echo "bundletool"
@@ -319,9 +319,9 @@ FROM bundletool-${BUNDLETOOL_TAGGED} as bundletool-final
 RUN echo "bundletool finished"
 
 #----------~~~~~~~~~~*****
-# build-target: ndk-final
+# build stage: ndk-final
 #----------~~~~~~~~~~*****
-# NDK Build Stage
+# NDK (side-by-side)
 FROM minimal as ndk-base
 WORKDIR ${DIRWORK}
 RUN echo "NDK"
@@ -346,9 +346,9 @@ FROM ndk-${NDK_TAGGED} as ndk-final
 RUN echo "NDK finished"
 
 #----------~~~~~~~~~~*****
-# build-target: flutter-final
+# build stage: flutter-final
 #----------~~~~~~~~~~*****
-# Flutter build stage
+# Flutter
 FROM --platform=linux/amd64 base as flutter-base
 WORKDIR ${DIRWORK}
 FROM flutter-base as flutter-tagged
@@ -363,9 +363,9 @@ FROM flutter-${FLUTTER_TAGGED} as flutter-final
 RUN flutter config --no-analytics
 
 #----------~~~~~~~~~~*****
-# build-target: stage3
+# build stage: stage3
 #----------~~~~~~~~~~*****
-# fastlane build stage
+# ruby gems
 FROM minimal as stage3
 WORKDIR ${DIRWORK}
 COPY Gemfile /Gemfile
@@ -385,8 +385,9 @@ RUN echo "fastlane" && \
     echo "FASTLANE_VERSION=$FASTLANE_VERSION" >> ${INSTALLED_TEMP}
 
 #----------~~~~~~~~~~*****
-# build-target: node-final
+# build stage: node-final
 #----------~~~~~~~~~~*****
+# node
 FROM stage3 as node-base
 ENV NODE_ENV=production
 RUN echo "nodejs, npm, cordova, ionic, react-native" && \
@@ -434,11 +435,11 @@ RUN apt-get install -qq nodejs > /dev/null && \
 #----------~~~~~~~~~~**********~~~~~~~~~~~-----------#
 #                FINAL BUILD TARGETS
 #----------~~~~~~~~~~**********~~~~~~~~~~~-----------#
-# All targets which follow are intended to be used as a final target
+# All stages which follow are intended to be used as a final target
 # for use by users. Otherwise known as production ready.
 
 #----------~~~~~~~~~~*****
-# build-target: minimal-final
+# build target: minimal-final
 #----------~~~~~~~~~~*****
 # intended as a functional bare-bones installation
 FROM minimal as minimal-final
@@ -458,7 +459,7 @@ RUN chmod 775 -R $ANDROID_HOME && \
 WORKDIR ${FINAL_DIRWORK}
 
 #----------~~~~~~~~~~*****
-# build-target: complete
+# build target: complete
 #----------~~~~~~~~~~*****
 FROM node-final as complete
 COPY --from=stage1-final --chmod=775 ${ANDROID_HOME} ${ANDROID_HOME}
@@ -488,7 +489,7 @@ RUN chmod 775 $ANDROID_HOME $ANDROID_NDK_ROOT/../ && \
 WORKDIR ${FINAL_DIRWORK}
 
 #----------~~~~~~~~~~*****
-# build-target: complete-flutter
+# build target: complete-flutter
 #----------~~~~~~~~~~*****
 FROM --platform=linux/amd64 complete as complete-flutter
 COPY --from=flutter-final ${FLUTTER_HOME} ${FLUTTER_HOME}
