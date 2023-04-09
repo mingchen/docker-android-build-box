@@ -58,7 +58,7 @@ ENV ANDROID_HOME="/opt/android-sdk" \
     ANDROID_NDK="/opt/android-sdk/ndk/latest" \
     ANDROID_NDK_ROOT="/opt/android-sdk/ndk/latest" \
     FLUTTER_HOME="/opt/flutter" \
-    JENV_HOME="/root/.jenv"
+    JENV_HOME="/opt/jenv"
 ENV ANDROID_SDK_MANAGER=${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager
 
 ENV TZ=America/Los_Angeles
