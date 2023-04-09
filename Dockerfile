@@ -470,7 +470,6 @@ COPY --from=stage1-final ${INSTALLED_TEMP} ${DIRWORK}/.sdks_version
 COPY --from=bundletool-final ${INSTALLED_TEMP} ${DIRWORK}/.bundletool_version
 COPY --from=ndk-final ${INSTALLED_TEMP} ${DIRWORK}/.ndk_version
 COPY --from=jenv-final ${INSTALLED_TEMP} ${DIRWORK}/.jenv_version
-COPY --from=node-final ${INSTALLED_TEMP} ${DIRWORK}/.node_version
 
 COPY README.md /README.md
 
