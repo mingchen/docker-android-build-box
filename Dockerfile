@@ -167,13 +167,13 @@ RUN TEMP=$(curl -S https://developer.android.com/studio/index.html) && \
     echo "ANDROID_SDK_TOOLS_VERSION=$ANDROID_SDK_TOOLS_VERSION" >> ${INSTALLED_VERSIONS}
 
 FROM base-${ANDROID_SDK_TOOLS_TAGGED} as base
-RUN  mkdir --parents "$ANDROID_HOME" && \
+RUN mkdir --parents "$ANDROID_HOME" && \
     unzip -q sdk-tools.zip -d "$ANDROID_HOME" && \
     cd "$ANDROID_HOME" && \
     mv cmdline-tools latest && \
     mkdir cmdline-tools && \
     mv latest cmdline-tools && \
-    rm --force sdk-tools.zip
+    rm --force ${DIRWORK}/sdk-tools.zip
 
 # Copy sdk license agreement files.
 RUN mkdir -p $ANDROID_HOME/licenses
