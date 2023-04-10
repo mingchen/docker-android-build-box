@@ -413,7 +413,7 @@ RUN apt-get install -qq nodejs > /dev/null && \
         bower \
         cordova \
         eslint \
-        gulp \
+        gulp-cli \
         @ionic/cli \
         jshint \
         karma-cli \
