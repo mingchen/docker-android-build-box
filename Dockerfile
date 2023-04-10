@@ -100,8 +100,6 @@ RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selectio
 
 # Installing packages
 RUN apt-get update -qq > /dev/null && \
-    apt-get install -qq locales > /dev/null && \
-    locale-gen "$LANG" > /dev/null && \
     apt-get install -qq --no-install-recommends \
         autoconf \
         build-essential \
