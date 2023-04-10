@@ -292,10 +292,6 @@ RUN echo "installing: $(cat $PACKAGES_FILENAME)" && \
     . /etc/jdk.env && \
     yes | ${ANDROID_SDK_MANAGER} ${DEBUG:+--verbose} --package_file=$PACKAGES_FILENAME > /dev/null
 
-RUN echo "Android SDKs, Build tools, etc Installed: " >> ${INSTALLED_TEMP} && \
-    . /etc/jdk.env && \
-    ${ANDROID_SDK_MANAGER} --list_installed | tail --lines=+2 >> ${INSTALLED_TEMP}
-
 #----------~~~~~~~~~~*****
 # build stage: bundletool-final
 #----------~~~~~~~~~~*****
@@ -329,8 +325,7 @@ FROM ndk-base as ndk-tagged
 RUN echo "Installing ${NDK_VERSION}" && \
     . /etc/jdk.env && \
     yes | $ANDROID_SDK_MANAGER ${DEBUG:+--verbose} "ndk;${NDK_VERSION}" > /dev/null && \
-    ln -sv $ANDROID_HOME/ndk/${NDK_VERSION} ${ANDROID_NDK} && \
-    echo "NDK_VERSION=${NDK_VERSION}" >> ${INSTALLED_TEMP}
+    ln -sv $ANDROID_HOME/ndk/${NDK_VERSION} ${ANDROID_NDK}
 
 FROM ndk-base as ndk-latest
 RUN NDK=$(grep 'ndk;' ${SDK_PACKAGES_LIST} | sort | tail -n1 | awk '{print $1}') && \
@@ -338,8 +333,7 @@ RUN NDK=$(grep 'ndk;' ${SDK_PACKAGES_LIST} | sort | tail -n1 | awk '{print $1}')
     echo "Installing $NDK" && \
     . /etc/jdk.env && \
     yes | $ANDROID_SDK_MANAGER ${DEBUG:+--verbose} "$NDK" > /dev/null && \
-    ln -sv $ANDROID_HOME/ndk/$NDK_VERSION ${ANDROID_NDK} && \
-    echo "NDK_VERSION=$NDK_VERSION" >> ${INSTALLED_TEMP}
+    ln -sv $ANDROID_HOME/ndk/$NDK_VERSION ${ANDROID_NDK}
 
 FROM ndk-${NDK_TAGGED} as ndk-final
 RUN echo "NDK finished"
@@ -451,10 +445,10 @@ COPY --from=jenv-final /root/.bash_profile /root/.bash_profile
 RUN chmod 775 -R $ANDROID_HOME && \
     git config --global --add safe.directory ${JENV_HOME} && \
     cat ${DIRWORK}/.jenv_version >> ${INSTALLED_VERSIONS} && \
+    rm ${DIRWORK}/.*_version && \
     echo "Android SDKs, Build tools, etc Installed: " >> ${INSTALLED_VERSIONS} && \
     . /etc/jdk.env && \
-    ${ANDROID_SDK_MANAGER} --list_installed | tail --lines=+2 >> ${INSTALLED_VERSIONS} && \
-    rm ${DIRWORK}/.*_version
+    ${ANDROID_SDK_MANAGER} --list_installed | tail --lines=+2 >> ${INSTALLED_VERSIONS}
 
 WORKDIR ${FINAL_DIRWORK}
 
@@ -470,7 +464,6 @@ COPY --from=ndk-final --chmod=775 ${ANDROID_NDK_ROOT}/../ ${ANDROID_NDK_ROOT}/..
 COPY --from=jenv-final ${JENV_HOME} ${JENV_HOME}
 COPY --from=jenv-final /root/.bash_profile /root/.bash_profile
 
-COPY --from=stage1-final ${INSTALLED_TEMP} ${DIRWORK}/.sdks_version
 COPY --from=bundletool-final ${INSTALLED_TEMP} ${DIRWORK}/.bundletool_version
 COPY --from=ndk-final ${INSTALLED_TEMP} ${DIRWORK}/.ndk_version
 COPY --from=jenv-final ${INSTALLED_TEMP} ${DIRWORK}/.jenv_version
@@ -481,6 +474,9 @@ RUN chmod 775 $ANDROID_HOME $ANDROID_NDK_ROOT/../ && \
     git config --global --add safe.directory ${JENV_HOME} && \
     cat ${DIRWORK}/.*_version >> ${INSTALLED_VERSIONS} && \
     rm ${DIRWORK}/.*_version && \
+    echo "Android SDKs, Build tools, etc Installed: " >> ${INSTALLED_VERSIONS} && \
+    . /etc/jdk.env && \
+    ${ANDROID_SDK_MANAGER} --list_installed | tail --lines=+2 >> ${INSTALLED_VERSIONS} && \
     ls -l $ANDROID_HOME && \
     ls -l $ANDROID_HOME/ndk && \
     ls -l $ANDROID_HOME/ndk/* && \
