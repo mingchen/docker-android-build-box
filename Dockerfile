@@ -416,7 +416,7 @@ RUN apt-get install -qq nodejs > /dev/null && \
         cordova \
         eslint \
         gulp \
-        ionic \
+        @ionic/cli \
         jshint \
         karma-cli \
         mocha \
