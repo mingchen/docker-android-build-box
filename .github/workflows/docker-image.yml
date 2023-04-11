@@ -131,6 +131,10 @@ jobs:
         docker run --rm ${{ env.IMAGE_NAME}}:${{ env.TAG}} bash -c 'ls -l $ANDROID_NDK_HOME'
         docker run --rm ${{ env.IMAGE_NAME}}:${{ env.TAG}} bash -c 'ls -l /opt/android-sdk/ndk/'
 
+        # Test Node
+        echo "Test Node installation"
+        docker run --rm ${{ env.IMAGE_NAME}}:${{ env.TAG}} bash -c 'curl -fsSL https://deb.nodesource.com/test | bash -'
+
         cd test_projects/SampleProject/
         docker run --rm -v `pwd`:/project ${{ env.IMAGE_NAME}}:${{ env.TAG}} bash -c './gradlew build'
 
