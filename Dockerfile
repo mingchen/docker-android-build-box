@@ -58,7 +58,7 @@ ENV ANDROID_HOME="/opt/android-sdk" \
     ANDROID_NDK="/opt/android-sdk/ndk/latest" \
     ANDROID_NDK_ROOT="/opt/android-sdk/ndk/latest" \
     FLUTTER_HOME="/opt/flutter" \
-    JENV_HOME="/opt/jenv"
+    JENV_ROOT="/opt/jenv"
 ENV ANDROID_SDK_MANAGER=${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager
 
 ENV TZ=America/Los_Angeles
@@ -72,7 +72,7 @@ ENV LANG="en_US.UTF-8" \
 ENV ANDROID_SDK_HOME="$ANDROID_HOME"
 ENV ANDROID_NDK_HOME="$ANDROID_NDK"
 
-ENV PATH="${JENV_HOME}/shims:${JENV_HOME}/bin:$JAVA_HOME/bin:$PATH:$ANDROID_SDK_HOME/emulator:$ANDROID_SDK_HOME/cmdline-tools/latest/bin:$ANDROID_SDK_HOME/tools:$ANDROID_SDK_HOME/platform-tools:$ANDROID_NDK:$FLUTTER_HOME/bin:$FLUTTER_HOME/bin/cache/dart-sdk/bin"
+ENV PATH="${JENV_ROOT}/shims:${JENV_ROOT}/bin:$JAVA_HOME/bin:$PATH:$ANDROID_SDK_HOME/emulator:$ANDROID_SDK_HOME/cmdline-tools/latest/bin:$ANDROID_SDK_HOME/tools:$ANDROID_SDK_HOME/platform-tools:$ANDROID_NDK:$FLUTTER_HOME/bin:$FLUTTER_HOME/bin/cache/dart-sdk/bin"
 
 #----------~~~~~~~~~~*****
 # build stage: base
@@ -193,12 +193,12 @@ RUN echo '#!/usr/bin/env bash' >> ~/.bash_profile && \
     echo 'eval "$(jenv init -)"' >> ~/.bash_profile
 
 FROM jenv-base as jenv-tagged
-RUN git clone --depth 1 --branch ${JENV_RELEASE} https://github.com/jenv/jenv.git ${JENV_HOME} && \
+RUN git clone --depth 1 --branch ${JENV_RELEASE} https://github.com/jenv/jenv.git ${JENV_ROOT} && \
     echo "JENV_RELEASE=${JENV_RELEASE}" >> ${INSTALLED_TEMP}
 
 FROM jenv-base as jenv-latest
-RUN git clone  https://github.com/jenv/jenv.git ${JENV_HOME} && \
-    cd ${JENV_HOME} && echo "JENV_RELEASE=$(git describe --tags HEAD)" >> ${INSTALLED_TEMP}
+RUN git clone  https://github.com/jenv/jenv.git ${JENV_ROOT} && \
+    cd ${JENV_ROOT} && echo "JENV_RELEASE=$(git describe --tags HEAD)" >> ${INSTALLED_TEMP}
 
 FROM jenv-${JENV_TAGGED} as jenv-final
 RUN . ~/.bash_profile && \
@@ -437,12 +437,12 @@ RUN apt-get install -qq nodejs > /dev/null && \
 FROM pre-minimal as minimal
 COPY --from=stage2 /var/lib/jenkins/workspace /var/lib/jenkins/workspace
 COPY --from=stage2 /home/jenkins /home/jenkins
-COPY --from=jenv-final ${JENV_HOME} ${JENV_HOME}
+COPY --from=jenv-final ${JENV_ROOT} ${JENV_ROOT}
 COPY --from=jenv-final ${INSTALLED_TEMP} ${DIRWORK}/.jenv_version
 COPY --from=jenv-final /root/.bash_profile /root/.bash_profile
 
 RUN chmod 775 -R $ANDROID_HOME && \
-    git config --global --add safe.directory ${JENV_HOME} && \
+    git config --global --add safe.directory ${JENV_ROOT} && \
     cat ${DIRWORK}/.jenv_version >> ${INSTALLED_VERSIONS} && \
     rm -r ${DIRWORK}/* && \
     echo "Android SDKs, Build tools, etc Installed: " >> ${INSTALLED_VERSIONS} && \
@@ -460,7 +460,7 @@ COPY --from=stage2 /var/lib/jenkins/workspace /var/lib/jenkins/workspace
 COPY --from=stage2 /home/jenkins /home/jenkins
 COPY --from=bundletool-final $ANDROID_SDK_HOME/cmdline-tools/latest/bundletool.jar $ANDROID_SDK_HOME/cmdline-tools/latest/bundletool.jar
 COPY --from=ndk-final --chmod=775 ${ANDROID_NDK_ROOT}/../ ${ANDROID_NDK_ROOT}/../
-COPY --from=jenv-final ${JENV_HOME} ${JENV_HOME}
+COPY --from=jenv-final ${JENV_ROOT} ${JENV_ROOT}
 COPY --from=jenv-final /root/.bash_profile /root/.bash_profile
 
 COPY --from=bundletool-final ${INSTALLED_TEMP} ${DIRWORK}/.bundletool_version
@@ -470,7 +470,7 @@ COPY --from=jenv-final ${INSTALLED_TEMP} ${DIRWORK}/.jenv_version
 COPY README.md /README.md
 
 RUN chmod 775 $ANDROID_HOME $ANDROID_NDK_ROOT/../ && \
-    git config --global --add safe.directory ${JENV_HOME} && \
+    git config --global --add safe.directory ${JENV_ROOT} && \
     cat ${DIRWORK}/.*_version >> ${INSTALLED_VERSIONS} && \
     rm -r ${DIRWORK}/* && \
     echo "Android SDKs, Build tools, etc Installed: " >> ${INSTALLED_VERSIONS} && \
