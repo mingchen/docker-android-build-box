@@ -158,3 +158,19 @@ jobs:
         push: ${{ github.event_name != 'pull_request' && (github.ref == 'refs/heads/master' || contains(github.ref, 'refs/tags/')) }}
         tags: mingc/android-build-box:latest,${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
+
+    - name: Modify Readme to list latest software
+      if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/master')
+      run: |
+        printf "\n\n \"Latest\" Tag Software:\n\n" >> README.md
+        TEMP=$(docker run --rm ${{ env.IMAGE_NAME}}:${{ env.TAG}} cat '/root/installed-versions.txt')
+        echo "$TEMP" | tail --lines=+2 >> README.md
+
+    - name: Update Docker Hub Description
+      if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/master')
+      uses: peter-evans/dockerhub-description@579f64ca0abced29dbbc44ab4c6a0b9e33ab3588
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_PASSWORD }}
+        repository: mingc/android-build-box
+        enable-url-completion: true
