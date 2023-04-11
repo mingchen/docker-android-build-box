@@ -223,10 +223,9 @@ RUN mkdir -p /var/lib/jenkins/workspace && \
     chmod 777 /var/lib/jenkins/workspace
 
 #----------~~~~~~~~~~*****
-# build stage: minimal
+# build stage: pre-minimal
 #----------~~~~~~~~~~*****
-# minimal
-FROM base as minimal
+FROM base as pre-minimal
 ARG DEBUG
 # The `yes` is for accepting all non-standard tool licenses.
 RUN mkdir --parents "$ANDROID_HOME/.android/" && \
@@ -252,7 +251,7 @@ RUN echo "platform tools" && \
 # installs the intended android SDKs
 #
 # https://developer.android.com/studio/command-line/sdkmanager.html
-FROM minimal as stage1-independent-base
+FROM pre-minimal as stage1-independent-base
 WORKDIR ${DIRWORK}
 ARG PACKAGES_FILENAME="android-sdks.txt"
 
@@ -296,7 +295,7 @@ RUN echo "installing: $(cat $PACKAGES_FILENAME)" && \
 # build stage: bundletool-final
 #----------~~~~~~~~~~*****
 # bundletool
-FROM minimal as bundletool-base
+FROM pre-minimal as bundletool-base
 WORKDIR ${DIRWORK}
 RUN echo "bundletool"
 
@@ -317,7 +316,7 @@ RUN echo "bundletool finished"
 # build stage: ndk-final
 #----------~~~~~~~~~~*****
 # NDK (side-by-side)
-FROM minimal as ndk-base
+FROM pre-minimal as ndk-base
 WORKDIR ${DIRWORK}
 RUN echo "NDK"
 
@@ -359,7 +358,7 @@ RUN flutter config --no-analytics
 # build stage: stage3
 #----------~~~~~~~~~~*****
 # ruby gems
-FROM minimal as stage3
+FROM pre-minimal as stage3
 WORKDIR ${DIRWORK}
 COPY Gemfile /Gemfile
 
@@ -432,10 +431,10 @@ RUN apt-get install -qq nodejs > /dev/null && \
 # for use by users. Otherwise known as production ready.
 
 #----------~~~~~~~~~~*****
-# build target: minimal-final
+# build target: minimal
 #----------~~~~~~~~~~*****
 # intended as a functional bare-bones installation
-FROM minimal as minimal-final
+FROM pre-minimal as minimal
 COPY --from=stage2 /var/lib/jenkins/workspace /var/lib/jenkins/workspace
 COPY --from=stage2 /home/jenkins /home/jenkins
 COPY --from=jenv-final ${JENV_HOME} ${JENV_HOME}
