@@ -134,10 +134,6 @@ jobs:
         cd test_projects/SampleProject/
         docker run --rm -v `pwd`:/project ${{ env.IMAGE_NAME}}:${{ env.TAG}} bash -c './gradlew build'
 
-    - name: Remove local docker image
-      run: |
-        docker rmi ${{ env.IMAGE_NAME}}:${{ env.TAG}}
-
     - name: Login to DockerHub
       # if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
       if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/master' || contains(github.ref, 'refs/tags/'))
