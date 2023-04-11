@@ -444,7 +444,7 @@ COPY --from=jenv-final /root/.bash_profile /root/.bash_profile
 RUN chmod 775 -R $ANDROID_HOME && \
     git config --global --add safe.directory ${JENV_HOME} && \
     cat ${DIRWORK}/.jenv_version >> ${INSTALLED_VERSIONS} && \
-    rm ${DIRWORK}/.*_version && \
+    rm -r ${DIRWORK}/* && \
     echo "Android SDKs, Build tools, etc Installed: " >> ${INSTALLED_VERSIONS} && \
     . /etc/jdk.env && \
     ${ANDROID_SDK_MANAGER} --list_installed | tail --lines=+2 >> ${INSTALLED_VERSIONS}
@@ -472,7 +472,7 @@ COPY README.md /README.md
 RUN chmod 775 $ANDROID_HOME $ANDROID_NDK_ROOT/../ && \
     git config --global --add safe.directory ${JENV_HOME} && \
     cat ${DIRWORK}/.*_version >> ${INSTALLED_VERSIONS} && \
-    rm ${DIRWORK}/.*_version && \
+    rm -r ${DIRWORK}/* && \
     echo "Android SDKs, Build tools, etc Installed: " >> ${INSTALLED_VERSIONS} && \
     . /etc/jdk.env && \
     ${ANDROID_SDK_MANAGER} --list_installed | tail --lines=+2 >> ${INSTALLED_VERSIONS} && \
@@ -494,7 +494,7 @@ COPY --from=flutter-final ${INSTALLED_TEMP} ${DIRWORK}/.flutter_version
 
 RUN git config --global --add safe.directory ${FLUTTER_HOME} && \
     cat ${DIRWORK}/.flutter_version >> ${INSTALLED_VERSIONS} && \
-    rm ${DIRWORK}/.*_version
+    rm ${DIRWORK}/*
 
 # labels, see http://label-schema.org/
 LABEL maintainer="Ming Chen"
