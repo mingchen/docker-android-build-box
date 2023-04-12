@@ -417,6 +417,7 @@ feel free to send a [pull request](https://github.com/mingchen/docker-android-bu
 
 Please also preface commits with `DOCS:` when editing any documentation and `CI:` when editing `.github/workflows/`.
 
+Also note that building / testing can use up a lot of space. After developing a feature and prune-ing, routinely 100GB of space is freed.
 
 ## References
 
