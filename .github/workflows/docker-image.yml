@@ -96,9 +96,9 @@ jobs:
         # check disk space one more time
         df -h
 
-    - name: Build and load local docker image for PRs and Not Tags
+    - name: Build and load local docker image for PRs or Not Tags
       uses: docker/build-push-action@v4
-      if: github.event_name == 'pull_request' && !${{contains(github.ref, 'refs/tags/')}}
+      if: github.event_name == 'pull_request' || !${{contains(github.ref, 'refs/tags/')}}
       with:
         context: .
         load: true
