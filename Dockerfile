@@ -464,7 +464,6 @@ COPY --from=jenv-final ${JENV_ROOT} ${JENV_ROOT}
 COPY --from=jenv-final /root/.bash_profile /root/.bash_profile
 
 COPY --from=bundletool-final ${INSTALLED_TEMP} ${DIRWORK}/.bundletool_version
-COPY --from=ndk-final ${INSTALLED_TEMP} ${DIRWORK}/.ndk_version
 COPY --from=jenv-final ${INSTALLED_TEMP} ${DIRWORK}/.jenv_version
 
 COPY README.md /README.md
