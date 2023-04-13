@@ -25,7 +25,7 @@ ARG FLUTTER_TAGGED="latest"
 ARG FLUTTER_VERSION="3.7.7"
 
 ARG JENV_TAGGED="latest"
-ARG JENV_RELEASE="0.5.4"
+ARG JENV_RELEASE="0.5.6"
 
 #----------~~~~~~~~~~**********~~~~~~~~~~~-----------#
 #                PRELIMINARY STAGES
