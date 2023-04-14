@@ -199,7 +199,7 @@ RUN echo "build cmake" && \
     yes | $ANDROID_SDK_MANAGER \
         "cmake;3.22.1" \
         "cmake;3.18.1" \
-        "cmake;3.10.2" \
+        "cmake;3.10.2.4988404" \
         "cmake;3.6.4111459" > /dev/null
 
 # ndk-bundle does exist on arm64
