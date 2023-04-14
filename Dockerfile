@@ -194,6 +194,14 @@ RUN echo "emulator" && \
     . /etc/jdk.env && \
     yes | $ANDROID_SDK_MANAGER "emulator" > /dev/null
 
+RUN echo "build cmake" && \
+    . /etc/jdk.env && \
+    yes | $ANDROID_SDK_MANAGER \
+        "cmake;3.22.1" \
+        "cmake;3.18.1" \
+        "cmake;3.10.2" \
+        "cmake;3.6.4111459" > /dev/null
+
 # ndk-bundle does exist on arm64
 # RUN echo "NDK" && \
 #     yes | $ANDROID_SDK_MANAGER "ndk-bundle" > /dev/null
