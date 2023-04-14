@@ -39,7 +39,7 @@ It includes the following components:
   * 3.16.3 (install by apt)
   * 3.22.1 (install by sdk manager)
   * 3.18.1 (install by sdk manager)
-  * 3.10.2 (install by sdk manager)
+  * 3.10.2.4988404 (install by sdk manager)
   * 3.6.4111459 (install by sdk manager)
 * TestNG
 * Python 3.8.10
