@@ -397,10 +397,10 @@ If you wish to use the version of software specified in the file in the `_TAGGED
 
 For example, build target of `minimal` with SDK CLI tool `4333796` and jEnv `0.5.6`:
 ```sh
-docker buildx build --target minimal --build-arg ANDROID_SDK_TOOLS_TAGGED="tagged" --build-arg ANDROID_SDK_TOOLS_VERSION="4333796" --build-arg JENV_TAGGED="latest" --build-arg JENV_RELEASE="0.5.6"
+docker buildx build --target minimal --build-arg ANDROID_SDK_TOOLS_TAGGED="tagged" --build-arg ANDROID_SDK_TOOLS_VERSION="4333796" --build-arg JENV_TAGGED="tagged" --build-arg JENV_RELEASE="0.5.6"
 ```
 
-Please see the [Dockerfile][Dockerfile] for all the variable names. Also note, that jEnv is special so the version is specified by the argument `JENV_RELEASE`.
+Please see the [Dockerfile](Dockerfile) for all the variable names. Also note, that jEnv is special so the version is specified by the argument `JENV_RELEASE`.
 
 ## Changelog
 
