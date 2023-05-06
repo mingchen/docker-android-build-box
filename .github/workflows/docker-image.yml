@@ -96,12 +96,29 @@ jobs:
         # check disk space one more time
         df -h
 
-    - name: Build and load local docker image for test
+    - name: Build and load local docker image for PRs or Not Tags
       uses: docker/build-push-action@v4
+      if: github.event_name == 'pull_request' || !${{contains(github.ref, 'refs/tags/')}}
       with:
         context: .
         load: true
         tags: ${{ env.IMAGE_NAME}}:${{ env.TAG}}
+    
+    - name: Build and load local docker image for Not PRs and Tags
+      uses: docker/build-push-action@v4
+      if: github.event_name != 'pull_request' && (contains(github.ref, 'refs/tags/'))
+      with:
+        context: .
+        load: true
+        tags: ${{ env.IMAGE_NAME}}:${{ env.TAG}}
+        build-args: |
+          ANDROID_SDK_TOOLS_TAGGED="tagged"
+          ANDROID_SDKS="tagged"
+          NDK_TAGGED="tagged"
+          NODE_TAGGED="tagged"
+          BUNDLETOOL_TAGGED="tagged"
+          FLUTTER_TAGGED="tagged"
+          JENV_TAGGED="tagged"
 
     - name: Inspect local docker image
       run: |
@@ -131,12 +148,12 @@ jobs:
         docker run --rm ${{ env.IMAGE_NAME}}:${{ env.TAG}} bash -c 'ls -l $ANDROID_NDK_HOME'
         docker run --rm ${{ env.IMAGE_NAME}}:${{ env.TAG}} bash -c 'ls -l /opt/android-sdk/ndk/'
 
+        # Test Node
+        echo "Test Node installation"
+        docker run --rm ${{ env.IMAGE_NAME}}:${{ env.TAG}} bash -c 'curl -fsSL https://deb.nodesource.com/test | bash -'
+
         cd test_projects/SampleProject/
         docker run --rm -v `pwd`:/project ${{ env.IMAGE_NAME}}:${{ env.TAG}} bash -c './gradlew build'
-
-    - name: Remove local docker image
-      run: |
-        docker rmi ${{ env.IMAGE_NAME}}:${{ env.TAG}}
 
     - name: Login to DockerHub
       # if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
@@ -158,3 +175,19 @@ jobs:
         push: ${{ github.event_name != 'pull_request' && (github.ref == 'refs/heads/master' || contains(github.ref, 'refs/tags/')) }}
         tags: mingc/android-build-box:latest,${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
+
+    - name: Modify Readme to list latest software
+      if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/master')
+      run: |
+        printf "\n\n \"Latest\" Tag Software:\n\n" >> README.md
+        TEMP=$(docker run --rm ${{ env.IMAGE_NAME}}:${{ env.TAG}} cat '/root/installed-versions.txt')
+        echo "$TEMP" | tail --lines=+2 >> README.md
+
+    - name: Update Docker Hub Description
+      if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/master')
+      uses: peter-evans/dockerhub-description@579f64ca0abced29dbbc44ab4c6a0b9e33ab3588
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_PASSWORD }}
+        repository: mingc/android-build-box
+        enable-url-completion: true

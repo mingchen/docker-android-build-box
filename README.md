@@ -9,7 +9,7 @@ An optimized **Docker** image that includes the **Android SDK** and **Flutter SD
 
 ## What Is Inside
 
-It includes the following components:
+It includes the following components for the last tagged release:
 
 * Ubuntu 20.04
 * Java - OpenJDK
@@ -45,6 +45,8 @@ It includes the following components:
 * [jEnv](https://www.jenv.be)
 
 Please also see the [matrixes](COMPATIBILITY.md) file for details on the various software installed for the various tags.
+
+The latest image will always have the latest software installed, including the last 8 Android SDKs for platforms and associated build tools.
 
 ## Pull Docker Image
 
@@ -371,12 +373,34 @@ This can also be done by creating a `.java-version` file in the directory. See t
 
 ## Build the Docker Image
 
+Check your free disk space before building it as the image can be anywhere from ~10GB - ~16GB in size.
+
+Docker buildx is used so at a minimum Docker Engine version 19.03 or later is required.
+
 If you want to build the docker image by yourself, you can use following command.
-The compressed image itself is around 6 GB and uncompressed it's around 16GB, so check your free disk space before building it.
 
 ```sh
-docker build -t android-build-box .
+docker buildx build -t android-build-box .
 ```
+
+There are three build targets. The default is `complete-flutter`. The other two targets available are `minimal` and `complete`.
+
+| Build Target | SDK CLI Tools | jEnv | platform-tools; | platforms / build-tools | bundletool | NDK | Fastlane / Rake  | Node, etc | Flutter | 
+|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:| 
+| minimal | ✅<!--SDK CLI Tools-->  | ✅<!--jEnv--> | ✅<!--platform-tools;--> | ❌<!--platforms/build-tools--> | ❌<!--bundletool--> |❌<!--NDK--> | ❌<!--Fastlane/Rake--> | ❌<!--Node--> | ❌<!--Flutter--> | 
+| complete | ✅<!--SDK CLI Tools-->  | ✅<!--jEnv--> | ✅<!--platform-tools;--> | ✅<!--platforms/build-tools--> | ✅<!--bundletool--> | ✅<!--NDK--> | ✅<!--Fastlane/Rake--> | ✅<!--Node--> | ❌<!--Flutter--> | 
+| complete-flutter | ✅<!--SDK CLI Tools-->  | ✅<!--jEnv--> | ✅<!--platform-tools;--> | ✅<!--platforms/build-tools--> | ✅<!--bundletool--> | ✅<!--NDK--> | ✅<!--Fastlane/Rake--> | ✅<!--Node--> | ✅<!--Flutter--> | 
+
+No matter the build target chosen, the default will be to grab the latest software. This means the latest SDK CLI tools, jEnv, etc. With regards to the platforms; / build-tools the last 8 platforms are used as well as all associated build tools and any extensions.
+
+If you wish to use the version of software specified in the file in the `_TAGGED` build argument must be set to `tagged`. If you wish to specifiy the software version to be installed, then the `_TAGGED` argument must be set as mentioned, and the `_VERSION` build argument must be set to the desired version.
+
+For example, build target of `minimal` with SDK CLI tool `4333796` and jEnv `0.5.6`:
+```sh
+docker buildx build --target minimal --build-arg ANDROID_SDK_TOOLS_TAGGED="tagged" --build-arg ANDROID_SDK_TOOLS_VERSION="4333796" --build-arg JENV_TAGGED="latest" --build-arg JENV_RELEASE="0.5.6"
+```
+
+Please see the [Dockerfile][Dockerfile] for all the variable names. Also note, that jEnv is special so the version is specified by the argument `JENV_RELEASE`.
 
 ## Changelog
 
@@ -393,6 +417,7 @@ feel free to send a [pull request](https://github.com/mingchen/docker-android-bu
 
 Please also preface commits with `DOCS:` when editing any documentation and `CI:` when editing `.github/workflows/`.
 
+Also note that building / testing can use up a lot of space. After developing a feature and prune-ing, routinely 100GB of space is freed.
 
 ## References
 
