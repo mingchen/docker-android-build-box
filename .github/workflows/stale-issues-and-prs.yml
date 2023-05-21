@@ -1,7 +1,8 @@
 name: 'Close stale issues and PRs'
 on:
+  workflow_dispatch:  # manual trigger
   schedule:
-    - cron: '30 1 * * *'
+    - cron: '0 1 * * *'  # Run at 1:00 everyday.
 
 jobs:
   stale:
