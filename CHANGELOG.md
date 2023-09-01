@@ -26,7 +26,7 @@ Here be the changes.
  **NOTE**: missed this tag in DockerHub due to a github action error, should use `1.23.1` instead.
 
 * Upgrade Flutter 2.2.0 to 2.5.1
-* PR #71: Ubuunt 20.04, JDK 16, gradle 7.2 @sedwards
+* PR #71: Ubuntu 20.04, JDK 16, gradle 7.2 @sedwards
 * Fix #57: Correct repositories.cfg path
 * Add jenv to choose java version
 
