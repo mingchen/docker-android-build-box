@@ -2,6 +2,17 @@
 
 Here be the changes.
 
+## 1.26.0
+
+- Close #140: Update README about jenv usage
+PR #132: Adds build tools 33.0.1 and 33.0.2 @master-bob
+- PR #129: CI: Fix dockerhub-description password
+- PR #124: Multi stage build
+- PR #123: CI: Streamline docker build @master-bob
+- Update Bundletool to 1.14.0
+- Remove python2.7
+- Upgrade to Flutter 3.7.7
+
 ## 1.25.0
 
 * Add Java 17. @master-bob
@@ -168,4 +179,3 @@ Here be the changes.
 * extra-android-m2repository
 * extra-google-google\_play\_services
 * extra-google-m2repository
-
