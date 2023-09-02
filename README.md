@@ -219,6 +219,8 @@ pipelines:
           - gradle-wrapper
           - android-emulator
         script:
+          - . ~/.bash_profile
+          - jenv global 11  # switch java version
           - bash ./gradlew assemble
 definitions:
   caches:
@@ -310,9 +312,15 @@ Note that x86_64 emulators are not currently supported. See [Issue #18](https://
 
 ### Choose the system Java version
 
-As of `1.23.0`, `jenv` is used to switch `java` versions. Versions prior to `1.23.0` used `update-alternatives`; brief documentation is available [here](https://github.com/mingchen/docker-android-build-box/tree/95fde4a765cecf6d43b084190394fd43bef5bfd1#choose-the-system-java-version). 
+As of `1.23.0`, `jenv` is used to switch `java` versions. Versions prior to `1.23.0` used `update-alternatives`; brief documentation is available [here](https://github.com/mingchen/docker-android-build-box/tree/95fde4a765cecf6d43b084190394fd43bef5bfd1#choose-the-system-java-version).
 
 Please also see the [installed java versions matrix](COMPATIBILITY.md#Installed-Java-Versions-Matrix) for the installed java versions and [jEnv Cache](#jenv-cache) on how to cache the *global* java version.
+
+To allow `jenv` work properly, please run following command before any `jenv` command:
+
+```sh
+. ~/.bash_profile
+```
 
 The following documentation is for `jenv`. Please note that if the container is removed, that is run with the `--rm` flag, *global* changes will not persist unless jEnv is cached.
 
@@ -385,11 +393,11 @@ docker buildx build -t android-build-box .
 
 There are three build targets. The default is `complete-flutter`. The other two targets available are `minimal` and `complete`.
 
-| Build Target | SDK CLI Tools | jEnv | platform-tools; | platforms / build-tools | bundletool | NDK | Fastlane / Rake  | Node, etc | Flutter | 
-|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:| 
-| minimal | ✅<!--SDK CLI Tools-->  | ✅<!--jEnv--> | ✅<!--platform-tools;--> | ❌<!--platforms/build-tools--> | ❌<!--bundletool--> |❌<!--NDK--> | ❌<!--Fastlane/Rake--> | ❌<!--Node--> | ❌<!--Flutter--> | 
-| complete | ✅<!--SDK CLI Tools-->  | ✅<!--jEnv--> | ✅<!--platform-tools;--> | ✅<!--platforms/build-tools--> | ✅<!--bundletool--> | ✅<!--NDK--> | ✅<!--Fastlane/Rake--> | ✅<!--Node--> | ❌<!--Flutter--> | 
-| complete-flutter | ✅<!--SDK CLI Tools-->  | ✅<!--jEnv--> | ✅<!--platform-tools;--> | ✅<!--platforms/build-tools--> | ✅<!--bundletool--> | ✅<!--NDK--> | ✅<!--Fastlane/Rake--> | ✅<!--Node--> | ✅<!--Flutter--> | 
+| Build Target | SDK CLI Tools | jEnv | platform-tools; | platforms / build-tools | bundletool | NDK | Fastlane / Rake  | Node, etc | Flutter |
+|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| minimal | ✅<!--SDK CLI Tools-->  | ✅<!--jEnv--> | ✅<!--platform-tools;--> | ❌<!--platforms/build-tools--> | ❌<!--bundletool--> |❌<!--NDK--> | ❌<!--Fastlane/Rake--> | ❌<!--Node--> | ❌<!--Flutter--> |
+| complete | ✅<!--SDK CLI Tools-->  | ✅<!--jEnv--> | ✅<!--platform-tools;--> | ✅<!--platforms/build-tools--> | ✅<!--bundletool--> | ✅<!--NDK--> | ✅<!--Fastlane/Rake--> | ✅<!--Node--> | ❌<!--Flutter--> |
+| complete-flutter | ✅<!--SDK CLI Tools-->  | ✅<!--jEnv--> | ✅<!--platform-tools;--> | ✅<!--platforms/build-tools--> | ✅<!--bundletool--> | ✅<!--NDK--> | ✅<!--Fastlane/Rake--> | ✅<!--Node--> | ✅<!--Flutter--> |
 
 No matter the build target chosen, the default will be to grab the latest software. This means the latest SDK CLI tools, jEnv, etc. With regards to the platforms; / build-tools the last 8 platforms are used as well as all associated build tools and any extensions.
 
