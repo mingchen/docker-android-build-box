@@ -103,7 +103,7 @@ jobs:
         context: .
         load: true
         tags: ${{ env.IMAGE_NAME}}:${{ env.TAG}}
-    
+
     - name: Build and load local docker image for Not PRs and Tags
       uses: docker/build-push-action@v4.1.1
       if: github.event_name != 'pull_request' && (contains(github.ref, 'refs/tags/'))
@@ -112,13 +112,13 @@ jobs:
         load: true
         tags: ${{ env.IMAGE_NAME}}:${{ env.TAG}}
         build-args: |
-          ANDROID_SDK_TOOLS_TAGGED="tagged"
-          ANDROID_SDKS="tagged"
-          NDK_TAGGED="tagged"
-          NODE_TAGGED="tagged"
-          BUNDLETOOL_TAGGED="tagged"
-          FLUTTER_TAGGED="tagged"
-          JENV_TAGGED="tagged"
+          ANDROID_SDK_TOOLS_TAGGED=tagged
+          ANDROID_SDKS=tagged
+          NDK_TAGGED=tagged
+          NODE_TAGGED=tagged
+          BUNDLETOOL_TAGGED=tagged
+          FLUTTER_TAGGED=tagged
+          JENV_TAGGED=tagged
 
     - name: Inspect local docker image
       run: |
