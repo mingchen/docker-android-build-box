@@ -12,6 +12,7 @@ PR #132: Adds build tools 33.0.1 and 33.0.2 @master-bob
 - Update Bundletool to 1.14.0
 - Remove python2.7
 - Upgrade to Flutter 3.7.7
+- Upgrade node to 18.x
 
 ## 1.25.0
 
