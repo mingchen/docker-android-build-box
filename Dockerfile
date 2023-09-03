@@ -16,7 +16,7 @@ ARG NDK_TAGGED="latest"
 ARG NDK_VERSION="25.2.9519653"
 
 ARG NODE_TAGGED="latest"
-ARG NODE_VERSION="16.x"
+ARG NODE_VERSION="18.x"
 
 ARG BUNDLETOOL_TAGGED="latest"
 ARG BUNDLETOOL_VERSION="1.14.0"
@@ -394,6 +394,7 @@ RUN curl -sL -k https://deb.nodesource.com/setup_lts.x | bash - > /dev/null
 
 FROM node-${NODE_TAGGED} as node-final
 RUN apt-get install -qq nodejs > /dev/null && \
+    echo "node version: `node -v`" && \
     curl -sS -k https://dl.yarnpkg.com/debian/pubkey.gpg \
         | apt-key add - > /dev/null && \
     echo "deb https://dl.yarnpkg.com/debian/ stable main" \
@@ -402,6 +403,7 @@ RUN apt-get install -qq nodejs > /dev/null && \
     apt-get install -qq yarn > /dev/null && \
     rm -rf /var/lib/apt/lists/ && \
     npm install --quiet -g npm > /dev/null && \
+    echo "npm version: `npm -v`" && \
     npm install --quiet -g \
         bower \
         cordova \

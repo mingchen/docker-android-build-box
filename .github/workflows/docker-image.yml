@@ -65,7 +65,15 @@ jobs:
 
     - name: Pre build
       run: |
+        # possible ref examples:
+        #   refs/pull/138/merge
+        #   refs/heads/master
+        #   refs/tags/1.25.0
         echo "GITHUB_REF: $GITHUB_REF"
+
+        # possible event name examples:
+        #   push
+        #   pull_request
         echo "GITHUB_EVENT_NAME: $GITHUB_EVENT_NAME"
         echo "GITHUB_EVENT_PATH: $GITHUB_EVENT_PATH"
         echo "GITHUB_WORKFLOW: $GITHUB_WORKFLOW"
