@@ -38,7 +38,7 @@ It includes the following components for the last tagged release:
 * cmake
 * TestNG
 * Python 3.8.10
-* Node.js 16, npm, React Native
+* Node.js 18, npm, React Native
 * Ruby, RubyGems
 * fastlane
 * Flutter 3.7.7
