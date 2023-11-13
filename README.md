@@ -9,7 +9,10 @@ An optimized **Docker** image that includes the **Android SDK** and **Flutter SD
 
 ## What Is Inside
 
-It includes the following components for the last tagged release:
+The *latest* image will always have the latest software installed, including the last 8 Android SDKs for platforms and associated build tools.
+Please also see the [matrixes](COMPATIBILITY.md) file for details on the various software installed on the tagged release and the *latest* image.
+
+The last **tagged** release includes the following components:
 
 * Ubuntu 20.04
 * Java - OpenJDK
@@ -44,9 +47,6 @@ It includes the following components for the last tagged release:
 * Flutter 3.7.7
 * [jEnv](https://www.jenv.be)
 
-Please also see the [matrixes](COMPATIBILITY.md) file for details on the various software installed for the various tags.
-
-The latest image will always have the latest software installed, including the last 8 Android SDKs for platforms and associated build tools.
 
 ## Pull Docker Image
 
