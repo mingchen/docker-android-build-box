@@ -105,7 +105,7 @@ jobs:
         df -h
 
     - name: Build and load local docker image for PRs or Not Tags
-      uses: docker/build-push-action@v5.0.0
+      uses: docker/build-push-action@v5.1.0
       if: github.event_name == 'pull_request' || !startsWith(github.ref, 'refs/tags/')
       with:
         context: .
@@ -113,7 +113,7 @@ jobs:
         tags: ${{ env.IMAGE_NAME}}:${{ env.TAG}}
 
     - name: Build and load local docker image for Not PRs and Tags
-      uses: docker/build-push-action@v5.0.0
+      uses: docker/build-push-action@v5.1.0
       if: github.event_name != 'pull_request' && startsWith(github.ref, 'refs/tags/')
       with:
         context: .
@@ -172,7 +172,7 @@ jobs:
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
     - name: Build and push
-      uses: docker/build-push-action@v5.0.0
+      uses: docker/build-push-action@v5.1.0
       with:
         context: .
         # Android SDK not support arm64 yet
