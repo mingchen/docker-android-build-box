@@ -39,11 +39,11 @@ jobs:
       TAG: $GITHUB_SHA
 
     steps:
-    - uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608
+    - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
 
     - name: Docker meta
       id: meta
-      uses: docker/metadata-action@96383f45573cb7f253c731d3b3ab81c87ef81934
+      uses: docker/metadata-action@e6428a5c4e294a61438ed7f43155db912025b6b3
       with:
         images: mingc/android-build-box
         labels: |
@@ -105,7 +105,7 @@ jobs:
         df -h
 
     - name: Build and load local docker image for PRs or Not Tags
-      uses: docker/build-push-action@v5.0.0
+      uses: docker/build-push-action@v5.1.0
       if: github.event_name == 'pull_request' || !startsWith(github.ref, 'refs/tags/')
       with:
         context: .
@@ -113,7 +113,7 @@ jobs:
         tags: ${{ env.IMAGE_NAME}}:${{ env.TAG}}
 
     - name: Build and load local docker image for Not PRs and Tags
-      uses: docker/build-push-action@v5.0.0
+      uses: docker/build-push-action@v5.1.0
       if: github.event_name != 'pull_request' && startsWith(github.ref, 'refs/tags/')
       with:
         context: .
@@ -172,7 +172,7 @@ jobs:
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
     - name: Build and push
-      uses: docker/build-push-action@v5.0.0
+      uses: docker/build-push-action@v5.1.0
       with:
         context: .
         # Android SDK not support arm64 yet
