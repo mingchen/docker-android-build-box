@@ -187,7 +187,7 @@ jobs:
     - name: Modify Readme to list latest software
       if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/master')
       run: |
-        printf "\n\n \"Latest\" Tag Software:\n\n" >> README.md
+        printf "\n\n ## \"Latest\" Tag Software:\n\n" >> README.md
         TEMP=$(docker run --rm ${{ env.IMAGE_NAME}}:${{ env.TAG}} cat '/root/installed-versions.txt')
         echo "$TEMP" | tail --lines=+2 >> README.md
 
