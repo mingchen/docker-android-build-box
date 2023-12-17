@@ -93,7 +93,7 @@ jobs:
         echo "TAG: $TAG"
 
         # Remove exist images to free disk space
-        docker rmi $(docker image ls -a | grep -vE 'ubuntu.*20\.04|moby/buildkit' | awk 'NR>1 {print $3}')
+        docker rmi $(docker image ls -a | grep -vE 'ubuntu.*22\.04|moby/buildkit' | awk 'NR>1 {print $3}')
         #docker rmi $(docker images | grep -v IMAGE | awk '{print $3}')
         docker images
 

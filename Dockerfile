@@ -36,7 +36,7 @@ ARG JENV_RELEASE="0.5.6"
 #----------~~~~~~~~~~*****
 # build stage: ubunutu
 #----------~~~~~~~~~~*****
-FROM ubuntu:20.04 as ubuntu
+FROM ubuntu:22.04 as ubuntu
 # Ensure ARGs are in this build context
 ARG ANDROID_SDK_TOOLS_VERSION
 ARG NDK_VERSION
