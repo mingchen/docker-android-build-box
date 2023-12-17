@@ -15,7 +15,7 @@ Please also see the [matrixes](COMPATIBILITY.md) file for details on the various
 
 The last **tagged** release includes the following components:
 
-* Ubuntu 20.04
+* Ubuntu 22.04
 * Java - OpenJDK
   * 8 (1.8)
   * 11
