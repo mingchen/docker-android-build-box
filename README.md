@@ -10,6 +10,7 @@ An optimized **Docker** image that includes the **Android SDK** and **Flutter SD
 ## What Is Inside
 
 The *latest* image will always have the latest software installed, including the last 8 Android SDKs for platforms and associated build tools.
+The Dockerhub description, accessible by clicking the Docker badge above, has an always up-to-date listing of the software installed on the *latest* image.
 Please also see the [matrixes](COMPATIBILITY.md) file for details on the various software installed on the tagged release and the *latest* image.
 
 The last **tagged** release includes the following components:
