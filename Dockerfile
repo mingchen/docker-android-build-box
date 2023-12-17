@@ -306,7 +306,7 @@ RUN wget -q https://github.com/google/bundletool/releases/download/${BUNDLETOOL_
 FROM bundletool-base as bundletool-latest
 RUN TEMP=$(curl -s https://api.github.com/repos/google/bundletool/releases/latest) && \
     echo "$TEMP" | grep "browser_download_url.*jar" | cut -d : -f 2,3 | tr -d \" | wget -O $ANDROID_SDK_HOME/cmdline-tools/latest/bundletool.jar -qi - && \
-    TAG_NAME=$(echo "$TEMP" | grep "tag_name" | cut -d : -f 2,3 | tr -d \"\ ,) && \
+    TAG_NAME=$(echo "$TEMP" | grep "tag_name" | cut -d : -f 2,3 | tr -d '",') && \
     echo "BUNDLETOOL_VERSION=$TAG_NAME" >> ${INSTALLED_TEMP}
 
 FROM bundletool-${BUNDLETOOL_TAGGED} as bundletool-final
