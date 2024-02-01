@@ -43,7 +43,7 @@ jobs:
 
     - name: Docker meta
       id: meta
-      uses: docker/metadata-action@e6428a5c4e294a61438ed7f43155db912025b6b3
+      uses: docker/metadata-action@8e5442c4ef9f78752691e2d8f8d19755c6f78e81
       with:
         images: mingc/android-build-box
         labels: |
