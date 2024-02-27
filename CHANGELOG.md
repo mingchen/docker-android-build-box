@@ -2,6 +2,11 @@
 
 Here be the changes.
 
+## 1.27.0
+
+- PR #173: Upgrade Flutter to 3.16.9 @master-bob
+- PR #164: Upgrade to Ubuntu 22.04 LTS @master-bob
+
 ## 1.26.0
 
 - Close #140: Update README about jenv usage
