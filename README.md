@@ -28,6 +28,7 @@ The last **tagged** release includes the following components:
   * 31
   * 32
   * 33
+  * 34
 * Android build tools:
   * 27.0.1 27.0.2 27.0.3
   * 28.0.1 28.0.2 28.0.3
@@ -36,6 +37,7 @@ The last **tagged** release includes the following components:
   * 31.0.0
   * 32.0.0
   * 33.0.0
+  * 34.0.0
 * Android NDK (always the latest version, side-by-side install)
 * [Android bundletool](https://github.com/google/bundletool)
 * Android Emulator
