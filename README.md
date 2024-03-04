@@ -34,7 +34,7 @@ The last **tagged** release includes the following components:
   * 30.0.0 30.0.2 30.0.3
   * 31.0.0
   * 32.0.0
-  * 33.0.0
+  * 33.0.0 33.0.1 33.0.2 33.0.3
   * 34.0.0
 * Android NDK - r26c
 * [Android bundletool](https://github.com/google/bundletool)
