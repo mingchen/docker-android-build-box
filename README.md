@@ -21,28 +21,28 @@ The last **tagged** release includes the following components:
   * 11
   * 17
 * Android SDKs for platforms:
-  * 27
   * 28
   * 29
   * 30
   * 31
   * 32
   * 33
+  * 34
 * Android build tools:
-  * 27.0.1 27.0.2 27.0.3
   * 28.0.1 28.0.2 28.0.3
   * 29.0.2 29.0.3
   * 30.0.0 30.0.2 30.0.3
   * 31.0.0
   * 32.0.0
-  * 33.0.0
-* Android NDK (always the latest version, side-by-side install)
+  * 33.0.0 33.0.1 33.0.2 33.0.3
+  * 34.0.0
+* Android NDK - r26c
 * [Android bundletool](https://github.com/google/bundletool)
 * Android Emulator
 * cmake
 * TestNG
 * Python 3.8.10
-* Node.js 18, npm, React Native
+* Node.js 20, npm, React Native
 * Ruby, RubyGems
 * fastlane
 * Flutter 3.16.9
