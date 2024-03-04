@@ -21,7 +21,6 @@ The last **tagged** release includes the following components:
   * 11
   * 17
 * Android SDKs for platforms:
-  * 27
   * 28
   * 29
   * 30
@@ -30,7 +29,6 @@ The last **tagged** release includes the following components:
   * 33
   * 34
 * Android build tools:
-  * 27.0.1 27.0.2 27.0.3
   * 28.0.1 28.0.2 28.0.3
   * 29.0.2 29.0.3
   * 30.0.0 30.0.2 30.0.3
