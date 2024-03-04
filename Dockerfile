@@ -3,9 +3,9 @@
 # when _TAGGED is "tagged" the version in _VERSION will be used.
 # _TAGGED is used to handle the build stages
 
-# "9123335" as of 2023/01/11
+# "11076708" as of 2024/03/04
 ARG ANDROID_SDK_TOOLS_TAGGED="latest"
-ARG ANDROID_SDK_TOOLS_VERSION="9123335"
+ARG ANDROID_SDK_TOOLS_VERSION="11076708"
 
 # Valid values are "last8" or "tagged"
 # "last8" will grab the last 8 android-sdks, including extensions and
