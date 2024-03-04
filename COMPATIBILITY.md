@@ -155,6 +155,7 @@ Leave preceeding and trailing line of this comment **blank**.
 | 1.25.0 | 2023-02-21 | 20.04<!--Ubunutu--> | 9123335<!--SDK T.--> | r25c<!--NDK--> | 3.0.4<!--Flutter--> | 16.x<!--NodeJS--> | 1.9.1<!--bundletool--> |
 | 1.26.0 | 2023-09-03 | 20.04<!--Ubunutu--> | 9123335<!--SDK T.--> | r25c<!--NDK--> | 3.7.7<!--Flutter--> | 18.x<!--NodeJS--> | 1.14.0<!--bundletool--> |
 | 1.27.0 | 2024-02-27 | 22.04<!--Ubunutu--> | 9123335<!--SDK T.--> | r25c<!--NDK--> | 3.16.9<!--Flutter--> | 18.x<!--NodeJS--> | 1.14.0<!--bundletool--> |
+| 1.28.0 | TBD | 22.04<!--Ubunutu--> | 9123335<!--SDK T.--> | r26c<!--NDK--> | 3.16.9<!--Flutter--> | 18.x<!--NodeJS--> | 1.14.0<!--bundletool--> |
 | latest | 2024-03-01 | 22.04<!--Ubunutu--> | 11076708<!--SDK T.--> | r26c<!--NDK--> | 3.19.1<!--Flutter--> | 20.x<!--NodeJS--> | 1.15.6<!--bundletool--> |
 
 Note: As of 1.23.0 the latest released Android NDK at the build time is used. This means that the latest Android NDK on the release date of 1.24.0 was r22 and thus that is used. However, if one where to build 1.24.0 on 2023-02-21 (1.25.0 release date), then r25c would be installed.

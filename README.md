@@ -38,7 +38,7 @@ The last **tagged** release includes the following components:
   * 32.0.0
   * 33.0.0
   * 34.0.0
-* Android NDK (always the latest version, side-by-side install)
+* Android NDK - r26c
 * [Android bundletool](https://github.com/google/bundletool)
 * Android Emulator
 * cmake
