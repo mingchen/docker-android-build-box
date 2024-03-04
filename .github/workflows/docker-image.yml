@@ -171,18 +171,33 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-    - name: Build and push
+    - name: Build and push - for Not PRs and Not Tags
       uses: docker/build-push-action@v5.1.0
+      if: github.event_name != 'pull_request' && !startsWith(github.ref, 'refs/tags/')
       with:
         context: .
-        # Android SDK not support arm64 yet
-        # platforms: linux/amd64,linux/arm64
         platforms: linux/amd64
-        # platforms: linux/arm64
-        # push: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/master' }}
-        push: ${{ github.event_name != 'pull_request' && (github.ref == 'refs/heads/master' || contains(github.ref, 'refs/tags/')) }}
-        tags: mingc/android-build-box:latest,${{ steps.meta.outputs.tags }}
+        push: ${{ github.ref == 'refs/heads/master' }}
+        tags: mingc/android-build-box:latest, ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
+
+    - name: Build and push - for Not PRs and Tags
+      uses: docker/build-push-action@v5.1.0
+      if: github.event_name != 'pull_request' && startsWith(github.ref, 'refs/tags/')
+      with:
+        context: .
+        platforms: linux/amd64
+        push: ${{ contains(github.ref, 'refs/tags/') }}
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        build-args: |
+          ANDROID_SDK_TOOLS_TAGGED=tagged
+          ANDROID_SDKS=tagged
+          NDK_TAGGED=tagged
+          NODE_TAGGED=tagged
+          BUNDLETOOL_TAGGED=tagged
+          FLUTTER_TAGGED=tagged
+          JENV_TAGGED=tagged
 
     - name: Modify Readme to list latest software
       if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/master')
