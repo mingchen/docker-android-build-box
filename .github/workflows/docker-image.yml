@@ -39,7 +39,7 @@ jobs:
       TAG: $GITHUB_SHA
 
     steps:
-    - uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b
+    - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332
 
     - name: Docker meta
       id: meta
