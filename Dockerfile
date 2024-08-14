@@ -104,6 +104,7 @@ RUN apt-get update -qq > /dev/null && \
         autoconf \
         build-essential \
         cmake \
+        ninja-build \
         curl \
         file \
         git \
