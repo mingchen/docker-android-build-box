@@ -59,7 +59,7 @@ jobs:
       run: echo ${{ steps.qemu.outputs.platforms }}
 
     - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@988b5a0280414f521da01fcc63a27aeeb4b104db
+      uses: docker/setup-buildx-action@c47758b77c9736f4b2ef4073d4d51994fabfe349
       with:
         driver: docker
 
