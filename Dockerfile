@@ -34,7 +34,7 @@ ARG JENV_RELEASE="0.5.6"
 # ubuntu and base.
 
 #----------~~~~~~~~~~*****
-# build stage: ubunutu
+# build stage: ubuntu
 #----------~~~~~~~~~~*****
 FROM ubuntu:22.04 as ubuntu
 # Ensure ARGs are in this build context
