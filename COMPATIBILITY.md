@@ -7,7 +7,7 @@ Note: 1.23.0 is *not* on Docker Hub.
 
 ## Installed Java Versions Matrix
 
-Java 8 (1.8), Java 11, and Java 17 are installed.
+Java 8 (1.8), Java 11, Java 17, and Java 21 are installed.
 
 | docker-android-build-box version  | Date released  | Java default  | 8 | 11 | 16 | 17 | 21 |
 |:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|

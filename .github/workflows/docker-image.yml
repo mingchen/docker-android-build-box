@@ -149,6 +149,9 @@ jobs:
 
         echo "Test jenv recognizes Java 17"
         docker run --rm ${{ env.IMAGE_NAME}}:${{ env.TAG}} bash -c 'jenv local 17 && java -version'
+        
+        echo "Test jenv recognizes Java 21"
+        docker run --rm ${{ env.IMAGE_NAME}}:${{ env.TAG}} bash -c 'jenv local 21 && java -version'
 
         docker run -v `pwd`:/project --rm ${{ env.IMAGE_NAME}}:${{ env.TAG}} bash -c 'echo "Current directory: $PWD"'
 
