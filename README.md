@@ -20,6 +20,7 @@ The last **tagged** release includes the following components:
   * 8 (1.8)
   * 11
   * 17
+  * 21
 * Android SDKs for platforms:
   * 28
   * 29
