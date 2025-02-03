@@ -123,6 +123,7 @@ RUN apt-get update -qq > /dev/null && \
         openjdk-8-jdk \
         openjdk-11-jdk \
         openjdk-17-jdk \
+        openjdk-21-jdk \
         openssh-client \
         pkg-config \
         ruby-full \
@@ -208,8 +209,9 @@ RUN . ~/.bash_profile && \
     jenv add /usr/lib/jvm/java-8-openjdk-$JDK_PLATFORM && \
     jenv add /usr/lib/jvm/java-11-openjdk-$JDK_PLATFORM && \
     jenv add /usr/lib/jvm/java-17-openjdk-$JDK_PLATFORM && \
+    jenv add /usr/lib/jvm/java-21-openjdk-$JDK_PLATFORM && \
     jenv versions && \
-    jenv global 17.0 && \
+    jenv global 21 && \
     java -version
 
 #----------~~~~~~~~~~*****
