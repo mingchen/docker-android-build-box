@@ -169,7 +169,7 @@ jobs:
     - name: Login to DockerHub
       # if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
       if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/'))
-      uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567
+      uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
