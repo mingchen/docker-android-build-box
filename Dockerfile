@@ -3,9 +3,9 @@
 # when _TAGGED is "tagged" the version in _VERSION will be used.
 # _TAGGED is used to handle the build stages
 
-# "11076708" as of 2024/03/04
+# "13114758" as of 2025/04/04
 ARG ANDROID_SDK_TOOLS_TAGGED="latest"
-ARG ANDROID_SDK_TOOLS_VERSION="11076708"
+ARG ANDROID_SDK_TOOLS_VERSION="13114758"
 
 # Valid values are "last8" or "tagged"
 # "last8" will grab the last 8 android-sdks, including extensions and
@@ -13,16 +13,16 @@ ARG ANDROID_SDK_TOOLS_VERSION="11076708"
 ARG ANDROID_SDKS="last8"
 
 ARG NDK_TAGGED="latest"
-ARG NDK_VERSION="26.2.11394342"
+ARG NDK_VERSION="28.0.13004108"
 
 ARG NODE_TAGGED="latest"
-ARG NODE_VERSION="20.x"
+ARG NODE_VERSION="22.x"
 
 ARG BUNDLETOOL_TAGGED="latest"
-ARG BUNDLETOOL_VERSION="1.15.6"
+ARG BUNDLETOOL_VERSION="1.18.1"
 
 ARG FLUTTER_TAGGED="latest"
-ARG FLUTTER_VERSION="3.19.2"
+ARG FLUTTER_VERSION="3.24.5"
 
 ARG JENV_TAGGED="latest"
 ARG JENV_RELEASE="0.5.6"
