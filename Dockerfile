@@ -492,7 +492,7 @@ WORKDIR ${FINAL_DIRWORK}
 #----------~~~~~~~~~~*****
 FROM --platform=linux/amd64 complete as complete-flutter
 COPY --from=flutter-final ${FLUTTER_HOME} ${FLUTTER_HOME}
-COPY --from=flutter-final /root/.flutter /root/.flutter
+#COPY --from=flutter-final /root/.flutter /root/.flutter
 COPY --from=flutter-final /root/.config/flutter /root/.config/flutter
 COPY --from=flutter-final ${INSTALLED_TEMP} ${DIRWORK}/.flutter_version
 
