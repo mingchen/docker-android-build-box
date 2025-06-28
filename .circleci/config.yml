@@ -22,7 +22,10 @@ jobs:
           name: "Test"
           command: |
             cd test_projects/SampleProject/
-            docker run --rm -v `pwd`:/project android-build-box:latest bash -c 'pwd ; cd /project ; ls -l ; ./gradlew build'
+            pwd
+            ls -l
+            echo "Run gradle build inside docker"
+            docker run --rm -v `pwd`:/project android-build-box bash -c 'pwd ; cd /project ; ls -l ; ./gradlew build'
 
 workflows:
   CI:
