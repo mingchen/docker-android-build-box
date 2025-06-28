@@ -26,7 +26,39 @@ jobs:
             set -x
             docker run --rm -v `pwd`:/project android-build-box bash -c 'ls -l /; pwd ; cd /project ; ls -l ; ./gradlew build'
 
+  cd:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: medium
+    steps:
+      - checkout
+      - run:
+          name: "Build docker image"
+          command: |
+            TAG=latest
+
+            # CIRCLE_TAG: The name of the git tag, if the current build is tagged.
+            if [ "$CIRCLE_TAG" != "" ]; then
+              TAG=$CIRCLE_TAG
+            fi
+            echo "Building docker image with tag: $TAG"
+            docker buildx build -t $DOCKERHUB_USERNAME/android-build-box .
+      - run:
+          name: Push docker image to DockerHub
+          command: |
+            TAG=latest
+            # CIRCLE_TAG: The name of the git tag, if the current build is tagged.
+            if [ "$CIRCLE_TAG" != "" ]; then
+              TAG=$CIRCLE_TAG
+            fi
+            echo "Push docker image with tag: $TAG"
+            echo $DOCKERHUB_PASSWORD | docker login -u $DOCKERHUB_USERNAME --password-stdin
+            docker push $DOCKERHUB_USERNAME/android-build-box:$TAG
+
 workflows:
   CI:
     jobs:
       - ci
+  CD:
+    jobs:
+      - cd
