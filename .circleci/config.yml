@@ -18,6 +18,11 @@ jobs:
           name: "Build docker image"
           command: |
             docker buildx build -t android-build-box .
+      - run:
+          name: "Test"
+          command: |
+            cd test_projects/SampleProject/
+            docker run --rm -v `pwd`:/project android-build-box:latest bash -c './gradlew build'
 
 workflows:
   CI:
