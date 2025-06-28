@@ -39,7 +39,7 @@ The last **tagged** release includes the following components:
   * 33.0.0 33.0.1 33.0.2 33.0.3
   * 34.0.0
   * 35.0.0
-* Android NDK - r28c
+* Android NDK - r28b
 * [Android bundletool](https://github.com/google/bundletool)
 * Android Emulator
 * cmake
@@ -48,7 +48,7 @@ The last **tagged** release includes the following components:
 * Node.js 22, npm, React Native
 * Ruby, RubyGems
 * fastlane
-* Flutter 3.16.9
+* Flutter 3.32.4
 * [jEnv](https://www.jenv.be)
 
 
