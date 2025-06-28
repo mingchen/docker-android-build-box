@@ -74,7 +74,11 @@ jobs:
 workflows:
   CI:
     jobs:
-      - ci
+      - ci:
+          filters:
+            branches:
+              ignore:
+                - master
   CD:
     jobs:
       - cd
