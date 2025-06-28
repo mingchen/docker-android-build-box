@@ -6,8 +6,6 @@ jobs:
       image: ubuntu-2204:current
     steps:
       - checkout
-      - setup_remote_docker:
-          docker_layer_caching: true
       - run:
           name: "Check env"
           command: |
