@@ -13,7 +13,7 @@ ARG ANDROID_SDK_TOOLS_VERSION="13114758"
 ARG ANDROID_SDKS="last8"
 
 ARG NDK_TAGGED="latest"
-ARG NDK_VERSION="28.0.13004108"
+ARG NDK_VERSION="28.1.13356709"
 
 ARG NODE_TAGGED="latest"
 ARG NODE_VERSION="22.x"
@@ -22,7 +22,7 @@ ARG BUNDLETOOL_TAGGED="latest"
 ARG BUNDLETOOL_VERSION="1.18.1"
 
 ARG FLUTTER_TAGGED="latest"
-ARG FLUTTER_VERSION="3.24.5"
+ARG FLUTTER_VERSION="3.32.4"
 
 ARG JENV_TAGGED="latest"
 ARG JENV_RELEASE="0.5.6"
@@ -36,7 +36,7 @@ ARG JENV_RELEASE="0.5.6"
 #----------~~~~~~~~~~*****
 # build stage: ubuntu
 #----------~~~~~~~~~~*****
-FROM ubuntu:22.04 as ubuntu
+FROM ubuntu:22.04 AS ubuntu
 # Ensure ARGs are in this build context
 ARG ANDROID_SDK_TOOLS_VERSION
 ARG NDK_VERSION
@@ -77,7 +77,7 @@ ENV PATH="${JENV_ROOT}/shims:${JENV_ROOT}/bin:$JAVA_HOME/bin:$PATH:$ANDROID_SDK_
 #----------~~~~~~~~~~*****
 # build stage: base
 #----------~~~~~~~~~~*****
-FROM ubuntu as pre-base
+FROM ubuntu AS pre-base
 ARG TERM=dumb \
     DEBIAN_FRONTEND=noninteractive
 
@@ -150,16 +150,16 @@ RUN apt-get update -qq > /dev/null && \
 
 # preliminary base-base stage
 # Install Android SDK CLI
-FROM pre-base as base-base
+FROM pre-base AS base-base
 RUN echo '# Installed Versions of Specified Software' >> ${INSTALLED_VERSIONS}
 
-FROM base-base as base-tagged
+FROM base-base AS base-tagged
 RUN echo "sdk tools ${ANDROID_SDK_TOOLS_VERSION}" && \
     wget --quiet --output-document=sdk-tools.zip \
         "https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_SDK_TOOLS_VERSION}_latest.zip" && \
     echo "ANDROID_SDK_TOOLS_VERSION=${ANDROID_SDK_TOOLS_VERSION}" >> ${INSTALLED_VERSIONS}
 
-FROM base-base as base-latest
+FROM base-base AS base-latest
 RUN TEMP=$(curl -S https://developer.android.com/studio/index.html) && \
     ANDROID_SDK_TOOLS_VERSION=$(echo "$TEMP" | grep commandlinetools-linux | tail -n 1 | cut -d \- -f 3 | tr -d _latest.zip\</em\>\<\/p\>) && \
     echo "sdk tools $ANDROID_SDK_TOOLS_VERSION" && \
@@ -167,7 +167,7 @@ RUN TEMP=$(curl -S https://developer.android.com/studio/index.html) && \
         "https://dl.google.com/android/repository/commandlinetools-linux-"$ANDROID_SDK_TOOLS_VERSION"_latest.zip" && \
     echo "ANDROID_SDK_TOOLS_VERSION=$ANDROID_SDK_TOOLS_VERSION" >> ${INSTALLED_VERSIONS}
 
-FROM base-${ANDROID_SDK_TOOLS_TAGGED} as base
+FROM base-${ANDROID_SDK_TOOLS_TAGGED} AS base
 RUN mkdir --parents "$ANDROID_HOME" && \
     unzip -q sdk-tools.zip -d "$ANDROID_HOME" && \
     cd "$ANDROID_HOME" && \
@@ -190,19 +190,19 @@ COPY sdk/licenses/* $ANDROID_HOME/licenses/
 #----------~~~~~~~~~~*****
 # jenv
 # Add jenv to control which version of java to use, default to 17.
-FROM base as jenv-base
+FROM base AS jenv-base
 RUN echo '#!/usr/bin/env bash' >> ~/.bash_profile && \
     echo 'eval "$(jenv init -)"' >> ~/.bash_profile
 
-FROM jenv-base as jenv-tagged
+FROM jenv-base AS jenv-tagged
 RUN git clone --depth 1 --branch ${JENV_RELEASE} https://github.com/jenv/jenv.git ${JENV_ROOT} && \
     echo "JENV_RELEASE=${JENV_RELEASE}" >> ${INSTALLED_TEMP}
 
-FROM jenv-base as jenv-latest
+FROM jenv-base AS jenv-latest
 RUN git clone  https://github.com/jenv/jenv.git ${JENV_ROOT} && \
     cd ${JENV_ROOT} && echo "JENV_RELEASE=$(git describe --tags HEAD)" >> ${INSTALLED_TEMP}
 
-FROM jenv-${JENV_TAGGED} as jenv-final
+FROM jenv-${JENV_TAGGED} AS jenv-final
 RUN . ~/.bash_profile && \
     . /etc/jdk.env && \
     java -version && \
@@ -218,7 +218,7 @@ RUN . ~/.bash_profile && \
 # build stage: stage2
 #----------~~~~~~~~~~*****
 # Create some jenkins required directory to allow this image run with Jenkins
-FROM ubuntu as stage2
+FROM ubuntu AS stage2
 WORKDIR ${DIRWORK}
 RUN mkdir -p /var/lib/jenkins/workspace && \
     mkdir -p /home/jenkins && \
@@ -228,7 +228,7 @@ RUN mkdir -p /var/lib/jenkins/workspace && \
 #----------~~~~~~~~~~*****
 # build stage: pre-minimal
 #----------~~~~~~~~~~*****
-FROM base as pre-minimal
+FROM base AS pre-minimal
 ARG DEBUG
 # The `yes` is for accepting all non-standard tool licenses.
 RUN mkdir --parents "$ANDROID_HOME/.android/" && \
@@ -254,23 +254,23 @@ RUN echo "platform tools" && \
 # installs the intended android SDKs
 #
 # https://developer.android.com/studio/command-line/sdkmanager.html
-FROM pre-minimal as stage1-independent-base
+FROM pre-minimal AS stage1-independent-base
 WORKDIR ${DIRWORK}
 ARG PACKAGES_FILENAME="android-sdks.txt"
 
-FROM --platform=linux/amd64 stage1-independent-base as stage1-base
+FROM --platform=linux/amd64 stage1-independent-base AS stage1-base
 RUN echo "emulator" && \
     . /etc/jdk.env && \
     yes | $ANDROID_SDK_MANAGER "emulator" > /dev/null
 
-FROM --platform=linux/arm64 stage1-independent-base as stage1-base
+FROM --platform=linux/arm64 stage1-independent-base AS stage1-base
 # seems there is no emulator on arm64
 # Warning: Failed to find package emulator
 
-FROM stage1-base as stage1-tagged
+FROM stage1-base AS stage1-tagged
 COPY tagged_sdk_packages_list.txt $PACKAGES_FILENAME
 
-FROM stage1-base as stage1-last8
+FROM stage1-base AS stage1-last8
 ARG LAST8_PACKAGES=$PACKAGES_FILENAME
 # Get last 8 platforms
 # Extract platform version numbers.
@@ -289,7 +289,7 @@ RUN cat ${SDK_PACKAGES_LIST} | grep "platforms;android-[[:digit:]][[:digit:]]\+ 
     done; \
     cat ${SDK_PACKAGES_LIST} | grep "build-tools;$i" | awk '{print $1}' >> $LAST8_PACKAGES
 
-FROM stage1-${ANDROID_SDKS} as stage1-final
+FROM stage1-${ANDROID_SDKS} AS stage1-final
 RUN echo "installing: $(cat $PACKAGES_FILENAME)" && \
     . /etc/jdk.env && \
     yes | ${ANDROID_SDK_MANAGER} ${DEBUG:+--verbose} --package_file=$PACKAGES_FILENAME > /dev/null
@@ -298,38 +298,38 @@ RUN echo "installing: $(cat $PACKAGES_FILENAME)" && \
 # build stage: bundletool-final
 #----------~~~~~~~~~~*****
 # bundletool
-FROM pre-minimal as bundletool-base
+FROM pre-minimal AS bundletool-base
 WORKDIR ${DIRWORK}
 RUN echo "bundletool"
 
-FROM bundletool-base as bundletool-tagged
+FROM bundletool-base AS bundletool-tagged
 RUN wget -q https://github.com/google/bundletool/releases/download/${BUNDLETOOL_VERSION}/bundletool-all-${BUNDLETOOL_VERSION}.jar -O $ANDROID_SDK_HOME/cmdline-tools/latest/bundletool.jar && \
     echo "BUNDLETOOL_VERSION=${BUNDLETOOL_VERSION}" >> ${INSTALLED_TEMP}
 
-FROM bundletool-base as bundletool-latest
+FROM bundletool-base AS bundletool-latest
 RUN TEMP=$(curl -s https://api.github.com/repos/google/bundletool/releases/latest) && \
     echo "$TEMP" | grep "browser_download_url.*jar" | cut -d : -f 2,3 | tr -d \" | wget -O $ANDROID_SDK_HOME/cmdline-tools/latest/bundletool.jar -qi - && \
     TAG_NAME=$(echo "$TEMP" | grep "tag_name" | cut -d : -f 2,3 | tr -d \"\ ,) && \
     echo "BUNDLETOOL_VERSION=$TAG_NAME" >> ${INSTALLED_TEMP}
 
-FROM bundletool-${BUNDLETOOL_TAGGED} as bundletool-final
+FROM bundletool-${BUNDLETOOL_TAGGED} AS bundletool-final
 RUN echo "bundletool finished"
 
 #----------~~~~~~~~~~*****
 # build stage: ndk-final
 #----------~~~~~~~~~~*****
 # NDK (side-by-side)
-FROM pre-minimal as ndk-base
+FROM pre-minimal AS ndk-base
 WORKDIR ${DIRWORK}
 RUN echo "NDK"
 
-FROM ndk-base as ndk-tagged
+FROM ndk-base AS ndk-tagged
 RUN echo "Installing ${NDK_VERSION}" && \
     . /etc/jdk.env && \
     yes | $ANDROID_SDK_MANAGER ${DEBUG:+--verbose} "ndk;${NDK_VERSION}" > /dev/null && \
     ln -sv $ANDROID_HOME/ndk/${NDK_VERSION} ${ANDROID_NDK}
 
-FROM ndk-base as ndk-latest
+FROM ndk-base AS ndk-latest
 RUN NDK=$(grep 'ndk;' ${SDK_PACKAGES_LIST} | sort | tail -n1 | awk '{print $1}') && \
     NDK_VERSION=$(echo $NDK | awk -F\; '{print $2}') && \
     echo "Installing $NDK" && \
@@ -337,31 +337,31 @@ RUN NDK=$(grep 'ndk;' ${SDK_PACKAGES_LIST} | sort | tail -n1 | awk '{print $1}')
     yes | $ANDROID_SDK_MANAGER ${DEBUG:+--verbose} "$NDK" > /dev/null && \
     ln -sv $ANDROID_HOME/ndk/$NDK_VERSION ${ANDROID_NDK}
 
-FROM ndk-${NDK_TAGGED} as ndk-final
+FROM ndk-${NDK_TAGGED} AS ndk-final
 RUN echo "NDK finished"
 
 #----------~~~~~~~~~~*****
 # build stage: flutter-final
 #----------~~~~~~~~~~*****
 # Flutter
-FROM --platform=linux/amd64 base as flutter-base
+FROM --platform=linux/amd64 base AS flutter-base
 WORKDIR ${DIRWORK}
-FROM flutter-base as flutter-tagged
+FROM flutter-base AS flutter-tagged
 RUN git clone --depth 1 --branch ${FLUTTER_VERSION} https://github.com/flutter/flutter.git ${FLUTTER_HOME} && \
     echo "FLUTTER_VERSION=${FLUTTER_VERSION}" >> ${INSTALLED_TEMP}
 
-FROM flutter-base as flutter-latest
+FROM flutter-base AS flutter-latest
 RUN git clone --depth 5 -b stable https://github.com/flutter/flutter.git ${FLUTTER_HOME} && \
     cd ${FLUTTER_HOME} && echo "FLUTTER_VERSION="$(git describe --tags HEAD) >> ${INSTALLED_TEMP}
 
-FROM flutter-${FLUTTER_TAGGED} as flutter-final
+FROM flutter-${FLUTTER_TAGGED} AS flutter-final
 RUN flutter config --no-analytics
 
 #----------~~~~~~~~~~*****
 # build stage: stage3
 #----------~~~~~~~~~~*****
 # ruby gems
-FROM pre-minimal as stage3
+FROM pre-minimal AS stage3
 WORKDIR ${DIRWORK}
 COPY Gemfile /Gemfile
 
@@ -383,19 +383,19 @@ RUN echo "fastlane" && \
 # build stage: node-final
 #----------~~~~~~~~~~*****
 # node
-FROM stage3 as node-base
+FROM stage3 AS node-base
 ENV NODE_ENV=production
 RUN echo "nodejs, npm, cordova, ionic, react-native" && \
     echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
 
 # Install Node
-FROM node-base as node-tagged
+FROM node-base AS node-tagged
 RUN curl -sL -k https://deb.nodesource.com/setup_${NODE_VERSION} | bash - > /dev/null
 
-FROM node-base as node-latest
+FROM node-base AS node-latest
 RUN curl -sL -k https://deb.nodesource.com/setup_lts.x | bash - > /dev/null
 
-FROM node-${NODE_TAGGED} as node-final
+FROM node-${NODE_TAGGED} AS node-final
 RUN apt-get install -qq nodejs > /dev/null && \
     echo "node version: `node -v`" && \
     curl -sS -k https://dl.yarnpkg.com/debian/pubkey.gpg \
@@ -439,7 +439,7 @@ RUN apt-get install -qq nodejs > /dev/null && \
 # build target: minimal
 #----------~~~~~~~~~~*****
 # intended as a functional bare-bones installation
-FROM pre-minimal as minimal
+FROM pre-minimal AS minimal
 COPY --from=stage2 /var/lib/jenkins/workspace /var/lib/jenkins/workspace
 COPY --from=stage2 /home/jenkins /home/jenkins
 COPY --from=jenv-final ${JENV_ROOT} ${JENV_ROOT}
@@ -459,7 +459,7 @@ WORKDIR ${FINAL_DIRWORK}
 #----------~~~~~~~~~~*****
 # build target: complete
 #----------~~~~~~~~~~*****
-FROM node-final as complete
+FROM node-final AS complete
 COPY --from=stage1-final --chmod=775 ${ANDROID_HOME} ${ANDROID_HOME}
 COPY --from=stage2 /var/lib/jenkins/workspace /var/lib/jenkins/workspace
 COPY --from=stage2 /home/jenkins /home/jenkins
@@ -490,9 +490,9 @@ WORKDIR ${FINAL_DIRWORK}
 #----------~~~~~~~~~~*****
 # build target: complete-flutter
 #----------~~~~~~~~~~*****
-FROM --platform=linux/amd64 complete as complete-flutter
+FROM --platform=linux/amd64 complete AS complete-flutter
 COPY --from=flutter-final ${FLUTTER_HOME} ${FLUTTER_HOME}
-COPY --from=flutter-final /root/.flutter /root/.flutter
+#COPY --from=flutter-final /root/.flutter /root/.flutter
 COPY --from=flutter-final /root/.config/flutter /root/.config/flutter
 COPY --from=flutter-final ${INSTALLED_TEMP} ${DIRWORK}/.flutter_version
 

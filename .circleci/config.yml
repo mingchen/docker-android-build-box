@@ -1,0 +1,32 @@
+version: 2.1
+
+jobs:
+  ci:
+    machine:
+      image: ubuntu-2204:current
+    steps:
+      - checkout
+      - run:
+          name: "Check env"
+          command: |
+            uname -a
+            df -h
+            env
+      - run:
+          name: "Build docker image"
+          command: |
+            docker buildx build -t android-build-box .
+      - run:
+          name: "Test"
+          command: |
+            cd test_projects/SampleProject/
+            pwd
+            ls -l
+            echo "Run gradle build inside docker"
+            set -x
+            docker run --rm -v `pwd`:/project android-build-box bash -c 'ls -l /; pwd ; cd /project ; ls -l ; ./gradlew build'
+
+workflows:
+  CI:
+    jobs:
+      - ci
