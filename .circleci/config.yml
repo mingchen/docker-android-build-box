@@ -6,12 +6,13 @@ jobs:
       - image: cimg/base:current
     steps:
       - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
       - run:
           name: "Check env"
           command: |
             uname -a
             df -h
-            docker images
             env
       - run:
           name: "Build docker image"
