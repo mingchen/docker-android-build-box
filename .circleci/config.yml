@@ -4,6 +4,7 @@ jobs:
   ci:
     machine:
       image: ubuntu-2204:current
+    resource_class: xlarge
     steps:
       - checkout
       - run:
