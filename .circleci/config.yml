@@ -12,7 +12,6 @@ jobs:
           command: |
             uname -a
             df -h
-            env
       - run:
           name: "Build docker image"
           command: |
