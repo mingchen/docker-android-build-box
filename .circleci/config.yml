@@ -58,7 +58,8 @@ jobs:
               TAG=$CIRCLE_TAG
             fi
             echo "Building docker image with tag: $TAG"
-            docker buildx build -t $DOCKERHUB_USERNAME/android-build-box .
+            docker buildx build -t $DOCKERHUB_USERNAME/android-build-box:$TAG .
+            docker tag $DOCKERHUB_USERNAME/android-build-box:$TAG $DOCKERHUB_USERNAME/android-build-box:$CIRCLE_BRANCH
       - run:
           name: Push docker image to DockerHub
           command: |
@@ -70,6 +71,9 @@ jobs:
             echo "Push docker image with tag: $TAG"
             echo $DOCKERHUB_PASS | docker login -u $DOCKERHUB_USERNAME --password-stdin
             docker push $DOCKERHUB_USERNAME/android-build-box:$TAG
+            docker push $DOCKERHUB_USERNAME/android-build-box:$CIRCLE_BRANCH
+            echo "Docker image pushed successfully"
+            docker logout
 
 workflows:
   CI:
@@ -79,6 +83,7 @@ workflows:
             branches:
               ignore:
                 - master
+
   CD:
     jobs:
       - cd
