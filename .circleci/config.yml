@@ -8,6 +8,14 @@ jobs:
     steps:
       - checkout
       - run:
+          name: "Preconditions"
+          command: |
+            # Don't run on master branch
+            if [ "$CIRCLE_BRANCH" = "master" ]; then
+              echo "Skipping build on master branch"
+              circleci-agent step halt
+            fi
+      - run:
           name: "Check env"
           command: |
             uname -a
@@ -33,6 +41,14 @@ jobs:
     steps:
       - checkout
       - run:
+          name: "Preconditions"
+          command: |
+            # Only run on master branch
+            if [ "$CIRCLE_BRANCH" != "master" ]; then
+              echo "Skipping build on non-master branch"
+              circleci-agent step halt
+            fi
+      - run:
           name: "Build docker image"
           command: |
             TAG=latest
@@ -52,7 +68,7 @@ jobs:
               TAG=$CIRCLE_TAG
             fi
             echo "Push docker image with tag: $TAG"
-            echo $DOCKERHUB_PASSWORD | docker login -u $DOCKERHUB_USERNAME --password-stdin
+            echo $DOCKERHUB_PASS | docker login -u $DOCKERHUB_USERNAME --password-stdin
             docker push $DOCKERHUB_USERNAME/android-build-box:$TAG
 
 workflows:
