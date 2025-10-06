@@ -1,0 +1,89 @@
+version: 2.1
+
+jobs:
+  ci:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: medium
+    steps:
+      - checkout
+      - run:
+          name: "Preconditions"
+          command: |
+            # Don't run on master branch
+            if [ "$CIRCLE_BRANCH" = "master" ]; then
+              echo "Skipping build on master branch"
+              circleci-agent step halt
+            fi
+      - run:
+          name: "Check env"
+          command: |
+            uname -a
+            df -h
+      - run:
+          name: "Build docker image"
+          command: |
+            docker buildx build -t android-build-box .
+      - run:
+          name: "Test"
+          command: |
+            cd test_projects/SampleProject/
+            pwd
+            ls -l
+            echo "Run gradle build inside docker"
+            set -x
+            docker run --rm -v `pwd`:/project android-build-box bash -c 'ls -l /; pwd ; cd /project ; ls -l ; ./gradlew build'
+
+  cd:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: medium
+    steps:
+      - checkout
+      - run:
+          name: "Preconditions"
+          command: |
+            # Only run on master branch
+            if [ "$CIRCLE_BRANCH" != "master" ]; then
+              echo "Skipping build on non-master branch"
+              circleci-agent step halt
+            fi
+      - run:
+          name: "Build docker image"
+          command: |
+            TAG=latest
+
+            # CIRCLE_TAG: The name of the git tag, if the current build is tagged.
+            if [ "$CIRCLE_TAG" != "" ]; then
+              TAG=$CIRCLE_TAG
+            fi
+            echo "Building docker image with tag: $TAG"
+            docker buildx build -t $DOCKERHUB_USERNAME/android-build-box:$TAG .
+            docker tag $DOCKERHUB_USERNAME/android-build-box:$TAG $DOCKERHUB_USERNAME/android-build-box:$CIRCLE_BRANCH
+      - run:
+          name: Push docker image to DockerHub
+          command: |
+            TAG=latest
+            # CIRCLE_TAG: The name of the git tag, if the current build is tagged.
+            if [ "$CIRCLE_TAG" != "" ]; then
+              TAG=$CIRCLE_TAG
+            fi
+            echo "Push docker image with tag: $TAG"
+            echo $DOCKERHUB_PASS | docker login -u $DOCKERHUB_USERNAME --password-stdin
+            docker push $DOCKERHUB_USERNAME/android-build-box:$TAG
+            docker push $DOCKERHUB_USERNAME/android-build-box:$CIRCLE_BRANCH
+            echo "Docker image pushed successfully"
+            docker logout
+
+workflows:
+  CI:
+    jobs:
+      - ci:
+          filters:
+            branches:
+              ignore:
+                - master
+
+  CD:
+    jobs:
+      - cd
